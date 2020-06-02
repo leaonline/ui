@@ -29,7 +29,7 @@ const defaults = {
   },
   text: {
     name: 'text',
-    group: RendererGroups.layout,
+    group: RendererGroups.layout.name,
     schema: ({ i18n }) => ({
       type: {
         type: String,
@@ -72,7 +72,7 @@ const defaults = {
   },
   markdown: {
     name: 'markdown',
-    group: RendererGroups.layout,
+    group: RendererGroups.layout.name,
     schema: ({ i18n }) => ({
       type: {
         type: String,
@@ -148,7 +148,7 @@ const defaults = {
   },
   image: {
     name: 'image',
-    group: RendererGroups.layout,
+    group: RendererGroups.layout.name,
     schema: ({ i18n, imageForm }) => ({
       type: {
         type: String,
