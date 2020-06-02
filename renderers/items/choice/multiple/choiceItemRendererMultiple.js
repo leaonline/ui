@@ -1,0 +1,1 @@
+import './choiceItemRendererMultiple.html'
