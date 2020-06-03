@@ -83,7 +83,9 @@ Template.choiceItemRenderer.helpers({
   selected (index) {
     const instance = Template.instance()
     const selected = instance.selected && instance.selected.get()
-    if (!selected) return false
+    if (typeof selected === 'undefined' || selected === null){
+      return false
+    }
 
     return instance.isMultiple.get()
       ? selected.includes(index)
@@ -99,7 +101,7 @@ Template.choiceItemRenderer.events({
   'click .choice-soundbutton' (event) {
     event.stopPropagation()
   },
-  'click .choice-entry' (event, templateInstance) {
+  'click .choice-interaction' (event, templateInstance) {
     const $target = templateInstance.$(event.currentTarget)
     const indexStr = $target.data('index')
     const name = $target.data('name')
@@ -132,9 +134,6 @@ Template.choiceItemRenderer.events({
 
       // skip if we have already selected this
       if (selection === index) return
-
-      // set some unusable default
-      if (!Number.isInteger(selection)) selection = -99
 
       templateInstance.selected.set(index)
       templateInstance.$(`#${name}-${index}`).prop('checked', true)
