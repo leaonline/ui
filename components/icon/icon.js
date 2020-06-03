@@ -6,8 +6,9 @@ Template.icon.helpers({
     const data = Template.instance().data
     const fw = data.fw ? 'fa-fw' : ''
     const pulse = data.pulse ? 'fa-pulse' : ''
+    const spinning = data.spin ? 'fa-spin' : ''
     const name = data.name
-    const classAtts = `fa fas ${fw} fa-${name} ${pulse}`
+    const classAtts = `fa fas ${fw} fa-${name} ${pulse} ${spinning}`
     return {
       class: classAtts,
       title: data.title,
