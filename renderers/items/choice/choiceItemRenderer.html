@@ -1,5 +1,5 @@
 <template name="choiceItemRenderer">
-    <div class="choice-container w-100 pl-5 my-2">
+    <div class="choice-container lea-text w-100 pl-5 my-2">
         {{#each entry in values}}
             <div class="d-flex align-items-center w-100 my-2 p-2 choice-entry choice-interaction {{#if hovered @index}}bg-light{{/if}} border border-{{#if
                     selected @index}}{{color}}{{else}}light{{/if}}"
