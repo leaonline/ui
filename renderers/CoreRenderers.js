@@ -1,5 +1,6 @@
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
+import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
 import { Scoring } from 'meteor/leaonline:corelib/scoring/Scoring'
 import { RendererGroups } from './RendererGroups'
 
@@ -30,6 +31,18 @@ allConfigs.push({
 })
 
 allConfigs.push({
+  name: Highlight.name,
+  group: RendererGroups.items.name,
+  label: Highlight.label,
+  icon: Highlight.icon,
+  template: 'itemHighlightRenderer',
+  async load () {
+    return import('./items/highlight/itemHighlightRenderer')
+  },
+
+})
+
+allConfigs.push({
   name: Scoring.name,
   template: 'itemScoringRenderer',
   async load () {
@@ -37,6 +50,7 @@ allConfigs.push({
   },
   exclude: true
 })
+
 
 CoreRenderers.forEach = cb => allConfigs.forEach(cb)
 CoreRenderers.get  = () => allConfigs

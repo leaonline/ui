@@ -1,0 +1,8 @@
+.highlight-token {
+    cursor: pointer;
+}
+
+.item-highlight-container {
+    user-select: none;
+}
+

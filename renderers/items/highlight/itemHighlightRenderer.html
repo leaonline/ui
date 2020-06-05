@@ -1,0 +1,7 @@
+<template name="itemHighlightRenderer">
+    <div class="item-highlight-container lea-text w-100 p-5">
+        {{#each token in tokens}}
+            <span {{tokenAtts @index token}}>{{token.value}}</span>
+        {{/each}}
+    </div>
+</template>
