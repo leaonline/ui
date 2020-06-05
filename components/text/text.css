@@ -4,9 +4,12 @@
 
 .lea-text-token-active {
     font-weight: bold;
-    color: #F00;
 }
 
 .text-wrapper:hover {
+    cursor: pointer;
+}
+
+.cloze-highlight-token {
     cursor: pointer;
 }

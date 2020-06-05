@@ -1,29 +1,49 @@
 <template name="clozeItemRenderer">
-	<div class="cloze-container w-100 p-5">
-		{{#each token in tokens}}
-			{{#if token.isBlock}}
-				{{> soundbutton md=true outline=false block=true type=color text=token.tts class="h-100 mr-n1" }}
-			{{else if token.isNewLine}}
-				<div class="d-block p-2"></div>
-			{{else if token.isToken}}
-				<span class="cloze-input-group no-wrap">
-				{{#if token.tts}}
-					{{> soundbutton md=true outline=true sm=true type=color text=token.tts class="h-100 mr-n1" }}
-				{{/if}}
+    <div class="cloze-container w-100 p-5">
+        {{#each token in tokens}}
+            {{#if token.isBlock}}
+                {{> soundbutton md=true outline=false block=true type=color text=token.tts class="h-100 mr-n1" }}
 
-					{{#if token.value}}
-						<input class="cloze-input {{#if token.label}}mr-n1{{/if}} border border-{{color}}"
-							   data-index="{{@index}}"
-							   data-tokenindex="{{token.index}}" type="text"
-							   size="{{token.length}}" name="{{random}}" autocomplete="off">
-					{{/if}}
-					{{#if token.label}}
-						<span>{{token.label}}</span>
-					{{/if}}
-				</span>
-			{{else}}
-				<span class="cloze-token">{{token.value}}</span>
-			{{/if}}
-		{{/each}}
-	</div>
+            {{else if token.isNewLine}}
+                <div class="d-block p-2"></div>
+
+
+            {{else if token.isToken}}
+                <span class="cloze-input-group no-wrap">
+
+                    {{#if token.tts}}
+                        {{> soundbutton md=true outline=true sm=true type=color text=token.tts class="h-100 mr-n1" }}
+                    {{/if}}
+
+                    {{#if isBlank token}}
+                        <input class="cloze-input {{#if token.label}}mr-n1{{/if}} border border-{{color}}"
+                               data-index="{{@index}}"
+                               data-tokenindex="{{token.index}}" type="text"
+                               size="{{token.length}}" name="{{random}}" autocomplete="off">
+                    {{/if}}
+
+                    {{#if isSelect token}}
+                        <select class="cloze-select form-control w-auto d-inline p-0 {{#if
+                                token.label}}mr-n1{{/if}} border border-{{color}}"
+                                data-index="{{@index}}"
+                                data-tokenindex="{{token.index}}"
+                                type="text" name="{{random}}" autocomplete="off">
+                                    <option></option>
+                            {{#each option in token.value}}
+                                <option value="{{@index}}">{{option}}</option>
+                            {{/each}}
+                                </select>
+                    {{/if}}
+
+                    {{#if token.label}}
+                        <span>{{token.label}}</span>
+                    {{/if}}
+
+                </span>
+            {{else}}
+                <span class="cloze-token">{{token.value}}</span>
+            {{/if}}
+
+        {{/each}} {{!-- end token in tokens --}}
+    </div>
 </template>

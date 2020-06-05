@@ -1,7 +1,7 @@
 <template name="choiceItemRenderer">
     <div class="choice-container w-100 pl-5 my-2">
         {{#each entry in values}}
-            <div class="d-flex align-items-baseline w-100 my-2 p-2 choice-entry choice-interaction {{#if hovered @index}}bg-light{{/if}} border border-{{#if
+            <div class="d-flex align-items-center w-100 my-2 p-2 choice-entry choice-interaction {{#if hovered @index}}bg-light{{/if}} border border-{{#if
                     selected @index}}{{color}}{{else}}light{{/if}}"
                  data-index="{{@index}}" data-name="{{entry.name}}">
                 <input type="{{choiceType}}" id="{{entry.name}}-{{@index}}" name="{{entry.name}}" value="{{entry.index}}" class="mx-2 choice-interaction choice-input radio-group-button"
@@ -11,7 +11,7 @@
                     {{> soundbutton type=color outline=true text=entry.tts class="choice-soundbutton"}}
                 {{/if}}
                 {{#if entry.image}}
-                    {{> image src=entry.image class="choice-interaction"}}
+                    {{> image src=entry.image class="choice-interaction choice-image"}}
                 {{/if}}
                 <span class="h-100 mx-2 choice-interaction">
 					<!--

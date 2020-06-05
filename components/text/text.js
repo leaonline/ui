@@ -47,7 +47,7 @@ Template.text.helpers({
     const fill = (data.fill && 'flex-fill') || ''
     const customTokenClass = data.tokenClass || ''
     const playingClass = instance.isPlaying(currentIndex)
-      ? 'lea-text-token-active'
+      ? 'lea-text-token-active text-primary'
       : ''
     return { class: `lea-text-token ${fill} ${playingClass} ${customTokenClass}` }
   }

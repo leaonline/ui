@@ -1,3 +1,7 @@
 .choice-entry {
 	cursor: pointer;
 }
+
+.choice-image {
+    max-width: 5rem;
+}

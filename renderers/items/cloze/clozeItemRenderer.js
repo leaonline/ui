@@ -2,7 +2,8 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
-import { createSimpleTokenizer } from '../../../utils/tokenizer'
+import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
+import { createSimpleTokenizer } from 'meteor/leaonline:corelib/utils/tokenizer'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.html'
 import './clozeItemRenderer.css'
@@ -11,6 +12,7 @@ const separator = '$'
 const startPattern = '{{'
 const closePattern = '}}'
 const newLinePattern = '//'
+const optionsSeparator = '|'
 const newLineReplacer = `${startPattern}${newLinePattern}${closePattern}`
 const newLineRegExp = new RegExp(/\n/, 'g')
 const tokenize = createSimpleTokenizer(startPattern, closePattern)
@@ -19,15 +21,9 @@ Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.tokens = new ReactiveVar()
+  instance.flavor = new ReactiveVar()
   instance.color = new ReactiveVar('secondary')
   instance.responseCache = new ReactiveVar('')
-
-  // const { collector } = instance.data
-  // if (collector) {
-  //  collector.addEventListener('collect', function () {
-  //    submitValues(instance)
-  //  })
-  // }
 
   instance.autorun(() => {
     const data = Template.currentData()
@@ -40,33 +36,13 @@ Template.clozeItemRenderer.onCreated(function () {
     }
 
     const { value } = data
-    const preprocessedValue = value.replace(newLineRegExp, newLineReplacer)
-    const tokens = tokenize(preprocessedValue).map(entry => {
-      // we simply indicate newlines within
-      // our brackets to avoid complex parsing
-      if (entry.value.indexOf('//') > -1) {
-        entry.isNewLine = true
-        return entry
-      }
+    if (!value) return
 
-      // for normal text tokens we don't need
-      // further processing of content here
-      if (entry.value.indexOf(separator) === -1) {
-        return entry
-      }
-
-      // if this is an interactive token
-      // we process ist from the value split
-      const split = entry.value.split('$')
-      entry.value = split[0]
-      entry.label = split[1]
-      entry.tts = split[2]
-      entry.length = entry.value.length
-      entry.isBlock = !entry.value && !entry.label
-      return entry
-    })
-
+    const { text, flavor } = value
+    const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
+    const tokens = tokenize(preprocessedValue).map(toTokens, { flavor })
     instance.tokens.set(tokens)
+    instance.flavor.set(flavor)
   })
 })
 
@@ -79,6 +55,12 @@ Template.clozeItemRenderer.onDestroyed(function () {
 Template.clozeItemRenderer.helpers({
   tokens () {
     return Template.instance().tokens.get()
+  },
+  isBlank (token) {
+    return token.flavor === Cloze.flavor.blanks.value
+  },
+  isSelect (token) {
+    return token.flavor === Cloze.flavor.select.value
   },
   color () {
     return Template.instance().color.get()
@@ -148,4 +130,42 @@ function submitValues (templateInstance) {
 
   templateInstance.responseCache.set(strResponses)
   templateInstance.data.onInput({ userId, sessionId, taskId, page, type, responses })
+}
+
+function toTokens (entry) {
+  // we simply indicate newlines within
+  // our brackets to avoid complex parsing
+  if (entry.value.indexOf('//') > -1) {
+    entry.isNewLine = true
+    return entry
+  }
+
+  // for normal text tokens we don't need
+  // further processing of content here
+  if (entry.value.indexOf(separator) === -1) {
+    return entry
+  }
+
+  // if this is an interactive token
+  // we process ist from the value split
+  const split = entry.value.split('$')
+  const flavor = Number.parseInt(split[0], 10)
+  entry.flavor = flavor
+  entry.value = getValue(flavor, split[1])
+  entry.label = split[2]
+  entry.tts = split[3]
+  entry.length = entry.value.length
+  entry.isBlock = !entry.value && !entry.label
+  return entry
+}
+
+const getValue = (flavor, rawValue = '') => {
+  switch (flavor) {
+    case Cloze.flavor.blanks.value:
+      return rawValue
+    case Cloze.flavor.select.value:
+      return rawValue.split(optionsSeparator)
+    default:
+      throw new Error(`Unexpected flavor ${flavor}`)
+  }
 }

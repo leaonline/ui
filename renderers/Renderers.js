@@ -194,7 +194,6 @@ let _initialized = false
 export const TaskRenderers = {
   groups: RendererGroups,
   get: key => {
-    console.info(key, rendererMap.get(key), rendererMap)
     return rendererMap.get(key) },
   getGroup: (group) => {
     // should we do caching here or on a component level?
@@ -206,12 +205,10 @@ export const TaskRenderers = {
     // load the factory
     const factory = TaskRenderers.get(defaults.factory.name)
     await factory.load()
-    console.log('[TaskRenderers]: factory loaded')
 
     // register the default item renderers
     const { CoreRenderers } = await import('./CoreRenderers')
     CoreRenderers.forEach(rendererContext => {
-      console.info('[TaskRenderers]: register core renderer', rendererContext.name)
       rendererMap.set(rendererContext.name, rendererContext)
     })
 
