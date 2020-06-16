@@ -8,6 +8,9 @@ import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.html'
 import './clozeItemRenderer.css'
 
+// TODO we should extract these into the Cloze definition or as a helper
+// TODO because we can then share these with the editor form component
+// TODO and validate the input before being saved and avoid runtime errors
 const separator = '$'
 const startPattern = '{{'
 const closePattern = '}}'
@@ -22,6 +25,7 @@ Template.clozeItemRenderer.onCreated(function () {
   instance.state = new ReactiveDict()
   instance.tokens = new ReactiveVar()
   instance.flavor = new ReactiveVar()
+  instance.error = new ReactiveVar()
   instance.color = new ReactiveVar('secondary')
   instance.responseCache = new ReactiveVar('')
 
@@ -38,11 +42,18 @@ Template.clozeItemRenderer.onCreated(function () {
     const { value } = data
     if (!value) return
 
-    const { text, flavor } = value
-    const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
-    const tokens = tokenize(preprocessedValue).map(toTokens, { flavor })
-    instance.tokens.set(tokens)
-    instance.flavor.set(flavor)
+    // since it can happen fast to enter some unexpected pattern for this component
+    // we try the parsing and catch any exception and display it as an error below
+    try {
+      const { text, flavor } = value
+      const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
+      const tokens = tokenize(preprocessedValue).map(toTokens, { flavor })
+      instance.tokens.set(tokens)
+      instance.flavor.set(flavor)
+      instance.error.set(null)
+    } catch (e) {
+      instance.error.set(e)
+    }
   })
 })
 
@@ -67,6 +78,9 @@ Template.clozeItemRenderer.helpers({
   },
   random () {
     return Random.id(10)
+  },
+  error () {
+    return Template.instance().error.get()
   }
 })
 
@@ -150,8 +164,13 @@ function toTokens (entry) {
   // we process ist from the value split
   const split = entry.value.split('$')
   const flavor = Number.parseInt(split[0], 10)
+  console.log(flavor)
+  if (Number.isNaN(flavor)) {
+    throw new Error(`Unexpected flavor parsed as NaN - ${split[0]}`)
+  }
+
   entry.flavor = flavor
-  entry.value = getValue(flavor, split[1])
+  entry.value = getTokenValueForFlavor(flavor, split[1])
   entry.label = split[2]
   entry.tts = split[3]
   entry.length = entry.value.length
@@ -159,7 +178,7 @@ function toTokens (entry) {
   return entry
 }
 
-const getValue = (flavor, rawValue = '') => {
+const getTokenValueForFlavor = (flavor, rawValue = '') => {
   switch (flavor) {
     case Cloze.flavor.blanks.value:
       return rawValue

@@ -45,5 +45,11 @@
             {{/if}}
 
         {{/each}} {{!-- end token in tokens --}}
+
+        {{#with error}}
+            <div class="alert alert-danger">
+                <div class="alert-heading">{{this.message}}</div>
+            </div>
+        {{/with}}
     </div>
 </template>
