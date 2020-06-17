@@ -13,15 +13,16 @@ const defaults = {
     name: 'factory',
     label: 'taskRenderers.factory',
     template: 'TaskRendererFactory',
+    group: RendererGroups.documents.name,
     async load () {
       return import('./factory/TaskRendererFactory.js')
-    },
-    exclude: true
+    }
   },
   page: {
     name: 'page',
     label: 'taskRenderers.page',
     template: 'taskPageRenderer',
+    group: RendererGroups.documents.name,
     async load () {
       return import('./page/taskPageRenderer.js')
     },
@@ -194,7 +195,9 @@ let _initialized = false
 export const TaskRenderers = {
   groups: RendererGroups,
   get: key => {
-    return rendererMap.get(key) },
+    return rendererMap.get(key)
+  },
+  factory: () => Object.assign({}, defaults.factory),
   getGroup: (group) => {
     // should we do caching here or on a component level?
     return Array.from(rendererMap.values()).filter(el => el.group === group)
@@ -215,10 +218,5 @@ export const TaskRenderers = {
     _initialized = true
     return true
   },
-  registerRenderer: ({ name, group, renderer: { template, load } }) => rendererMap.set(name, {
-    name,
-    group,
-    template,
-    load
-  })
+  registerRenderer: (renderer) => rendererMap.set(renderer.name, renderer)
 }

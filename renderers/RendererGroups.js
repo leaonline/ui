@@ -6,5 +6,9 @@ export const RendererGroups = {
   items: {
     name: 'items',
     label: 'taskRenderers.items.title'
+  },
+  documents: {
+    name: 'document',
+    label: 'taskRenderers.documents.title'
   }
 }
