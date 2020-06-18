@@ -3,6 +3,7 @@ import { ReactiveDict } from 'meteor/reactive-dict'
 import { ReactiveVar } from 'meteor/reactive-var'
 import './itemHighlightRenderer.css'
 import './itemHighlightRenderer.html'
+import '../../../components/soundbutton/soundbutton'
 import { dataTarget } from '../../../utils/eventUtils'
 
 const whiteSpace = /\s+/g
@@ -44,7 +45,7 @@ Template.itemHighlightRenderer.onCreated(function () {
           ? { value: token, isSeparator: true }
           : { value: token }
       })
-    instance.state.set({ tokens, tts })
+    instance.state.set({ tokens, ttsText: tts ? text : null, })
   })
 })
 
@@ -52,8 +53,6 @@ Template.itemHighlightRenderer.onRendered(function () {
   const instance = this
   submitValues(instance)
 })
-
-
 
 Template.itemHighlightRenderer.helpers({
   tokens () {
@@ -70,6 +69,9 @@ Template.itemHighlightRenderer.helpers({
       class: `highlight-token ${hoveredClass} ${selectedClass} ${separatorClass}`,
       'data-index': index
     }
+  },
+  ttsText () {
+    return Template.instance().state.get('ttsText')
   }
 })
 
@@ -109,7 +111,7 @@ function submitValues (templateInstance) {
 
   const selection = templateInstance.state.get('selection')
   const responses = []
-  ;Object.keys(selection).map(index => {
+  Object.keys(selection).map(index => {
     const value = selection[index]
     if (value) {
       responses.push(index)

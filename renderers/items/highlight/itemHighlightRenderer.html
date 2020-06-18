@@ -1,5 +1,9 @@
 <template name="itemHighlightRenderer">
     <div class="item-highlight-container lea-text w-100 p-5">
+        {{#with ttsText}}
+            {{> soundbutton text=this}}
+        {{/with}}
+
         {{#each token in tokens}}
             <span {{tokenAtts @index token}}>{{token.value}}</span>
         {{/each}}
