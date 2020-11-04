@@ -38,7 +38,7 @@ allConfigs.push({
   template: 'itemHighlightRenderer',
   async load () {
     return import('./items/highlight/itemHighlightRenderer')
-  },
+  }
 
 })
 
@@ -51,7 +51,5 @@ allConfigs.push({
   exclude: true
 })
 
-
 CoreRenderers.forEach = cb => allConfigs.forEach(cb)
-CoreRenderers.get  = () => allConfigs
-
+CoreRenderers.get = () => allConfigs

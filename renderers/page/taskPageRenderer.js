@@ -5,7 +5,6 @@ import '../factory/TaskRendererFactory'
 import './taskPageRenderer.html'
 import '../../components/actionButton/actionButton'
 
-
 Template.taskPageRenderer.onCreated(function () {
   const instance = this
   instance.collector = new EventTarget()
@@ -30,7 +29,6 @@ Template.taskPageRenderer.onCreated(function () {
     }
     instance.state.set('color', color)
   }
-
 
   instance.autorun(() => {
     const data = Template.currentData()

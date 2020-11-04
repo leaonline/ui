@@ -45,7 +45,7 @@ Template.itemHighlightRenderer.onCreated(function () {
           ? { value: token, isSeparator: true }
           : { value: token }
       })
-    instance.state.set({ tokens, ttsText: tts ? text : null, })
+    instance.state.set({ tokens, ttsText: tts ? text : null })
   })
 })
 

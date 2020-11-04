@@ -97,7 +97,6 @@ Components.load = function (names) {
   return loaded
 }
 
-
 Components.autoLoad = function () {
   TemplateLoader.enable()
 

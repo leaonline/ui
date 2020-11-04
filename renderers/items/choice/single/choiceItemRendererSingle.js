@@ -1,6 +1,8 @@
-import './choiceItemRendererSingle.html'
+import { ReactiveDict } from 'meteor/reactive-dict'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
+import { shuffle } from 'meteor/leaonline:corelib/utils/shuffle' // TODO inject shuffle from host project
+import './choiceItemRendererSingle.html'
 
 Template.choiceItemRendererSingle.onCreated(function () {
   const instance = this
@@ -146,5 +148,12 @@ function submitValues (templateInstance) {
   }
 
   templateInstance.responseCache.set(strResponses)
-  templateInstance.data.onInput({ userId, sessionId, unitId, page, type, responses })
+  templateInstance.data.onInput({
+    userId,
+    sessionId,
+    unitId,
+    page,
+    type,
+    responses
+  })
 }

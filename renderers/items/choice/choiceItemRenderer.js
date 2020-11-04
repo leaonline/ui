@@ -83,7 +83,7 @@ Template.choiceItemRenderer.helpers({
   selected (index) {
     const instance = Template.instance()
     const selected = instance.selected && instance.selected.get()
-    if (typeof selected === 'undefined' || selected === null){
+    if (typeof selected === 'undefined' || selected === null) {
       return false
     }
 
