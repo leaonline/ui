@@ -19,6 +19,11 @@ Template.image.helpers({
     const classes = `${imageClass} ${shadowClass} ${customClasses}`
     const obj = {}
 
+    const cors = data.cors
+    if (cors) {
+      obj.crossorigin = cors
+    }
+
     Object.keys(data).forEach(key => {
       if (key.includes('data-') || key.includes('aria-')) {
         obj[key] = data[key]
