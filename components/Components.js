@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { ReactiveVar } from 'meteor/reactive-var'
+import { TemplateLoader } from 'meteor/jkuester:template-loader'
 
 export const Components = {}
 
@@ -94,4 +95,14 @@ Components.load = function (names) {
       console.error(e)
     })
   return loaded
+}
+
+
+Components.autoLoad = function () {
+  TemplateLoader.enable()
+
+  Object.entries(internal).forEach(([key, { load }]) => {
+    TemplateLoader.register(key, load)
+    console.info('[TemplateLoader]: register', key)
+  })
 }
