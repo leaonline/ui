@@ -1,7 +1,7 @@
 <template name="actionButton">
     <span {{groupAttributes}}>
 		{{#if sound}}
-        {{> soundbutton tts=tts outline=true sm=sm lg=lg type=type active=active class=sndBtnClass }}
+        {{> soundbutton tts=tts text=label outline=true sm=sm lg=lg type=type active=active class=sndBtnClass }}
 		{{/if}}
         <button {{attributes}}>
 			{{#if leftIcon}}<i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>{{/if}}
