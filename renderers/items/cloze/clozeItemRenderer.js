@@ -113,18 +113,19 @@ function submitValues (templateInstance) {
   // skip if there is no onInput connected
   // which can happen when creating new items
   if (!templateInstance.data.onInput) {
+    console.warn('no onInput handler connected to this component')
     return
   }
 
   const userId = templateInstance.data.userId
   const sessionId = templateInstance.data.sessionId
-  const taskId = templateInstance.data.taskId
+  const unitId = templateInstance.data.unitId
   const page = templateInstance.data.page
   const type = templateInstance.data.subtype
 
   // also return if our identifier values
   // are not set, which also can occur in item-dev
-  if (!userId || !sessionId || !taskId) {
+  if (!userId || !sessionId || !unitId) {
     return
   }
 
@@ -143,7 +144,7 @@ function submitValues (templateInstance) {
   }
 
   templateInstance.responseCache.set(strResponses)
-  templateInstance.data.onInput({ userId, sessionId, taskId, page, type, responses })
+  templateInstance.data.onInput({ userId, sessionId, unitId, page, type, responses })
 }
 
 function toTokens (entry) {
