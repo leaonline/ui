@@ -55,6 +55,15 @@ Template.taskPageRenderer.helpers({
   currentPage () {
     return Template.getState('currentPage')
   },
+  currentInstructions (unitDoc) {
+    const instance = Template.instance()
+    const currentPage = instance.state.get('currentPage')
+    if (currentPage && currentPage?.instructions) {
+      return currentPage.instructions
+    }
+
+    return unitDoc.instructions
+  },
   currentPageCount () {
     return Template.getState('currentPageCount') + 1
   },

@@ -15,7 +15,7 @@
                 </div>
             {{/with}}
 
-            {{#with this.instructions}}
+            {{#with (currentInstructions unitDoc)}}
                 <div class="card my-2">
                     <div class="card-body d-flex align-items-center">
 							<span class="w-100 row">
@@ -39,7 +39,7 @@
                 </div>
                 {{#with currentPage}}
                     <div class="card-body row w-100 h-100 lea-unit-current-content">
-                        {{#each pageContent in this}}
+                        {{#each pageContent in this.content}}
                             <div class="col-12 col-md-{{pageContent.width}} mx-auto p-1 element-container lea-text">
                                 {{> TaskRendererFactory content=(itemData pageContent) type=currentType}}
                             </div>
