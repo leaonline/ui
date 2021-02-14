@@ -18,8 +18,8 @@ Template.image.helpers({
     const shadowClass = data.shadow ? 'shadow' : ''
     const classes = `${imageClass} ${shadowClass} ${customClasses}`
     const obj = {}
+    const cors = data.cors || data.crossorigin
 
-    const cors = data.cors
     if (cors) {
       obj.crossorigin = cors
     }

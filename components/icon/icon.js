@@ -8,7 +8,12 @@ Template.icon.helpers({
     const pulse = data.pulse ? 'fa-pulse' : ''
     const spinning = data.spin ? 'fa-spin' : ''
     const name = data.name
-    const classAtts = `fa fas ${fw} fa-${name} ${pulse} ${spinning}`
+    const regular = data.far && 'far'
+    const solid = data.fas && 'fas'
+    const type = regular || solid || 'fas'
+    const scale = data.scale ? `fa-${data.scale}x` : ''
+
+    const classAtts = `fa ${type} ${fw} fa-${name} ${pulse} ${spinning} ${scale}`
     return {
       class: classAtts,
       title: data.title,

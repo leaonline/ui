@@ -27,7 +27,7 @@ Template.soundbutton.onCreated(function () {
     title: data.title,
     disabled: data.disabled,
     type: 'button',
-    class: `lea-sound-btn btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass}`,
+    class: `lea-sound-btn d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass}`,
     'data-tts': initialTTS,
     'data-text': initialText,
     'aria-label': data.title
