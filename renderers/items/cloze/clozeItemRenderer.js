@@ -24,7 +24,6 @@ Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.tokens = new ReactiveVar()
-  instance.flavor = new ReactiveVar()
   instance.error = new ReactiveVar()
   instance.color = new ReactiveVar('secondary')
   instance.responseCache = new ReactiveVar('')
@@ -49,7 +48,6 @@ Template.clozeItemRenderer.onCreated(function () {
       const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
       const tokens = tokenize(preprocessedValue).map(toTokens, { flavor })
       instance.tokens.set(tokens)
-      instance.flavor.set(flavor)
       instance.error.set(null)
     } catch (e) {
       instance.error.set(e)
@@ -67,8 +65,8 @@ Template.clozeItemRenderer.helpers({
   tokens () {
     return Template.instance().tokens.get()
   },
-  isBlank (token) {
-    return token.flavor === Cloze.flavor.blanks.value
+  isBlank (valueToken) {
+    return valueToken.flavor === Cloze.flavor.blanks.value
   },
   isSelect (token) {
     return token.flavor === Cloze.flavor.select.value
@@ -81,6 +79,9 @@ Template.clozeItemRenderer.helpers({
   },
   error () {
     return Template.instance().error.get()
+  },
+  inputWidth (length) {
+    return length * 1.5
   }
 })
 
@@ -164,28 +165,53 @@ function toTokens (entry) {
   // if this is an interactive token
   // we process ist from the value split
   const split = entry.value.split('$')
-  const flavor = Number.parseInt(split[0], 10)
-  console.log(flavor)
-  if (Number.isNaN(flavor)) {
-    throw new Error(`Unexpected flavor parsed as NaN - ${split[0]}`)
+  const flavor = split[0]
+
+  if (!Cloze.flavor[flavor]) {
+    throw new Error(`Unexpected flavor - ${flavor}`)
   }
 
-  entry.flavor = flavor
-  entry.value = getTokenValueForFlavor(flavor, split[1])
-  entry.label = split[2]
-  entry.tts = split[3]
-  entry.length = entry.value.length
-  entry.isBlock = !entry.value && !entry.label
+  entry.flavor = Cloze.flavor[flavor].value
+  entry.value = getTokenValueForFlavor(entry.flavor, split[1])
+  entry.tts = split[2]
+  entry.isBlock = entry.value.length === -99
+  console.info(entry)
   return entry
 }
 
 const getTokenValueForFlavor = (flavor, rawValue = '') => {
   switch (flavor) {
     case Cloze.flavor.blanks.value:
-      return rawValue
+      return tokenizeBlanks(flavor, rawValue)
     case Cloze.flavor.select.value:
-      return rawValue.split(optionsSeparator)
+      return tokenizeSelect(flavor, rawValue)
     default:
       throw new Error(`Unexpected flavor ${flavor}`)
   }
+}
+
+const tokenizeValue = createSimpleTokenizer('[', ']')
+const tokenizeBlanks = (flavor, value) => {
+  const split = tokenizeValue(value).map((token, index, arr) => {
+    if (token.isToken) {
+      token.hasPre = index > 0
+      token.hasSuf = index < arr.length - 1
+      token.flavor = flavor
+    }
+    return token
+  })
+  return split
+}
+
+const tokenizeSelect = (flavor, value) => {
+  const split = tokenizeValue(value).map((token, index, arr) => {
+    if (token.isToken) {
+      token.value = token.value.split(optionsSeparator)
+      token.hasPre = index > 0
+      token.hasSuf = index < arr.length - 1
+      token.flavor = flavor
+    }
+    return token
+  })
+  return split
 }

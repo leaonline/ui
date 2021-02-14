@@ -69,7 +69,8 @@ const defaults = {
     template: 'textRenderer',
     async load () {
       return import('./text/textRenderer')
-    }
+    },
+    data: {}
   },
   markdown: {
     name: 'markdown',
@@ -208,6 +209,9 @@ export const TaskRenderers = {
     // load the factory
     const factory = TaskRenderers.get(defaults.factory.name)
     await factory.load()
+
+    const pageRender = TaskRenderers.get(defaults.page.name)
+    await pageRender.load()
 
     // register the default item renderers
     const { CoreRenderers } = await import('./CoreRenderers')

@@ -15,30 +15,28 @@
                         {{> soundbutton md=true outline=true sm=true type=color text=token.tts class="h-100 mr-n1" }}
                     {{/if}}
 
-                    {{#if isBlank token}}
-                        <input class="cloze-input {{#if token.label}}mr-n1{{/if}} border border-{{color}}"
-                               data-index="{{@index}}"
-                               data-tokenindex="{{token.index}}" type="text"
-                               size="{{token.length}}" name="{{random}}" autocomplete="off">
-                    {{/if}}
-
-                    {{#if isSelect token}}
-                        <select class="cloze-select form-control w-auto d-inline p-0 {{#if
-                                token.label}}mr-n1{{/if}} border border-{{color}}"
-                                data-index="{{@index}}"
-                                data-tokenindex="{{token.index}}"
-                                type="text" name="{{random}}" autocomplete="off">
+                    {{#each valueToken in token.value}}
+                        {{#if isBlank valueToken}}
+                            <input class="cloze-input border border-{{color}} my-1"
+                                   data-index="{{../@index}}"
+                                   data-tokenindex="{{token.index}}" type="text"
+                                   style="width: {{inputWidth valueToken.length}}rem; {{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}"
+                                   size="{{valueToken.length}}" name="{{random}}" autocomplete="off">
+                        {{else if isSelect valueToken}}
+                            <select class="cloze-select form-control w-auto d-inline my-1 p-0 border border-{{color}}"
+                                    data-index="{{../@index}}"
+                                    data-tokenindex="{{token.index}}"
+                                    type="text" name="{{random}}" autocomplete="off">
+                                    style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}"
                                     <option></option>
-                            {{#each option in token.value}}
-                                <option value="{{@index}}">{{option}}</option>
-                            {{/each}}
+                                {{#each option in valueToken.value}}
+                                    <option value="{{@index}}">{{option}}</option>
+                                {{/each}}
                                 </select>
+                        {{else}}
+                        <span class="my-1">{{valueToken.value}}</span>
                     {{/if}}
-
-                    {{#if token.label}}
-                        <span>{{token.label}}</span>
-                    {{/if}}
-
+                {{/each}} {{!-- end valueToken in token.values --}}
                 </span>
             {{else}}
                 <span class="cloze-token">{{token.value}}</span>

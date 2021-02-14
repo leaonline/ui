@@ -15,6 +15,20 @@
                 </div>
             {{/with}}
 
+            {{#with this.story}}
+                <div class="card my-2">
+                    <div class="card-body row">
+                        {{#each story in this}}
+                            <div class="col-12 col-md-{{story.width}} mx-auto p-1 element-container">
+                                {{> TaskRendererFactory content=story type=currentType}}
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+            {{/with}}
+
+
+
             {{#with (currentInstructions unitDoc)}}
                 <div class="card my-2">
                     <div class="card-body d-flex align-items-center">
@@ -32,6 +46,7 @@
                 </div>
             {{/with}}
 
+            {{#if hasPages}}
             <div class="card my-4 lea-unit-current-content-container border-gray">
                 <div class="card-header bg-transparent border-0 p-0 d-flex justify-content-center">
                                 <span class="text-white bg-gray px-3 py-1 trapezoid">{{currentPageCount}}
@@ -60,6 +75,7 @@
                     </div>
                 {{/with}}
             </div>
+            {{/if}}
 
             {{#if showFinishButton}}
                 <div class="card-body d-flex justify-content-center">

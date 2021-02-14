@@ -58,9 +58,39 @@ Template.choiceItemRenderer.onDestroyed(function () {
   instance.state.clear()
 })
 
+const parseResponse = responseStr => {
+  if (responseStr === '__undefined__' ||
+    typeof responseStr === 'undefined' ||
+    responseStr === null) {
+    return null
+  }
+  return Number.parseInt(responseStr, 10)
+}
+
+const nonNull = value => value !== null
+
 Template.choiceItemRenderer.onRendered(function () {
   const instance = this
-  submitValues(instance)
+  // submitValues(instance)
+
+  instance.autorun(() => {
+    const data = Template.currentData()
+    const isMultiple = instance.isMultiple.get()
+
+    // if we have any values cached we need to restore them here, because
+    // the choices need to be drawn first, in order to access them
+    if (typeof data.onLoad === 'function') {
+      const cachedData = data.onLoad(data)
+      if (cachedData) {
+        const { responses } = cachedData
+        const selected = isMultiple
+          ? responses.map(parseResponse).filter(nonNull)
+          : parseResponse(responses[0])
+
+        instance.selected.set(selected)
+      }
+    }
+  })
 })
 
 Template.choiceItemRenderer.helpers({
@@ -152,6 +182,8 @@ Template.choiceItemRenderer.events({
 })
 
 function submitValues (templateInstance) {
+  const warn = (...args) => Meteor.isDevelopment &&
+    console.warn(templateInstance.name, ...args)
   const responses = templateInstance.isMultiple.get()
     ? multipleResponse(templateInstance)
     : singleResponse(templateInstance)
@@ -164,7 +196,7 @@ function submitValues (templateInstance) {
   // skip if there is no onInput connected
   // which can happen when creating new items
   if (!templateInstance.data.onInput) {
-    return
+    return warn('missing input handler')
   }
 
   const userId = templateInstance.data.userId
@@ -172,11 +204,12 @@ function submitValues (templateInstance) {
   const unitId = templateInstance.data.unitId
   const page = templateInstance.data.page
   const type = templateInstance.data.subtype
+  const contentId = templateInstance.data.contentId
 
   // also return if our identifier values
   // are not set, which also can occur in item-dev
-  if (!userId || !sessionId || !unitId) {
-    return
+  if (!userId || !sessionId || !unitId || !contentId) {
+    return warn('missing args', templateInstance.data)
   }
 
   // we use a simple stringified cache as we have fixed
@@ -188,7 +221,15 @@ function submitValues (templateInstance) {
   }
 
   templateInstance.responseCache.set(strResponses)
-  templateInstance.data.onInput({ userId, sessionId, unitId, page, type, responses })
+  templateInstance.data.onInput({
+    userId,
+    sessionId,
+    unitId,
+    page,
+    contentId,
+    type,
+    responses
+  })
 }
 
 function singleResponse (templateInstance) {

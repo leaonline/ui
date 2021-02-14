@@ -9,16 +9,13 @@ Template.taskPageRenderer.onCreated(function () {
   const instance = this
   instance.collector = new EventTarget()
 
-  console.log(instance.data)
-
   const parseData = data => {
     const unitDoc = data.doc
     const color = data.color || 'secondary'
     const currentPageCount = data.currentPageCount || 0
-    const sessionId = data.sessionId
 
     instance.state.set('isPreview', data.isPreview)
-    instance.state.set('sessionDoc', sessionId)
+    instance.state.set('sessionId',  data.sessionId)
     instance.state.set('unitDoc', unitDoc)
 
     if (unitDoc.pages) {
@@ -55,6 +52,15 @@ Template.taskPageRenderer.helpers({
   currentPage () {
     return Template.getState('currentPage')
   },
+  hasPages () {
+    const unitDoc = Template.getState('unitDoc')
+    return unitDoc?.pages?.length > 0
+  },
+  currentStimuli (unitDoc) {
+    if (!unitDoc) return
+
+    return unitDoc.story || unitDoc.stimuli
+  },
   currentInstructions (unitDoc) {
     const instance = Template.instance()
     const currentPage = instance.state.get('currentPage')
@@ -80,18 +86,22 @@ Template.taskPageRenderer.helpers({
     const instance = Template.instance()
     const sessionId = instance.state.get('sessionId')
     const unitDoc = instance.state.get('unitDoc')
+    const isPreview = instance.state.get('isPreview')
     const page = instance.state.get('currentPageCount')
     const unitId = unitDoc._id
     const userId = Meteor.userId()
     const color = instance.state.get('color')
     const collector = instance.collector
+    const { onInput } = instance.data
+    const { onLoad } = instance.data
     return Object.assign({}, content, {
       userId,
       sessionId,
       unitId,
       page,
       color,
-      // onInput: onInput.bind(this),
+      onInput: !isPreview && onInput,
+      onLoad: !isPreview && onLoad,
       collector: collector
     })
   },
