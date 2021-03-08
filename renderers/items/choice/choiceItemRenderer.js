@@ -118,7 +118,7 @@ Template.choiceItemRenderer.helpers({
     }
 
     return instance.isMultiple.get()
-      ? selected.includes(index)
+      ? selected?.includes?.(index)
       : selected === index
   },
   color () {
