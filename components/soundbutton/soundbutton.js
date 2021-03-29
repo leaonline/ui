@@ -72,7 +72,7 @@ Template.soundbutton.helpers({
     }
     atts['data-tts'] = instance.tts.get()
     atts['data-text'] = instance.text.get()
-
+    atts['aria-hidden'] = true
     return atts
   },
   isPlaying () {

@@ -47,13 +47,13 @@
             {{/with}}
 
             {{#if hasPages}}
-            <div class="card my-4 lea-unit-current-content-container border-gray">
+            <div class="card my-4 lea-unit-current-content-container border-gray h-auto">
                 <div class="card-header bg-transparent border-0 p-0 d-flex justify-content-center">
                                 <span class="text-white bg-gray px-3 py-1 trapezoid">{{currentPageCount}}
                                     / {{maxPages}}</span>
                 </div>
                 {{#with currentPage}}
-                    <div class="card-body row w-100 h-100 lea-unit-current-content">
+                    <div class="card-body row w-100 h-100 lea-unit-current-content h-auto">
                         {{#each pageContent in this.content}}
                             <div class="col-12 col-md-{{pageContent.width}} mx-auto p-1 element-container lea-text">
                                 {{> TaskRendererFactory content=(itemData pageContent) type=currentType}}

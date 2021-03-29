@@ -33,7 +33,7 @@ Template.actionButton.helpers({
       id: data.id,
       title: data.title,
       class: `lea-action-button ml-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${customClass}`,
-      'aria-label': data.label || data.title || 'button'
+      'aria-label': data.label || data.titleŜ
     }
 
     if (data.href) {

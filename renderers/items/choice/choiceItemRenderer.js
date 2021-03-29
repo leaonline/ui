@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { shuffle } from 'meteor/leaonline:corelib/utils/shuffle'
@@ -11,12 +10,12 @@ import './choiceItemRenderer.html'
 Template.choiceItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
-  instance.values = new ReactiveVar()
-  instance.selected = new ReactiveVar(null)
-  instance.hovered = new ReactiveVar(null)
-  instance.isMultiple = new ReactiveVar(null)
-  instance.color = new ReactiveVar('secondary')
-  instance.responseCache = new ReactiveVar(null)
+  instance.state.setDefault('values', null)
+  instance.state.setDefault('selected', null)
+  instance.state.setDefault('hovered', null)
+  instance.state.setDefault('color', 'secondary')
+  instance.state.setDefault('isMultiple', null)
+  instance.state.setDefault('responseCache', null)
 
   instance.autorun(function () {
     const data = Template.currentData()
@@ -24,15 +23,19 @@ Template.choiceItemRenderer.onCreated(function () {
     const { color } = data
 
     if (color) {
-      instance.color.set(color)
+      instance.state.set('color', color)
     }
 
     if (typeof value !== 'object') {
       return
     }
 
+    // clear instance and rebuild for now data to make sure not leftovers are
+    // still in the state
+    instance.state.clear()
+
     const isMultiple = data.value.flavor === Choice.flavors.multiple.value
-    instance.isMultiple.set(isMultiple)
+    instance.state.set('isMultiple', isMultiple)
 
     // then we process the choices to ensure that
     // event when shuffled, thier original index remains
@@ -45,9 +48,11 @@ Template.choiceItemRenderer.onCreated(function () {
 
     // assign the values plain or shuffled
     if (data.value.shuffle) {
-      instance.values.set(shuffle(mapped))
-    } else {
-      instance.values.set(mapped)
+      instance.state.set('values', shuffle(mapped))
+    }
+
+    else {
+      instance.state.set('values', mapped)
     }
   })
 })
@@ -75,7 +80,7 @@ Template.choiceItemRenderer.onRendered(function () {
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const isMultiple = instance.isMultiple.get()
+    const isMultiple = instance.state.get('isMultiple')
 
     // if we have any values cached we need to restore them here, because
     // the choices need to be drawn first, in order to access them
@@ -87,7 +92,7 @@ Template.choiceItemRenderer.onRendered(function () {
           ? responses.map(parseResponse).filter(nonNull)
           : parseResponse(responses[0])
 
-        instance.selected.set(selected)
+        instance.state.set('selected', selected)
       }
     }
   })
@@ -95,35 +100,35 @@ Template.choiceItemRenderer.onRendered(function () {
 
 Template.choiceItemRenderer.helpers({
   isMultiple () {
-    return Template.instance().isMultiple.get()
+    return Template.instance().state.get('isMultiple')
   },
   choiceType () {
-    return Template.instance().isMultiple.get()
+    return Template.instance().state.get('isMultiple')
       ? 'checkbox'
       : 'radio'
   },
   values () {
     const instance = Template.instance()
-    return instance.values && instance.values.get()
+    return instance.state.get('values')
   },
   hovered (index) {
     const instance = Template.instance()
-    return instance.hovered && instance.hovered.get() === index
+    return instance.state.get('hovered') === index
   },
   selected (index) {
     const instance = Template.instance()
-    const selected = instance.selected && instance.selected.get()
+    const selected = instance.selected && instance.state.get('selected')
     if (typeof selected === 'undefined' || selected === null) {
       return false
     }
 
-    return instance.isMultiple.get()
+    return instance.state.get('isMultiple')
       ? selected?.includes?.(index)
       : selected === index
   },
   color () {
     const instance = Template.instance()
-    return instance.color && instance.color.get()
+    return instance.color && instance.state.get('color')
   }
 })
 
@@ -136,8 +141,8 @@ Template.choiceItemRenderer.events({
     const indexStr = $target.data('index')
     const name = $target.data('name')
     const index = parseInt(indexStr, 10)
-    const isMultiple = templateInstance.isMultiple.get()
-    let selection = templateInstance.selected.get()
+    const isMultiple = templateInstance.state.get('isMultiple')
+    let selection = templateInstance.state.get('selected')
 
     if (isMultiple) {
       // on multiple elements we need to make sure
@@ -155,7 +160,7 @@ Template.choiceItemRenderer.events({
         selection.push(index)
       }
 
-      templateInstance.selected.set(selection)
+      templateInstance.state.set('selected', selection)
       templateInstance.$(`#${name}-${index}`).prop('checked', !isSelected)
     } else {
       // on single elements we need to make sure
@@ -165,7 +170,7 @@ Template.choiceItemRenderer.events({
       // skip if we have already selected this
       if (selection === index) return
 
-      templateInstance.selected.set(index)
+      templateInstance.state.set('selected', index)
       templateInstance.$(`#${name}-${index}`).prop('checked', true)
     }
 
@@ -174,17 +179,23 @@ Template.choiceItemRenderer.events({
   'mouseenter .choice-entry' (event, templateInstance) {
     const index = templateInstance.$(event.currentTarget).data('index')
     const hovered = Number.parseInt(index, 10)
-    templateInstance.hovered.set(hovered)
+    templateInstance.state.set('hovered', hovered)
   },
   'mouseleave .choice-entry' (event, templateInstance) {
-    templateInstance.hovered.set(null)
+    templateInstance.state.set('hovered', null)
   }
 })
 
 function submitValues (templateInstance) {
-  const warn = (...args) => Meteor.isDevelopment &&
-    console.warn(templateInstance.name, ...args)
-  const responses = templateInstance.isMultiple.get()
+  const warn = (...args) => console.warn(templateInstance.name, ...args)
+
+  // skip if there is no onInput connected
+  // which can happen when creating new items
+  if (!templateInstance.data.onInput) {
+    return console.warn('[choiceItemRenderer]: onInput handler is missing. Skip submitting values.')
+  }
+
+  const responses = templateInstance.state.get('isMultiple')
     ? multipleResponse(templateInstance)
     : singleResponse(templateInstance)
 
@@ -193,10 +204,12 @@ function submitValues (templateInstance) {
     responses.push('__undefined__')
   }
 
-  // skip if there is no onInput connected
-  // which can happen when creating new items
-  if (!templateInstance.data.onInput) {
-    return warn('missing input handler')
+  // we use a simple stringified cache as we have fixed
+  // positions, so we can easily skip sending same responses
+  const cache = templateInstance.state.get('responseCache')
+  const strResponses = JSON.stringify(responses)
+  if (strResponses === cache) {
+    return
   }
 
   const userId = templateInstance.data.userId
@@ -206,21 +219,7 @@ function submitValues (templateInstance) {
   const type = templateInstance.data.subtype
   const contentId = templateInstance.data.contentId
 
-  // also return if our identifier values
-  // are not set, which also can occur in item-dev
-  if (!userId || !sessionId || !unitId || !contentId) {
-    return warn('missing args', templateInstance.data)
-  }
-
-  // we use a simple stringified cache as we have fixed
-  // positions, so we can easily skip sending same repsonses
-  const cache = templateInstance.responseCache.get()
-  const strResponses = JSON.stringify(responses)
-  if (strResponses === cache) {
-    return
-  }
-
-  templateInstance.responseCache.set(strResponses)
+  templateInstance.state.set('responseCache', strResponses)
   templateInstance.data.onInput({
     userId,
     sessionId,
