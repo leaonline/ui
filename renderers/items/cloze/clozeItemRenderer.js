@@ -174,8 +174,11 @@ function toTokens (entry) {
   entry.flavor = Cloze.flavor[flavor].value
   entry.value = getTokenValueForFlavor(entry.flavor, split[1])
   entry.tts = split[2]
-  entry.isBlock = entry.value.length === -99
-  console.info(entry)
+
+  // a block entry has no value and is used, for example, to
+  // render a d-block tts-button to read the whole text
+  entry.isBlock = !entry.value || entry.value.length === 0
+
   return entry
 }
 
