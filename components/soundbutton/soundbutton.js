@@ -16,7 +16,9 @@ Template.soundbutton.onCreated(function () {
   const btnSize = (data.sm && 'btn-sm') || (data.lg && 'btn-lg') || ''
   const customClass = data.class || ''
   const activeClass = data.active ? 'active' : ''
-  const borderClass = data.border ? '' : 'border-0'
+  const borderClass = (data.border || data.outline === false)
+    ? ''
+    : 'border-0'
 
   instance.isPlaying = new ReactiveVar(false)
   instance.tts = new ReactiveVar(initialTTS)

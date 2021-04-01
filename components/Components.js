@@ -29,6 +29,13 @@ internal.actionButton = {
   }
 }
 
+internal.routeButton = {
+  template: 'routeButton',
+  async load () {
+    return import('./routeButton/routeButton')
+  }
+}
+
 internal.text = {
   template: 'text',
   async load () {

@@ -1,0 +1,19 @@
+<template name="routeButton">
+    <span {{groupAttributes}}>
+        {{#if sound}}
+            {{> soundbutton tts=tts text=label outline=outline sm=sm lg=lg type=type active=active class=sndBtnClass border=border}}
+        {{/if}}
+        <a {{attributes}}>
+			{{#if leftIcon}}
+                <i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>
+            {{/if}}
+            {{#if label}}
+                <span class="lea-text {{labelClass}}">{{label}}</span>
+            {{/if}}
+            {{> Template.contentBlock ..}}
+            {{#if rightIcon}}
+                <i class="fas fa fa-fw fa-{{icon}} ml-1 {{iconClass}}"></i>
+            {{/if}}
+        </a>
+    </span>
+</template>
