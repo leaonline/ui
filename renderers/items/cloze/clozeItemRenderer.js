@@ -17,7 +17,7 @@ const closePattern = '}}'
 const newLinePattern = '//'
 const optionsSeparator = '|'
 const newLineReplacer = `${startPattern}${newLinePattern}${closePattern}`
-const newLineRegExp = new RegExp(/\n/, 'g')
+const newLineRegExp = /\n/g
 const tokenize = createSimpleTokenizer(startPattern, closePattern)
 
 Template.clozeItemRenderer.onCreated(function () {

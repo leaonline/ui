@@ -15,7 +15,7 @@ Template.taskPageRenderer.onCreated(function () {
     const currentPageCount = data.currentPageCount || 0
 
     instance.state.set('isPreview', data.isPreview)
-    instance.state.set('sessionId',  data.sessionId)
+    instance.state.set('sessionId', data.sessionId)
     instance.state.set('unitDoc', unitDoc)
 
     if (unitDoc.pages) {

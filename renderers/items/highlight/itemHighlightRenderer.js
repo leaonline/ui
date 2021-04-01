@@ -111,7 +111,7 @@ function submitValues (templateInstance) {
 
   const selection = templateInstance.state.get('selection')
   const responses = []
-  Object.keys(selection).map(index => {
+  Object.keys(selection).forEach(index => {
     const value = selection[index]
     if (value) {
       responses.push(index)

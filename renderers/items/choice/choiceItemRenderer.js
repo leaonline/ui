@@ -49,9 +49,7 @@ Template.choiceItemRenderer.onCreated(function () {
     // assign the values plain or shuffled
     if (data.value.shuffle) {
       instance.state.set('values', shuffle(mapped))
-    }
-
-    else {
+    } else {
       instance.state.set('values', mapped)
     }
   })
@@ -187,8 +185,6 @@ Template.choiceItemRenderer.events({
 })
 
 function submitValues (templateInstance) {
-  const warn = (...args) => console.warn(templateInstance.name, ...args)
-
   // skip if there is no onInput connected
   // which can happen when creating new items
   if (!templateInstance.data.onInput) {
