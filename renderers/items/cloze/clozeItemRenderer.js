@@ -145,7 +145,14 @@ function submitValues (templateInstance) {
   }
 
   templateInstance.responseCache.set(strResponses)
-  templateInstance.data.onInput({ userId, sessionId, unitId, page, type, responses })
+  templateInstance.data.onInput({
+    userId,
+    sessionId,
+    unitId,
+    page,
+    type,
+    responses
+  })
 }
 
 function toTokens (entry) {
@@ -174,6 +181,18 @@ function toTokens (entry) {
   entry.flavor = Cloze.flavor[flavor].value
   entry.value = getTokenValueForFlavor(entry.flavor, split[1])
   entry.tts = split[2]
+
+  // optionally we can parse some configurations
+  if (split[3]) {
+    const configs = split[3].split('&')
+    configs.forEach(configPair => {
+      const configSplit = configPair.split('=')
+      if (configSplit.length < 2) {
+        return console.warn('Invalid config:', configPair)
+      }
+      entry[configSplit[0]] = configSplit[1]
+    })
+  }
 
   // a block entry has no value and is used, for example, to
   // render a d-block tts-button to read the whole text
