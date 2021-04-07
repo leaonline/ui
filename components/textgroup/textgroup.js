@@ -7,5 +7,8 @@ Template.textGroup.helpers({
   join (...args) {
     args.pop()
     return args.join(' ')
+  },
+  noAutoText (autoText) {
+    return autoText === false
   }
 })
