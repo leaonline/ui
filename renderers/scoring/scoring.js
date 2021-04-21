@@ -5,9 +5,17 @@ import { resolveRepresentative } from 'meteor/leaonline:corelib/utils/resolveRep
 import '../../components/icon/icon'
 import './scoring.html'
 
+const toRepresentative = doc => resolveRepresentative(doc, Competency.representative)
+
 Template.itemScoringRenderer.helpers({
-  getCompetency (_id) {
-    const competencyDoc = getCollection(Competency.name).findOne(_id) || {}
-    return resolveRepresentative(competencyDoc, Competency.representative)
+  getCompetencies (selector) {
+    let competencies = undefined
+    const collection = getCollection(Competency.name)
+    const query = Array.isArray(selector)
+      ? { $in: selector }
+      : selector
+
+    competencies = collection.find({ _id: query }).fetch().map(toRepresentative)
+    return competencies
   }
 })
