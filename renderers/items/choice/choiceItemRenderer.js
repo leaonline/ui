@@ -57,7 +57,7 @@ Template.choiceItemRenderer.onCreated(function () {
     })
 
     // assign the values plain or shuffled
-    let values = data.value.shuffle
+    const values = data.value.shuffle
       ? shuffle(mapped)
       : mapped
 
@@ -176,9 +176,7 @@ Template.choiceItemRenderer.events({
 
       templateInstance.state.set('selected', selection)
       templateInstance.$(`#${name}-${index}`).prop('checked', !isSelected)
-    }
-
-    else {
+    } else {
       // on single elements we need to make sure
       // the selected variable is a number
       // and only replace it with the current index

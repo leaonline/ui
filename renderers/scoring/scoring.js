@@ -9,13 +9,11 @@ const toRepresentative = doc => resolveRepresentative(doc, Competency.representa
 
 Template.itemScoringRenderer.helpers({
   getCompetencies (selector) {
-    let competencies = undefined
     const collection = getCollection(Competency.name)
     const query = Array.isArray(selector)
       ? { $in: selector }
       : selector
 
-    competencies = collection.find({ _id: query }).fetch().map(toRepresentative)
-    return competencies
+    return collection.find({ _id: query }).fetch().map(toRepresentative)
   }
 })

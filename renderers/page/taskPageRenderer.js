@@ -12,7 +12,7 @@ Template.taskPageRenderer.onCreated(function () {
   const parseData = data => {
     const unitDoc = data.doc
     const color = data.color || 'secondary'
-    let currentPageCount = data.currentPageCount || 0
+    const currentPageCount = data.currentPageCount || 0
 
     instance.state.set('isPreview', data.isPreview)
     instance.state.set('sessionId', data.sessionId)

@@ -104,8 +104,6 @@ Components.load = function (names) {
   return loaded
 }
 
-const registerTemplate =
-
 Components.autoLoad = function (additionalTemplates = {}) {
   TemplateLoader.enable()
 

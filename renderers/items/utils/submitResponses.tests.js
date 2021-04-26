@@ -8,7 +8,7 @@ describe(createSubmitResponses.name, function () {
     [
       undefined,
       {},
-      { responseCache: { get: () => {}, set: () => {}}}
+      { responseCache: { get: () => {}, set: () => {} } }
     ].forEach(input => {
       expect(() => createSubmitResponses()).to.throw('Expected function, got undefined')
     })
@@ -17,7 +17,7 @@ describe(createSubmitResponses.name, function () {
     })).to.throw('Missing key \'get\'')
     expect(() => createSubmitResponses({
       onInput: () => {},
-      responseCache: { get: () => {}}
+      responseCache: { get: () => {} }
     })).to.throw('Missing key \'set\'')
   })
   it('returns a function to submit responses', function () {
@@ -48,7 +48,8 @@ describe(createSubmitResponses.name, function () {
       },
       responseCache: {
         get: val => cache.get(),
-        set: () => {} }
+        set: () => {}
+      }
     })
     submitResponses({
       responses: ['foo']

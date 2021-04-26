@@ -32,7 +32,7 @@ Template.clozeItemRenderer.onCreated(function () {
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.responseCache.get(),
-      set: val => instance.responseCache.set(val),
+      set: val => instance.responseCache.set(val)
     }
   })
 
