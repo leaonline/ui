@@ -13,16 +13,22 @@ Package.describe({
 
 Package.onUse(function (api) {
   api.versionsFrom('1.6')
-  api.use('ecmascript')
-  api.use('templating')
-  api.use('reactive-dict')
-  api.use('dynamic-import')
-  api.use('leaonline:corelib')
+
+  api.use([
+    'ecmascript',
+    'templating',
+    'reactive-dict',
+    'dynamic-import',
+    'leaonline:corelib'
+  ], 'client')
 })
 
 Package.onTest(function (api) {
   api.use('ecmascript')
-  api.use('tinytest')
-  api.use('leaonline:ui')
+  api.use('mongo')
+  api.use('random')
+  api.use('reactive-var')
+  api.use(['lmieulet:meteor-legacy-coverage', 'lmieulet:meteor-coverage', 'meteortesting:mocha'])
+  api.use('leaonline:corelib')
   api.mainModule('ui-tests.js')
 })

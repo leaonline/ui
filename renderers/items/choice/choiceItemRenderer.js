@@ -2,64 +2,11 @@ import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { shuffle } from 'meteor/leaonline:corelib/utils/shuffle'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
 import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import './choiceItemRenderer.css'
 import './choiceItemRenderer.html'
-
-Template.choiceItemRenderer.onCreated(function () {
-  const instance = this
-  instance.state = new ReactiveDict()
-  instance.state.setDefault('values', null)
-  instance.state.setDefault('selected', null)
-  instance.state.setDefault('hovered', null)
-  instance.state.setDefault('color', 'secondary')
-  instance.state.setDefault('isMultiple', null)
-  instance.state.setDefault('responseCache', null)
-
-  instance.autorun(function () {
-    const data = Template.currentData()
-    const { value } = data
-    const { color } = data
-
-    if (color) {
-      instance.state.set('color', color)
-    }
-
-    if (typeof value !== 'object') {
-      return
-    }
-
-    // clear instance and rebuild for now data to make sure not leftovers are
-    // still in the state
-    instance.state.clear()
-
-    const isMultiple = data.value.flavor === Choice.flavors.multiple.value
-    instance.state.set('isMultiple', isMultiple)
-
-    // then we process the choices to ensure that
-    // event when shuffled, thier original index remains
-    const name = Math.floor(Math.random() * 10000)
-    const mapped = value.choices.map((entry, index) => {
-      entry.name = name
-      entry.index = index
-      return entry
-    })
-
-    // assign the values plain or shuffled
-    if (data.value.shuffle) {
-      instance.state.set('values', shuffle(mapped))
-    } else {
-      instance.state.set('values', mapped)
-    }
-  })
-})
-
-Template.choiceItemRenderer.onDestroyed(function () {
-  const instance = this
-  submitValues(instance)
-  instance.state.clear()
-})
 
 const parseResponse = responseStr => {
   if (responseStr === '__undefined__' ||
@@ -72,9 +19,78 @@ const parseResponse = responseStr => {
 
 const nonNull = value => value !== null
 
+Template.choiceItemRenderer.onCreated(function () {
+  const instance = this
+  instance.state = instance.state || new ReactiveDict()
+  instance.state.setDefault('values', null)
+  instance.state.setDefault('selected', null)
+  instance.state.setDefault('hovered', null)
+  instance.state.setDefault('color', 'secondary')
+  instance.state.setDefault('isMultiple', null)
+  instance.state.setDefault('responseCache', null)
+  instance.submitResponse = createSubmitResponses({
+    onInput: instance.data.onInput,
+    responseCache: {
+      get: () => instance.state.get('responseCache'),
+      set: val => instance.state.set('responseCache', val)
+    }
+  })
+
+  instance.autorun(function () {
+    const data = Template.currentData()
+    const { value } = data
+    const { color } = data
+
+    if (typeof value !== 'object') {
+      return instance.state.set({ color: 'primary' })
+    }
+
+    const isMultiple = data.value.flavor === Choice.flavors.multiple.value
+
+    // then we process the choices to ensure that
+    // event when shuffled, thier original index remains
+    const name = Math.floor(Math.random() * 10000)
+    const mapped = value.choices.map((entry, index) => {
+      entry.name = name
+      entry.index = index
+      return entry
+    })
+
+    // assign the values plain or shuffled
+    let values = data.value.shuffle
+      ? shuffle(mapped)
+      : mapped
+
+    instance.state.set({
+      values, currentColor: color, isMultiple
+    })
+  })
+})
+
+Template.choiceItemRenderer.onDestroyed(function () {
+  const instance = this
+  instance.submitResponse({
+    responses: instance.getResponse(),
+    data: instance.data
+  })
+  instance.state.clear()
+})
+
 Template.choiceItemRenderer.onRendered(function () {
   const instance = this
-  // submitValues(instance)
+
+  instance.getResponse = () => {
+    const responses = instance.state.get('isMultiple')
+      ? multipleResponse(instance)
+      : singleResponse(instance)
+
+    // fallback for non-interaction
+    if (responses.length === 0) {
+      responses.push('__undefined__')
+    }
+
+    return responses
+  }
 
   instance.autorun(() => {
     const data = Template.currentData()
@@ -84,12 +100,12 @@ Template.choiceItemRenderer.onRendered(function () {
     // the choices need to be drawn first, in order to access them
     if (typeof data.onLoad === 'function') {
       const cachedData = data.onLoad(data)
+
       if (cachedData) {
         const { responses } = cachedData
         const selected = isMultiple
           ? responses.map(parseResponse).filter(nonNull)
           : parseResponse(responses[0])
-
         instance.state.set('selected', selected)
       }
     }
@@ -115,7 +131,8 @@ Template.choiceItemRenderer.helpers({
   },
   selected (index) {
     const instance = Template.instance()
-    const selected = instance.selected && instance.state.get('selected')
+    const selected = instance.state.get('selected')
+
     if (typeof selected === 'undefined' || selected === null) {
       return false
     }
@@ -124,9 +141,8 @@ Template.choiceItemRenderer.helpers({
       ? selected?.includes?.(index)
       : selected === index
   },
-  color () {
-    const instance = Template.instance()
-    return instance.color && instance.state.get('color')
+  getColor () {
+    return Template.instance().state.get('color')
   }
 })
 
@@ -160,7 +176,9 @@ Template.choiceItemRenderer.events({
 
       templateInstance.state.set('selected', selection)
       templateInstance.$(`#${name}-${index}`).prop('checked', !isSelected)
-    } else {
+    }
+
+    else {
       // on single elements we need to make sure
       // the selected variable is a number
       // and only replace it with the current index
@@ -172,7 +190,10 @@ Template.choiceItemRenderer.events({
       templateInstance.$(`#${name}-${index}`).prop('checked', true)
     }
 
-    submitValues(templateInstance)
+    templateInstance.submitResponse({
+      responses: templateInstance.getResponse(),
+      data: templateInstance.data
+    })
   },
   'mouseenter .choice-entry' (event, templateInstance) {
     const index = templateInstance.$(event.currentTarget).data('index')
@@ -183,49 +204,6 @@ Template.choiceItemRenderer.events({
     templateInstance.state.set('hovered', null)
   }
 })
-
-function submitValues (templateInstance) {
-  // skip if there is no onInput connected
-  // which can happen when creating new items
-  if (!templateInstance.data.onInput) {
-    return console.warn('[choiceItemRenderer]: onInput handler is missing. Skip submitting values.')
-  }
-
-  const responses = templateInstance.state.get('isMultiple')
-    ? multipleResponse(templateInstance)
-    : singleResponse(templateInstance)
-
-  // fallback for non-interaction
-  if (responses.length === 0) {
-    responses.push('__undefined__')
-  }
-
-  // we use a simple stringified cache as we have fixed
-  // positions, so we can easily skip sending same responses
-  const cache = templateInstance.state.get('responseCache')
-  const strResponses = JSON.stringify(responses)
-  if (strResponses === cache) {
-    return
-  }
-
-  const userId = templateInstance.data.userId
-  const sessionId = templateInstance.data.sessionId
-  const unitId = templateInstance.data.unitId
-  const page = templateInstance.data.page
-  const type = templateInstance.data.subtype
-  const contentId = templateInstance.data.contentId
-
-  templateInstance.state.set('responseCache', strResponses)
-  templateInstance.data.onInput({
-    userId,
-    sessionId,
-    unitId,
-    page,
-    contentId,
-    type,
-    responses
-  })
-}
 
 function singleResponse (templateInstance) {
   const responses = []

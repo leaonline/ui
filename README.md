@@ -23,3 +23,14 @@ In order to dynamically display (and edit) these interactions, we use a set of d
 - Item - render specific item types
 - Markdown - renders markdown
 - Page - renders a page with mixed and variable content
+
+## Run tests
+
+We use a proxy project for testing. Please follow the steps for setup and run:
+
+```bash
+$ cd test-proxy
+$ meteor npm install
+$ meteor npm run setup
+$ meteor npm run test:watch
+```

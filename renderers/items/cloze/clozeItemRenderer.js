@@ -4,6 +4,7 @@ import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
 import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
 import { createSimpleTokenizer } from 'meteor/leaonline:corelib/utils/tokenizer'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.html'
 import './clozeItemRenderer.css'
@@ -27,6 +28,13 @@ Template.clozeItemRenderer.onCreated(function () {
   instance.error = new ReactiveVar()
   instance.color = new ReactiveVar('secondary')
   instance.responseCache = new ReactiveVar('')
+  instance.submitResponse = createSubmitResponses({
+    onInput: instance.data.onInput,
+    responseCache: {
+      get: () => instance.responseCache.get(),
+      set: val => instance.responseCache.set(val),
+    }
+  })
 
   instance.autorun(() => {
     const data = Template.currentData()
@@ -55,9 +63,38 @@ Template.clozeItemRenderer.onCreated(function () {
   })
 })
 
+Template.clozeItemRenderer.onRendered(function () {
+  const instance = this
+  const { data } = instance
+
+  if (typeof data.onLoad === 'function') {
+    const cachedData = data.onLoad(data)
+    if (cachedData?.responses) {
+      instance.$('input').each(function (index, input) {
+        const response = cachedData.responses[index]
+        if (response && response !== '__undefined__') {
+          instance.$(input).val(response)
+        }
+      })
+    }
+  }
+
+  instance.getResponse = () => {
+    const responses = []
+    instance.$('input').each(function (index, input) {
+      const value = instance.$(input).val()
+      responses.push(value || '__undefined__')
+    })
+    return responses
+  }
+})
+
 Template.clozeItemRenderer.onDestroyed(function () {
   const instance = this
-  submitValues(instance)
+  instance.submitResponse({
+    responses: instance.getResponse(),
+    data: instance.data
+  })
   instance.state.clear()
 })
 
@@ -106,54 +143,12 @@ Template.clozeItemRenderer.events({
     $target.attr('size', newSize)
   },
   'blur .cloze-input' (event, templateInstance) {
-    submitValues(templateInstance)
+    templateInstance.submitResponse({
+      responses: templateInstance.getResponse(),
+      data: templateInstance.data
+    })
   }
 })
-
-function submitValues (templateInstance) {
-  // skip if there is no onInput connected
-  // which can happen when creating new items
-  if (!templateInstance.data.onInput) {
-    console.warn('no onInput handler connected to this component')
-    return
-  }
-
-  const userId = templateInstance.data.userId
-  const sessionId = templateInstance.data.sessionId
-  const unitId = templateInstance.data.unitId
-  const page = templateInstance.data.page
-  const type = templateInstance.data.subtype
-
-  // also return if our identifier values
-  // are not set, which also can occur in item-dev
-  if (!userId || !sessionId || !unitId) {
-    return
-  }
-
-  const responses = []
-  templateInstance.$('input').each(function (index, input) {
-    const value = templateInstance.$(input).val()
-    responses.push(value || '__undefined__')
-  })
-
-  // we use a simple stringified cache as we have fixed
-  // positions, so we can easily skip sending same repsonses
-  const cache = templateInstance.responseCache.get()
-  const strResponses = JSON.stringify(responses)
-  if (strResponses === cache) {
-    return
-  }
-
-  templateInstance.responseCache.set(strResponses)
-  templateInstance.data.onInput({
-    userId,
-    sessionId,
-    unitId,
-    page,
-    type,
-    responses
-  })
-}
 
 function toTokens (entry) {
   // we simply indicate newlines within

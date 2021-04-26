@@ -104,10 +104,17 @@ Components.load = function (names) {
   return loaded
 }
 
-Components.autoLoad = function () {
+const registerTemplate =
+
+Components.autoLoad = function (additionalTemplates = {}) {
   TemplateLoader.enable()
 
   Object.entries(internal).forEach(([key, { load }]) => {
+    TemplateLoader.register(key, load)
+    console.info('[TemplateLoader]: register', key)
+  })
+
+  Object.entries(additionalTemplates).forEach(([key, load]) => {
     TemplateLoader.register(key, load)
     console.info('[TemplateLoader]: register', key)
   })
