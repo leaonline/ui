@@ -20,7 +20,7 @@ Package.onUse(function (api) {
     'reactive-dict',
     'dynamic-import',
     'leaonline:corelib'
-  ], 'client')
+  ])
 })
 
 Package.onTest(function (api) {

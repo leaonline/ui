@@ -105,6 +105,7 @@ Components.load = function (names) {
 }
 
 Components.autoLoad = function (additionalTemplates = {}) {
+  console.info('[TemplateLoader]: enable')
   TemplateLoader.enable()
 
   Object.entries(internal).forEach(([key, { load }]) => {
