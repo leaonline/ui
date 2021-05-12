@@ -1,4 +1,3 @@
-/* global EventTarget Event */
 import { Template } from 'meteor/templating'
 import { Meteor } from 'meteor/meteor'
 import '../factory/TaskRendererFactory'
@@ -7,7 +6,6 @@ import '../../components/actionButton/actionButton'
 
 Template.taskPageRenderer.onCreated(function () {
   const instance = this
-  instance.collector = new EventTarget()
 
   const parseData = data => {
     const unitDoc = data.doc
@@ -79,6 +77,9 @@ Template.taskPageRenderer.helpers({
   hasNext () {
     return Template.getState('hasNext')
   },
+  waitForSubmit () {
+    return Template.getState('waitForSubmit')
+  },
   hasPrev () {
     return Template.getState('hasPrev')
   },
@@ -91,9 +92,9 @@ Template.taskPageRenderer.helpers({
     const unitId = unitDoc._id
     const userId = Meteor.userId()
     const color = instance.state.get('color')
-    const collector = instance.collector
     const { onInput } = instance.data
     const { onLoad } = instance.data
+
     return Object.assign({}, content, {
       userId,
       sessionId,
@@ -101,8 +102,7 @@ Template.taskPageRenderer.helpers({
       page,
       color,
       onInput: !isPreview && onInput,
-      onLoad: !isPreview && onLoad,
-      collector: collector
+      onLoad: !isPreview && onLoad
     })
   },
   showFinishButton () {
@@ -135,18 +135,24 @@ Template.taskPageRenderer.events({
       throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
     }
 
-    templateInstance.collector.dispatchEvent(new Event('collect'))
-
     const $current = templateInstance.$('.lea-unit-current-content-container')
     const currentHeight = $current.height()
     const oldContainerCss = $current.css('height') || ''
     $current.css('height', `${currentHeight}px`)
 
-    templateInstance.state.set(newPage)
+    if (typeof templateInstance.data.onNewPage === 'function') {
+      templateInstance.state.set('waitForSubmit', true)
+      templateInstance.data.onNewPage({ action, newPage }, () => {
+        templateInstance.state.set(newPage)
+        templateInstance.state.set('waitForSubmit', false)
+      })
+    } else {
+      templateInstance.state.set(newPage)
 
-    setTimeout(() => {
-      $current.css('height', oldContainerCss)
-    }, 100)
+      setTimeout(() => {
+        $current.css('height', oldContainerCss)
+      }, 100)
+    }
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {
     event.preventDefault()

@@ -52,6 +52,7 @@
                                 <span class="text-white bg-gray px-3 py-1 trapezoid">{{currentPageCount}}
                                     / {{maxPages}}</span>
                 </div>
+                {{#unless waitForSubmit}}
                 {{#with currentPage}}
                     <div class="card-body row w-100 h-100 lea-unit-current-content h-auto">
                         {{#each pageContent in this.content}}
@@ -74,6 +75,9 @@
                         {{/if}}
                     </div>
                 {{/with}}
+                {{else}}
+                    {{> loading }}
+                {{/unless}}
             </div>
             {{/if}}
 
