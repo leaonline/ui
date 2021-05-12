@@ -7,7 +7,7 @@ import { check, Match } from 'meteor/check'
  * @return {function({responses?: *, data?: *}=)}
  */
 export const createSubmitResponses = ({ onInput, responseCache = {} } = {}) => {
-  check(onInput, Function)
+  check(onInput, Match.Maybe(Function))
   check(responseCache, Match.ObjectIncluding({
     get: Function,
     set: Function

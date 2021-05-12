@@ -5,13 +5,6 @@ import { createSubmitResponses } from './createSubmitResponses'
 
 describe(createSubmitResponses.name, function () {
   it('throws on invalid input', function () {
-    [
-      undefined,
-      {},
-      { responseCache: { get: () => {}, set: () => {} } }
-    ].forEach(input => {
-      expect(() => createSubmitResponses()).to.throw('Expected function, got undefined')
-    })
     expect(() => createSubmitResponses({
       onInput: () => {}
     })).to.throw('Missing key \'get\'')
