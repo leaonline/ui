@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating'
 import { Meteor } from 'meteor/meteor'
 import '../factory/TaskRendererFactory'
-import './taskPageRenderer.html'
 import '../../components/actionButton/actionButton'
+import './taskPageRenderer.html'
 
 Template.taskPageRenderer.onCreated(function () {
   const instance = this
@@ -101,13 +101,19 @@ Template.taskPageRenderer.helpers({
       unitId,
       page,
       color,
-      onInput: !isPreview && onInput,
-      onLoad: !isPreview && onLoad
+      onInput: !isPreview ? onInput : undefined,
+      onLoad: !isPreview ? onLoad : undefined
     })
   },
   showFinishButton () {
     const instance = Template.instance()
     return !instance.state.get('isPreview') && !instance.state.get('hasNext')
+  },
+  updating () {
+    return Template.getState('updating')
+  },
+  finishing () {
+    return Template.getState('finishing')
   }
 })
 
@@ -156,7 +162,9 @@ Template.taskPageRenderer.events({
   },
   'click .lea-pagenav-finish-button' (event, templateInstance) {
     event.preventDefault()
-    if (templateInstance.onFinish) {
+
+    if (!templateInstance.state.get('finishing') && templateInstance.onFinish) {
+      templateInstance.state.set('finishing', true)
       templateInstance.onFinish()
     }
   }
