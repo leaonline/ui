@@ -187,7 +187,17 @@ const defaults = {
     async load () {
       return import('./image/imageRenderer')
     }
-  }
+  },
+  document: {
+    name: 'document',
+    label: 'taskRenderers.document',
+    template: 'documentRenderer',
+    group: RendererGroups.documents.name,
+    async load () {
+      return import('./document/documentRenderer.js')
+    },
+    exclude: true
+  },
 }
 
 const rendererMap = new Map(Object.entries(defaults))
@@ -195,6 +205,7 @@ let _initialized = false
 
 export const TaskRenderers = {
   groups: RendererGroups,
+  fallbackRenderer: 'document',
   get: key => {
     return rendererMap.get(key)
   },

@@ -1,19 +1,46 @@
 import { Template } from 'meteor/templating'
-import { ReactiveDict } from 'meteor/reactive-dict'
 import { ReactiveVar } from 'meteor/reactive-var'
+import { ReactiveDict } from 'meteor/reactive-dict'
+import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { dataTarget } from '../../../utils/eventUtils'
+import '../../../components/soundbutton/soundbutton'
 import './itemHighlightRenderer.css'
 import './itemHighlightRenderer.html'
-import '../../../components/soundbutton/soundbutton'
-import { dataTarget } from '../../../utils/eventUtils'
 
 const whiteSpace = /\s+/g
 const separatorChars = /[.,;:?!]+/g
+const groupPattern = /[{}]+/g
 const insertWhiteSpace = (str, index) => `${str.substr(0, index)} ${str.substr(index)}`
 
 Template.itemHighlightRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.responseCache = new ReactiveVar('')
+  instance.submitResponse = createSubmitResponses({
+    onInput: instance.data.onInput,
+    responseCache: {
+      get: () => instance.responseCache.get(),
+      set: val => instance.responseCache.set(val)
+    }
+  })
+
+  instance.getResponse = () => {
+    const selection = instance.state.get('selection')
+    const responses = []
+    Object.keys(selection).forEach(index => {
+      const value = selection[index]
+      if (value) {
+        responses.push(index)
+      }
+    })
+
+    if (responses.length === 0) {
+      responses.push('__undefined__')
+    }
+
+    return responses
+  }
 
   instance.state.set({
     selection: {},
@@ -33,13 +60,8 @@ Template.itemHighlightRenderer.onCreated(function () {
     if (!value) return
 
     const { text, tts } = value
-    const tokens = text.split(whiteSpace)
-      .map(token => {
-        const separatorIndex = token.search(separatorChars)
-        if (separatorIndex === -1) return token
-        return insertWhiteSpace(token, separatorIndex).split(whiteSpace)
-      })
-      .flat()
+    const tokens = [...text.matchAll(Highlight.pattern)]
+      .map(token => token[0].replace(groupPattern, ''))
       .map(token => {
         return separatorChars.test(token)
           ? { value: token, isSeparator: true }
@@ -47,11 +69,6 @@ Template.itemHighlightRenderer.onCreated(function () {
       })
     instance.state.set({ tokens, ttsText: tts ? text : null })
   })
-})
-
-Template.itemHighlightRenderer.onRendered(function () {
-  const instance = this
-  submitValues(instance)
 })
 
 Template.itemHighlightRenderer.helpers({
@@ -92,7 +109,10 @@ Template.itemHighlightRenderer.events({
     const selection = templateInstance.state.get('selection')
     selection[index] = !selection[index]
     templateInstance.state.set({ selection })
-    submitValues(templateInstance)
+    templateInstance.submitResponse({
+      responses: templateInstance.getResponse(),
+      data: templateInstance.data
+    })
   }
 })
 
