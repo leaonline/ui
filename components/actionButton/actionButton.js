@@ -40,6 +40,10 @@ Template.actionButton.helpers({
       atts.href = data.href
     }
 
+    if (data.disabled) {
+      atts.disabled = ''
+    }
+
     Object.keys(data).forEach(key => {
       if (key.indexOf('data-') === -1) return
       atts[key] = data[key]
