@@ -8,10 +8,8 @@ import '../../../components/soundbutton/soundbutton'
 import './itemHighlightRenderer.css'
 import './itemHighlightRenderer.html'
 
-const whiteSpace = /\s+/g
 const separatorChars = /[.,;:?!]+/g
 const groupPattern = /[{}]+/g
-const insertWhiteSpace = (str, index) => `${str.substr(0, index)} ${str.substr(index)}`
 
 Template.itemHighlightRenderer.onCreated(function () {
   const instance = this

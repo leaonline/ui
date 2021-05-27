@@ -197,7 +197,7 @@ const defaults = {
       return import('./document/documentRenderer.js')
     },
     exclude: true
-  },
+  }
 }
 
 const rendererMap = new Map(Object.entries(defaults))
