@@ -92,8 +92,8 @@ describe('ClozeItemTokenizer', function () {
   })
   describe(toTokens.name, function () {
     it('allows to map splits to renderable tokens', function () {
-      expect(toTokens({ value: '//'})).to.deep.equal({ value: '//', isNewLine: true })
-      expect(toTokens({ value: 'noseparator'})).to.deep.equal({ value: 'noseparator'})
+      expect(toTokens({ value: '//' })).to.deep.equal({ value: '//', isNewLine: true })
+      expect(toTokens({ value: 'noseparator' })).to.deep.equal({ value: 'noseparator' })
       expect(toTokens({ value: 'blanks$foo$bar' })).to.deep.equal({
         flavor: 2,
         isBlock: false,
@@ -151,7 +151,7 @@ describe('ClozeItemTokenizer', function () {
             index: 1,
             isToken: true,
             length: 7,
-            value: ['foo', 'baz' ]
+            value: ['foo', 'baz']
           },
           {
             index: 2,
