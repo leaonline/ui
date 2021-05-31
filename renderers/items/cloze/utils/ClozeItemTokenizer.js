@@ -46,10 +46,10 @@ const tokenizeSelect = (flavor, value) => tokenizeValueEntry(value).map((token, 
   return token
 })
 
-const toTokens = (entry) => {
+const toTokens = entry => {
   // we simply indicate newlines within
   // our brackets to avoid complex parsing
-  if (entry.value.indexOf('//') > -1) {
+  if (entry.value.includes('//')) {
     entry.isNewLine = true
     return entry
   }
