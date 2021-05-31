@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import {
-  ClozeItemTokenizer,
+  // ClozeItemTokenizer,
   tokenizeBlanks,
   tokenizeSelect,
   toTokens
@@ -16,7 +16,7 @@ describe('ClozeItemTokenizer', function () {
         index: 0,
         length: 0,
         value: ''
-      },{
+      }, {
         hasPre: true,
         hasSuf: true,
         flavor: flavor,
@@ -34,7 +34,7 @@ describe('ClozeItemTokenizer', function () {
         index: 0,
         length: 3,
         value: 'ha '
-      },{
+      }, {
         hasPre: true,
         hasSuf: true,
         flavor: flavor,

@@ -143,4 +143,3 @@ Template.clozeItemRenderer.events({
     })
   }
 })
-

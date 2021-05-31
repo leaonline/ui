@@ -28,7 +28,7 @@ Template.soundbutton.onCreated(function () {
   })
 })
 
-function updateAtts(data, instance) {
+function updateAtts (data, instance) {
   const initialTTS = data.tts
   const initialText = data.text
 
