@@ -5,9 +5,24 @@ import '../soundbutton/soundbutton'
 import './actionButton.html'
 
 Template.actionButton.helpers({
-  sound () {
+  soundButtonAtts () {
+    // tts=tts text=label outline=true sm=sm lg=lg type=type active=active class=sndBtnClass
     const instance = Template.instance()
-    return instance.data.sound !== false
+    const { data } = instance
+    if (data.sound === false) {
+      return null
+    }
+
+    return {
+      tts: data.tts,
+      text: data.label,
+      outline: typeof data.outline === 'boolean' ? data.outline : true,
+      sm: data.sm,
+      lg: data.lg,
+      type: data.type || 'secondary',
+      active: data.active,
+      class: data.sndBtnClass
+    }
   },
   leftIcon () {
     const instance = Template.instance()
