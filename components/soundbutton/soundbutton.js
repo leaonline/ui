@@ -6,8 +6,29 @@ import './soundbutton.html'
 
 Template.soundbutton.onCreated(function () {
   const instance = this
-  const { data } = instance
 
+  instance.autorun(() => {
+    const reactiveData = Template.currentData()
+    updateAtts(reactiveData, instance)
+
+    const reactiveTTS = (reactiveData.tts || reactiveData.text)
+    const currentTTS = (instance.tts.get() || instance.text.get())
+
+    if (reactiveTTS !== currentTTS) {
+      // if the TTS target changed reactively
+      // we need to stop the current playing
+      if (instance.isPlaying.get()) {
+        TTSEngine.stop()
+      }
+      // we need to update the internal
+      // TTS target state to allow playing the new sound
+      instance.tts.set(reactiveData.tts)
+      instance.text.set(reactiveData.text)
+    }
+  })
+})
+
+function updateAtts(data, instance) {
   const initialTTS = data.tts
   const initialText = data.text
 
@@ -34,25 +55,7 @@ Template.soundbutton.onCreated(function () {
     'data-text': initialText,
     'aria-label': data.title
   })
-
-  instance.autorun(() => {
-    const reactiveData = Template.currentData()
-    const reactiveTTS = (reactiveData.tts || reactiveData.text)
-    const currentTTS = (instance.tts.get() || instance.text.get())
-
-    if (reactiveTTS !== currentTTS) {
-      // if the TTS target changed reactively
-      // we need to stop the current playing
-      if (instance.isPlaying.get()) {
-        TTSEngine.stop()
-      }
-      // we need to update the internal
-      // TTS target state to allow playing the new sound
-      instance.tts.set(reactiveData.tts)
-      instance.text.set(reactiveData.text)
-    }
-  })
-})
+}
 
 Template.soundbutton.onDestroyed(function () {
   const instance = this
