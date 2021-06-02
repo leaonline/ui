@@ -70,7 +70,7 @@
                                     btnClass="lea-pagenav-button"
                                     data-action="back"
                                     type=currentType
-                                    label=(i18n "common.forward") class="mr-auto"}}
+                                    label=(i18n "common.back") class="mr-auto"}}
                         {{/if}}
                         {{#if hasNext}}
                             {{> actionButton
@@ -79,6 +79,7 @@
                                     btnClass="lea-pagenav-button"
                                     data-action="next"
                                     type=currentType
+                                    tts="common.forward"
                                     icon="arrow-right"
                                     disabled=updating
                                     class="ml-auto"}}
