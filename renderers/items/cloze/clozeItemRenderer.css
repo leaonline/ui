@@ -2,7 +2,12 @@
 	white-space : normal;
 }
 
-
 .cloze-input-group {
 	white-space : nowrap;
+}
+
+.cloze-select, .cloze-input, .cloze-option {
+	font-family: Semikolon, Arial, 'sans-serif';
+	font-size: 22px;
+	color: #212529 !important;
 }

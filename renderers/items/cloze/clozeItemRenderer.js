@@ -105,6 +105,12 @@ Template.clozeItemRenderer.helpers({
   },
   inputWidth (length) {
     return length * 1.5
+  },
+  inputSize (length) {
+    return length > 2 ? length : 2
+  },
+  maxLength (length) {
+    return length * 10
   }
 })
 
