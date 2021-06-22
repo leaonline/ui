@@ -24,6 +24,9 @@
                                    size="{{inputSize valueToken.length}}"
                                    name="{{random}}"
                                    autocomplete="off"
+                                   autocorrect="off"
+                                   autocapitalize="off"
+                                   spellcheck="false"
                                    maxlength="{{maxLength valueToken.length}}">
                         {{else if isSelect valueToken}}
                             <select class="cloze-select form-control w-auto d-inline my-1 p-0 border border-{{color}}"
