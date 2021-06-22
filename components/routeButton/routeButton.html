@@ -5,14 +5,14 @@
         {{/if}}
         <a {{attributes}}>
 			{{#if leftIcon}}
-                <i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>
+                <i class="fas fa fa-fw fa-{{icon}} align-middle {{iconClass}}"></i>
             {{/if}}
             {{#if label}}
                 <span class="lea-text {{labelClass}}">{{label}}</span>
             {{/if}}
             {{> Template.contentBlock ..}}
             {{#if rightIcon}}
-                <i class="fas fa fa-fw fa-{{icon}} ml-1 {{iconClass}}"></i>
+                <i class="fas fa fa-fw fa-{{icon}} ml-1 align-middle {{iconClass}}"></i>
             {{/if}}
         </a>
     </span>

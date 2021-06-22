@@ -88,6 +88,7 @@ Template.soundbutton.helpers({
 Template.soundbutton.events({
   'click .lea-sound-btn' (event, templateInstance) {
     event.preventDefault()
+    event.stopPropagation()
 
     const isPlaying = templateInstance.isPlaying.get()
 

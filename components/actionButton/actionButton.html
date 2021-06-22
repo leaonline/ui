@@ -4,7 +4,7 @@
         {{> soundbutton this}}
 		{{/with}}
         <button {{attributes}}>
-			{{#if leftIcon}}<i class="fas fa fa-fw fa-{{icon}} {{iconClass}}"></i>{{/if}}
+			{{#if leftIcon}}<i class="fas fa fa-fw fa-{{icon}} align-middle {{iconClass}}"></i>{{/if}}
             {{#if label}}<span class="lea-text">{{label}}</span>{{/if}}
 			{{> Template.contentBlock ..}}
 			{{#if rightIcon}}<i class="fas fa fa-fw fa-{{icon}} ml-1 {{iconClass}}"></i>{{/if}}
