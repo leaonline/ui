@@ -48,7 +48,7 @@ function updateAtts (data, instance) {
   instance.attributes = new ReactiveVar({
     id: data.id,
     title: data.title,
-    disabled: data.disabled,
+    disabled: data.disabled || !TTSEngine.isAvailable(),
     type: 'button',
     class: `lea-sound-btn d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass}`,
     'data-tts': initialTTS,
