@@ -86,9 +86,15 @@ Template.soundbutton.helpers({
 })
 
 Template.soundbutton.events({
+  'mousedown .lea-sound-btn' (event, templateInstance) {
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation()
+  },
   'click .lea-sound-btn' (event, templateInstance) {
     event.preventDefault()
     event.stopPropagation()
+    event.stopImmediatePropagation()
 
     const isPlaying = templateInstance.isPlaying.get()
 

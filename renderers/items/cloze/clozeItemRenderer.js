@@ -137,6 +137,16 @@ Template.clozeItemRenderer.events({
     $target.attr('size', newSize)
   },
   'blur .cloze-input' (event, templateInstance) {
+    const { relatedTarget } = event
+
+    if (relatedTarget && relatedTarget.className.includes('lea-sound-btn')) {
+      event.preventDefault()
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+      return false
+    }
+
+
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
       data: templateInstance.data
