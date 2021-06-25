@@ -1,59 +1,83 @@
 <template name="clozeItemRenderer">
     <div class="cloze-container lea-text w-100 p-5">
+        {{#if isTable}}
+            <table class="table table-bordered">
+                <tbody>
+                {{#each row in tableRows}}
+                    {{#let rowIndex=@index}}
+                    <tr>
+                    {{#each token in row}}
+                        {{#if token.isToken}}
+                            <td class="text-center align-middle">
+                                {{> clozeItemRenderValueToken rowIndex=rowIndex token=token color=color}}
+                            </td>
+                        {{else}}
+                            <td class="text-center align-middle">
+                                {{token.value}}
+                            </td>
+                        {{/if}}
+                    {{/each}}
+                    </tr>
+                    {{/let}}
+                {{/each}}
+                </tbody>
+            </table>
+        {{else}}
         {{#each token in tokens}}
-            {{#if token.isBlock}}
-                {{> soundbutton outline=false block=true type=color text=token.tts class="h-100 mr-n1" }}
-
-            {{else if token.isNewLine}}
+            {{#if token.isNewLine}}
                 <div class="d-block p-2"></div>
 
 
             {{else if token.isToken}}
                 <span class="cloze-input-group no-wrap">
-
-                    {{#if token.tts}}
-                        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 mr-n1 align-baseline" }}
-                    {{/if}}
-
-                    {{#each valueToken in token.value}}
-                        {{#if isBlank valueToken}}
-                            <input class="rounded form-control-lg cloze-input border border-{{color}} {{#if token.background}}bg-{{token.background}}{{/if}} {{#if token.textColor}}text-{{token.textColor  }}{{/if}} my-1"
-                                   data-index="{{../@index}}"
-                                   data-tokenindex="{{token.index}}" type="text"
-                                   style="width: auto; min-width: {{inputWidth (inputSize valueToken.length)}}rem; {{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}"
-                                   size="{{inputSize valueToken.length}}"
-                                   name="{{random}}"
-                                   autocomplete="off"
-                                   autocorrect="off"
-                                   autocapitalize="off"
-                                   spellcheck="false"
-                                   maxlength="{{maxLength valueToken.length}}">
-                        {{else if isSelect valueToken}}
-                            <select class="cloze-select form-control form-control-lg w-auto d-inline my-1 p-0 border border-{{color}}"
-                                    data-index="{{../@index}}"
-                                    data-tokenindex="{{token.index}}"
-                                    type="text" name="{{random}}" autocomplete="off"
-                                    style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}">
-                                    <option></option>
-                                {{#each option in valueToken.value}}
-                                    <option class="cloze-option" value="{{@index}}">{{option}}</option>
-                                {{/each}}
-                                </select>
-                        {{else}}
-                        <span class="my-1">{{valueToken.value}}</span>
-                    {{/if}}
-                {{/each}} {{!-- end valueToken in token.values --}}
+                    {{> clozeItemRenderValueToken token=token color=color}}
                 </span>
             {{else}}
                 <span class="cloze-token">{{token.value}}</span>
             {{/if}}
 
         {{/each}} {{!-- end token in tokens --}}
-
+        {{/if}}
         {{#with error}}
             <div class="alert alert-danger">
                 <div class="alert-heading">{{this.message}}</div>
             </div>
         {{/with}}
     </div>
+</template>
+
+<template name="clozeItemRenderValueToken">
+    {{#if token.tts}}
+        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 mr-n1 align-baseline" }}
+    {{/if}}
+
+    {{#each valueToken in token.value}}
+        {{#if isBlank valueToken}}
+            <input type="text"
+                   name="{{random}}"
+                   class="rounded form-control-lg cloze-input border border-{{color}} {{#if token.background}}bg-{{token.background}}{{/if}} {{#if token.textColor}}text-{{token.textColor}}{{/if}} my-1"
+                   style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}"
+                   data-valueindex="{{@index}}"
+                   data-tokenindex="{{token.index}}"
+                   data-rowindex="{{rowIndex}}"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   size="{{valueToken.length}}"
+                   maxlength="{{maxLength valueToken.length}}">
+        {{else if isSelect valueToken}}
+            <select class="cloze-select form-control form-control-lg w-auto d-inline my-1 p-0 border border-{{color}}"
+                    data-tokenindex="{{token.index}}"
+                    type="text" name="{{random}}" autocomplete="off"
+                    style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}">
+                <option></option>
+                {{#each option in valueToken.value}}
+                    <option class="cloze-option" value="{{@index}}">{{option}}</option>
+                {{/each}}
+            </select>
+        {{else}}
+            <span class="my-1">{{valueToken.value}}</span>
+        {{/if}}
+    {{/each}} {{!-- end valueToken in token.values --}}
 </template>

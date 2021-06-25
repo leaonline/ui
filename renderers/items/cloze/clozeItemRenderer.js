@@ -6,14 +6,15 @@ import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
 import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
 import '../../../components/soundbutton/soundbutton'
-import './clozeItemRenderer.html'
 import './clozeItemRenderer.css'
+import './clozeItemRenderer.html'
 
 Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.tokens = new ReactiveVar()
   instance.error = new ReactiveVar()
+  instance.isTable = new ReactiveVar()
   instance.color = new ReactiveVar('secondary')
   instance.responseCache = new ReactiveVar('')
   instance.submitResponse = createSubmitResponses({
@@ -29,18 +30,34 @@ Template.clozeItemRenderer.onCreated(function () {
 
     // set the color of the current dimension
     // only if it has been passed with the data
-    const { color } = data
+    const { value, color } = data
+
     if (color) {
       instance.color.set(color)
     }
 
-    const { value } = data
     if (!value) return
+
+    const { isTable } = value
+    instance.isTable.set(isTable)
 
     // since it can happen fast to enter some unexpected pattern for this component
     // we try the parsing and catch any exception and display it as an error below
     try {
       const tokens = ClozeItemTokenizer.tokenize(value)
+      let index = 0
+      const assignIndex = token => {
+        if (Object.hasOwnProperty.call(token, 'flavor')) {
+          token.itemIndex = index++
+        }
+      }
+
+      if (isTable) {
+        tokens.forEach(row => row.forEach(assignIndex))
+      } else {
+        tokens.forEach(assignIndex)
+      }
+
       instance.tokens.set(tokens)
       instance.error.set(null)
     } catch (e) {
@@ -88,29 +105,35 @@ Template.clozeItemRenderer.helpers({
   tokens () {
     return Template.instance().tokens.get()
   },
+  color () {
+    return Template.instance().color.get()
+  },
+  error () {
+    return Template.instance().error.get()
+  },
+  isTable () {
+    return Template.instance().isTable.get()
+  },
+  tableRows () {
+    return Template.instance().tokens.get()
+  }
+})
+
+Template.clozeItemRenderValueToken.helpers({
   isBlank (token) {
     return ClozeItemRendererUtils.isBlank(token.flavor)
   },
   isSelect (token) {
     return ClozeItemRendererUtils.isSelect(token.flavor)
   },
-  color () {
-    return Template.instance().color.get()
-  },
   random () {
     return Random.id(10)
-  },
-  error () {
-    return Template.instance().error.get()
   },
   inputWidth (length) {
     return length * 1.5
   },
-  inputSize (length) {
-    return length > 2 ? length : 2
-  },
   maxLength (length) {
-    return length * 10
+    return Math.round(length + (length * 0.1))
   }
 })
 
@@ -118,35 +141,28 @@ Template.clozeItemRenderer.events({
   'input .cloze-input' (event, templateInstance) {
     const $target = templateInstance.$(event.currentTarget)
     const $container = templateInstance.$('.cloze-container')
+    const isTable = templateInstance.isTable.get()
 
     // prevent layout overflow by limiting
     // overall width of an input to it's parent
 
-    if ($target.width() >= $container.width()) {
+    if (isTable || $target.width() >= $container.width()) {
       return
     }
+
     // otherwise we resize, if the word length
     // exceedes the default size of the input words
     const value = $target.val()
     const tokenIndex = $target.data('tokenindex')
+    const valueIndex = $target.data('valueindex')
     const tokens = templateInstance.tokens.get()
-    const originalSize = tokens[tokenIndex].value.length
+    const originalSize = tokens[tokenIndex].value[valueIndex].length
     const newSize = value.length > originalSize
       ? value.length
       : originalSize
     $target.attr('size', newSize)
   },
   'blur .cloze-input' (event, templateInstance) {
-    const { relatedTarget } = event
-
-    if (relatedTarget && relatedTarget.className.includes('lea-sound-btn')) {
-      event.preventDefault()
-      event.stopPropagation()
-      event.stopImmediatePropagation()
-      return false
-    }
-
-
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
       data: templateInstance.data

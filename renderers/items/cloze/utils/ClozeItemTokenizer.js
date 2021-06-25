@@ -8,6 +8,7 @@ const startPattern = '{{'
 const closePattern = '}}'
 const newLinePattern = '//'
 const optionsSeparator = '|'
+const tableSeparator = '||'
 const newLineReplacer = `${startPattern}${newLinePattern}${closePattern}`
 const newLineRegExp = /\n/g
 const tokenize = createSimpleTokenizer(startPattern, closePattern)
@@ -16,9 +17,17 @@ const tokenize = createSimpleTokenizer(startPattern, closePattern)
 // PUBLIC
 // =============================================================================
 
-ClozeItemTokenizer.tokenize = ({ text, flavor }) => {
-  const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
-  return tokenize(preprocessedValue).map(toTokens, { flavor })
+ClozeItemTokenizer.tokenize = ({ text, flavor, isTable }) => {
+  if (isTable) {
+    return text.split(newLineRegExp).map(row => {
+      return row.split(tableSeparator).map(cell => {
+        return tokenize(cell.trim()).map(toTokens, { flavor })
+      }).flat().filter(cell => cell.length > 0)
+    })
+  } else {
+    const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
+    return tokenize(preprocessedValue).map(toTokens, { flavor })
+  }
 }
 
 // =============================================================================

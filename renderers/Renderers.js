@@ -53,6 +53,11 @@ const defaults = {
           rows: 4
         }
       },
+      hidden: {
+        type: Boolean,
+        defaultValue: false,
+        optional: true
+      },
       width: {
         type: String,
         defaultValue: '12',
