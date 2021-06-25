@@ -1,3 +1,7 @@
 <template name="textRenderer">
-	{{> textGroup text=value class=class groupClass=groupClass type=type}}
+    {{#unless hidden}}
+	    {{> textGroup text=value class=class groupClass=groupClass type=type}}
+    {{else}}
+        {{> soundbutton lg=true block=true text=value class=class type=type}}
+    {{/unless}}
 </template>
