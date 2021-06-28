@@ -10,6 +10,7 @@ import './itemHighlightRenderer.html'
 
 const separatorChars = /[.,;:?!]+/g
 const groupPattern = /[{}]+/g
+const whiteSpace = /^\s+$/
 
 Template.itemHighlightRenderer.onCreated(function () {
   const instance = this
@@ -57,7 +58,7 @@ Template.itemHighlightRenderer.onCreated(function () {
     const { value } = data
     if (!value) return
 
-    const { text, tts } = value
+    const { text, tts, includeSpace } = value
     const tokens = [...text.matchAll(Highlight.pattern)]
       .map(token => token[0].replace(groupPattern, ''))
       .map(token => {
@@ -65,7 +66,7 @@ Template.itemHighlightRenderer.onCreated(function () {
           ? { value: token, isSeparator: true }
           : { value: token }
       })
-    instance.state.set({ tokens, ttsText: tts ? text : null })
+    instance.state.set({ tokens, ttsText: tts ? text : null, includeSpace })
   })
 })
 
@@ -80,9 +81,15 @@ Template.itemHighlightRenderer.helpers({
     const hoveredClass = !selection[index] && instance.state.get('hovered') === index ? 'highlight-hovered bg-light' : ''
     const selectedClass = selection[index] ? `highlight-selected px-1 rounded bg-${color}` : ''
     const separatorClass = token.isSeparator ? 'ml-n2' : ''
+    const isSpace = whiteSpace.test(token.value)
+    const tokenClass = !isSpace || instance.state.get('includeSpace')
+      ? 'highlight-token'
+      : ''
+
     return {
-      class: `highlight-token ${hoveredClass} ${selectedClass} ${separatorClass}`,
-      'data-index': index
+      class: `highlight-entry ${tokenClass} ${hoveredClass} ${selectedClass} ${separatorClass}`,
+      'data-index': index,
+      'data-isSpace': isSpace
     }
   },
   ttsText () {

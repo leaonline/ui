@@ -1,9 +1,12 @@
+.highlight-entry {
+  white-space: pre;
+}
+
 .highlight-token {
-    cursor: pointer;
-    white-space: pre;
+  cursor: pointer;
 }
 
 .item-highlight-container {
-    user-select: none;
+  user-select: none;
 }
 
