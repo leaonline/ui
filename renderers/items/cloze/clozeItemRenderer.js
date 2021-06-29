@@ -133,7 +133,7 @@ Template.clozeItemRenderValueToken.helpers({
     return length * 1.5
   },
   maxLength (length) {
-    return length * 2
+    return Math.floor(length * 1.5)
   }
 })
 

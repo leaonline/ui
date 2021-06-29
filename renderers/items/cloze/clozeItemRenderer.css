@@ -9,9 +9,10 @@
 .cloze-select, .cloze-input, .cloze-option {
   font-family: Semikolon, Arial, 'sans-serif';
   font-size: 22px;
-  color: #212529 !important;
+  color: #212529;
 }
 
 .cloze-input {
   width: auto !important;
+  max-width: 95%;
 }
