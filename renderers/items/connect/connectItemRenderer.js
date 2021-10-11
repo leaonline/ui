@@ -4,11 +4,7 @@ import '../../../components/soundbutton/soundbutton'
 import './connectItemRenderer.css'
 import './connectItemRenderer.html'
 
-var dragged;
-
-Template.connectItemRenderer.onCreated(function () {
-  const instance = this
-})
+let dragged
 
 Template.connectItemRenderer.events({
   'drag' (event, templateInstance) {
@@ -17,18 +13,18 @@ Template.connectItemRenderer.events({
   'dragstart .connect-draggable' (event, templateInstance) {
     console.log('dragstart')
     event.originalEvent.dataTransfer.setData('text/plain', null)
-    dragged = event.target;
+    dragged = event.target
   },
   'dragend .connect-draggable' (event, templateInstance) {
     console.log('dragend')
   },
   'dragover' (event, templateInstance) {
     // console.log('dragover')
-    event.preventDefault();
+    event.preventDefault()
   },
   'dragenter .connect-dropzone' (event, templateInstance) {
     console.log('drag enter')
-    event.preventDefault();
+    event.preventDefault()
     templateInstance.$(event.target).removeClass('bg-light')
     templateInstance.$(event.target).addClass('bg-secondary')
   },
@@ -39,12 +35,12 @@ Template.connectItemRenderer.events({
   },
   'drop' (event, templateInstance) {
     console.log('drop', event)
-    event.preventDefault();
+    event.preventDefault()
 
-    if ( event.target.className == "dropzone" ) {
-      event.target.style.background = "";
-      dragged.parentNode.removeChild( dragged );
-      event.target.appendChild( dragged );
+    if (event.target.className === 'dropzone') {
+      event.target.style.background = ''
+      dragged.parentNode.removeChild(dragged)
+      event.target.appendChild(dragged)
     }
   }
 })

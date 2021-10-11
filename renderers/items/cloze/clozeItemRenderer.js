@@ -45,7 +45,6 @@ Template.clozeItemRenderer.onCreated(function () {
     // we try the parsing and catch any exception and display it as an error below
     try {
       const tokens = ClozeItemTokenizer.tokenize(value)
-      console.debug({ tokens })
       let index = 0
       const assignIndex = token => {
         if (Object.hasOwnProperty.call(token, 'flavor')) {
@@ -86,7 +85,6 @@ Template.clozeItemRenderer.onRendered(function () {
   instance.getResponse = () => {
     const responses = []
     instance.$('[data-score="1"]').each(function (index, input) {
-      console.debug({ index, input: input.getAttribute('name') })
       const value = instance.$(input).val()
       responses.push(value || '__undefined__')
     })
