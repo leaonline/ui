@@ -1,4 +1,5 @@
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
+import { Connect } from 'meteor/leaonline:corelib/items/interactive/Connect'
 import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
 import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
 import { Scoring } from 'meteor/leaonline:corelib/scoring/Scoring'
@@ -16,6 +17,17 @@ allConfigs.push({
   template: 'choiceItemRenderer',
   async load () {
     return import('./items/choice/choiceItemRenderer')
+  }
+})
+
+allConfigs.push({
+  name: Connect.name,
+  group: RendererGroups.items.name,
+  label: Connect.label,
+  icon: Connect.icon,
+  template: 'connectItemRenderer',
+  async load () {
+    return import('./items/connect/connectItemRenderer')
   }
 })
 
