@@ -1,9 +1,11 @@
 import { Template } from 'meteor/templating'
 import './icon.html'
 
-Template.icon.helpers({
-  iconAtts () {
-    const data = Template.instance().data
+Template.icon.onCreated(function () {
+  const instance = this
+
+  instance.autorun(() => {
+    const data = Template.currentData()
     const fw = data.fw ? 'fa-fw' : ''
     const pulse = data.pulse ? 'fa-pulse' : ''
     const spinning = data.spin ? 'fa-spin' : ''
@@ -12,13 +14,19 @@ Template.icon.helpers({
     const solid = data.fas && 'fas'
     const type = regular || solid || 'fas'
     const scale = data.scale ? `fa-${data.scale}x` : ''
-
     const classAtts = `fa ${type} ${fw} fa-${name} ${pulse} ${spinning} ${scale}`
-    return {
+
+    instance.state.set('iconAtts', {
       class: classAtts,
       title: data.title,
       'aria-title': data.title
-    }
+    })
+  })
+})
+
+Template.icon.helpers({
+  iconAtts () {
+    return Template.getState('iconAtts')
   },
   spanAtts () {
     const data = Template.instance().data
