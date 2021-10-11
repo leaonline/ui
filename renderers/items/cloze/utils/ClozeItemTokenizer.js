@@ -111,6 +111,10 @@ const getTokenValueForFlavor = (flavor, rawValue = '') => {
     return tokenizeSelect(flavor, rawValue)
   }
 
+  if (ClozeItemRendererUtils.isEmpty(flavor)) {
+    return tokenizeBlanks(flavor, rawValue)
+  }
+
   throw new Error(`Unexpected flavor ${flavor}`)
 }
 

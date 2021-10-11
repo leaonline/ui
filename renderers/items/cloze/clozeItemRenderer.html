@@ -61,14 +61,31 @@
                    data-tokenindex="{{token.index}}"
                    data-rowindex="{{rowIndex}}"
                    autocomplete="off"
+                   data-score="1"
                    autocorrect="off"
                    autocapitalize="off"
                    spellcheck="false"
                    size="{{valueToken.length}}"
                    maxlength="{{maxLength valueToken.length}}">
+        {{else if isEmpty valueToken}}
+                <input type="text"
+                       data-score="0"
+                       name="{{random}}"
+                       class="rounded form-control-lg cloze-input border border-{{color}} {{#if token.background}}bg-{{token.background}}{{/if}} {{#if token.textColor}}text-{{token.textColor}}{{/if}} my-1"
+                       style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}"
+                       data-valueindex="{{@index}}"
+                       data-tokenindex="{{token.index}}"
+                       data-rowindex="{{rowIndex}}"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       size="{{valueToken.length}}"
+                       maxlength="{{maxLength valueToken.length}}">
         {{else if isSelect valueToken}}
             <select class="cloze-select form-control form-control-lg w-auto d-inline my-1 p-0 border border-{{color}}"
                     data-tokenindex="{{token.index}}"
+                    data-score="1"
                     type="text" name="{{random}}" autocomplete="off"
                     style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}">
                 <option></option>

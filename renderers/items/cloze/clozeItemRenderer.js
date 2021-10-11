@@ -45,6 +45,7 @@ Template.clozeItemRenderer.onCreated(function () {
     // we try the parsing and catch any exception and display it as an error below
     try {
       const tokens = ClozeItemTokenizer.tokenize(value)
+      console.debug({ tokens })
       let index = 0
       const assignIndex = token => {
         if (Object.hasOwnProperty.call(token, 'flavor')) {
@@ -84,7 +85,8 @@ Template.clozeItemRenderer.onRendered(function () {
 
   instance.getResponse = () => {
     const responses = []
-    instance.$('input, select').each(function (index, input) {
+    instance.$('[data-score="1"]').each(function (index, input) {
+      console.debug({ index, input: input.getAttribute('name') })
       const value = instance.$(input).val()
       responses.push(value || '__undefined__')
     })
@@ -125,6 +127,9 @@ Template.clozeItemRenderValueToken.helpers({
   },
   isSelect (token) {
     return ClozeItemRendererUtils.isSelect(token.flavor)
+  },
+  isEmpty (token) {
+    return ClozeItemRendererUtils.isEmpty(token.flavor)
   },
   random () {
     return Random.id(10)
