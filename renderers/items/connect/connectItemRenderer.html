@@ -1,0 +1,52 @@
+<template name="connectItemRenderer">
+    <div class="d-flex justify-content-start p-3 connect-root">
+        <div class="left connect-container mr-5">
+            {{#each leftItem in value.left}}
+                <div class="d-flex my-2 connect-dropzone border border-secondary ">
+                {{#if leftItem.tts}}
+                    {{> soundbutton text=tts}}
+                {{/if}}
+                <div class="p-3 connect-draggable"
+                     draggable="true"
+                     data-side="left" data-index={{@index}}>
+                    {{#if leftItem.image}}
+                        {{> image src=leftItem.image
+                                class="connect-image"
+                                alt="left image"
+                                cors="Anonymous"}}
+                    {{/if}}
+                    {{#if leftItem.text}}
+                        <span class="d-block">{{leftItem.text}}</span>
+                    {{/if}}
+                </div>
+                </div>
+            {{/each}}
+        </div>
+
+        <div class="right connect-container ml-5">
+            {{#each rightItem in value.right}}
+                <div class="d-flex my-2 border border-secondary">
+                    {{#if rightItem.tts}}
+                        {{> soundbutton text=tts}}
+                    {{/if}}
+                    <div class="p-3" data-side="left" data-index={{@index}}>
+                        {{#if rightItem.image}}
+                            {{> image src=leftItem.image
+                                    alt="left image"
+                                    cors="Anonymous"}}
+                        {{/if}}
+                        {{#if rightItem.text}}
+                            <span class="d-block">{{rightItem.text}}</span>
+                        {{/if}}
+                    </div>
+                    <div class="p-4 connect-dropzone bg-light">
+
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+
+    {{! autoform }}
+    <input type="hidden" {{atts}}>
+</template>
