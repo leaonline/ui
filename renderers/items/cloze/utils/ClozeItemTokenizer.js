@@ -36,30 +36,53 @@ ClozeItemTokenizer.tokenize = ({ text, flavor, isTable }) => {
 
 const tokenizeValueEntry = createSimpleTokenizer('[', ']')
 
-const tokenizeBlanks = (flavor, value) => tokenizeValueEntry(value).map((token, index, arr) => {
-  if (token.isToken) {
-    token.hasPre = index > 0
-    token.hasSuf = index < arr.length - 1
-    token.flavor = flavor
-  }
-  return token
-})
+const tokenizeBlanks = (flavor, value) => tokenizeValueEntry(value)
+  .filter(entry => entry.length > 0)
+  .map((token, index, arr) => {
+    if (token.isToken) {
+      token.hasPre = index > 0
+      token.hasSuf = index < arr.length - 1
+      token.flavor = flavor
+    }
+    token.index = index
+    return token
+  })
 
-const tokenizeSelect = (flavor, value) => tokenizeValueEntry(value).map((token, index, arr) => {
-  if (token.isToken) {
-    token.value = token.value.split(optionsSeparator)
-    token.hasPre = index > 0
-    token.hasSuf = index < arr.length - 1
-    token.flavor = flavor
-  }
-  return token
-})
+const tokenizeSelect = (flavor, value) => tokenizeValueEntry(value)
+  .filter(entry => entry.length > 0)
+  .map((token, index, arr) => {
+    if (token.isToken) {
+      token.value = token.value.split(optionsSeparator)
+      token.hasPre = index > 0
+      token.hasSuf = index < arr.length - 1
+      token.flavor = flavor
+    }
+    token.index = index
+    return token
+  })
+
+const tokenizeText = (flavor, value) => tokenizeValueEntry(value)
+  .filter(entry => entry.length > 0)
+  .map((token, index) => {
+    if (token.isToken) {
+      token.hasPre = false
+      token.hasSuf = false
+      token.flavor = flavor
+    }
+    token.index = index
+    return token
+  })
 
 const toTokens = entry => {
   // we simply indicate newlines within
   // our brackets to avoid complex parsing
   if (entry.value.includes('//')) {
     entry.isNewLine = true
+    return entry
+  }
+
+  if (entry.value.length === 0) {
+    entry.isEmpty = true
     return entry
   }
 
@@ -115,7 +138,17 @@ const getTokenValueForFlavor = (flavor, rawValue = '') => {
     return tokenizeBlanks(flavor, rawValue)
   }
 
-  throw new Error(`Unexpected flavor ${flavor}`)
+  if (ClozeItemRendererUtils.isText(flavor)) {
+    return tokenizeText(flavor, rawValue)
+  }
+
+  throw new Error(`Unexpected flavor: ${flavor}`)
 }
 
-export { tokenizeBlanks, tokenizeSelect, toTokens }
+export {
+  tokenizeBlanks,
+  tokenizeSelect,
+  tokenizeText,
+  toTokens,
+  getTokenValueForFlavor
+}

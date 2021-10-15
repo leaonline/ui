@@ -9,13 +9,16 @@ import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
 import './clozeItemRenderer.html'
 
+const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
+
 Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
   instance.tokens = new ReactiveVar()
   instance.error = new ReactiveVar()
   instance.isTable = new ReactiveVar()
-  instance.color = new ReactiveVar('secondary')
+  instance.hasTableBorder = new ReactiveVar()
+  instance.color = new ReactiveVar('primary')
   instance.responseCache = new ReactiveVar('')
   instance.submitResponse = createSubmitResponses({
     onInput: instance.data.onInput,
@@ -38,8 +41,9 @@ Template.clozeItemRenderer.onCreated(function () {
 
     if (!value) return
 
-    const { isTable } = value
+    const { isTable, hasTableBorder = true } = value
     instance.isTable.set(isTable)
+    instance.hasTableBorder.set(hasTableBorder)
 
     // since it can happen fast to enter some unexpected pattern for this component
     // we try the parsing and catch any exception and display it as an error below
@@ -73,7 +77,7 @@ Template.clozeItemRenderer.onRendered(function () {
   if (typeof data.onLoad === 'function') {
     const cachedData = data.onLoad(data)
     if (cachedData?.responses) {
-      instance.$('input, select').each(function (index, input) {
+      instance.$('.cloze-item').each(function (index, input) {
         const response = cachedData.responses[index]
         if (response && response !== '__undefined__') {
           instance.$(input).val(response)
@@ -84,7 +88,7 @@ Template.clozeItemRenderer.onRendered(function () {
 
   instance.getResponse = () => {
     const responses = []
-    instance.$('[data-score="1"]').each(function (index, input) {
+    instance.$('.cloze-item').each(function (index, input) {
       const value = instance.$(input).val()
       responses.push(value || '__undefined__')
     })
@@ -114,12 +118,24 @@ Template.clozeItemRenderer.helpers({
   isTable () {
     return Template.instance().isTable.get()
   },
+  hasTableBorder () {
+    return Template.instance().hasTableBorder.get()
+  },
   tableRows () {
     return Template.instance().tokens.get()
+  },
+  isCellSkip (value) {
+    return value === CELL_SKIP
+  },
+  isEmpty (value) {
+    return !value || value.length === 0
   }
 })
 
 Template.clozeItemRenderValueToken.helpers({
+  loadComplete () {
+    return Template.instance().state.get('loadComplete')
+  },
   isBlank (token) {
     return ClozeItemRendererUtils.isBlank(token.flavor)
   },
@@ -129,6 +145,9 @@ Template.clozeItemRenderValueToken.helpers({
   isEmpty (token) {
     return ClozeItemRendererUtils.isEmpty(token.flavor)
   },
+  isText (token) {
+    return ClozeItemRendererUtils.isText(token.flavor)
+  },
   random () {
     return Random.id(10)
   },
@@ -137,6 +156,9 @@ Template.clozeItemRenderValueToken.helpers({
   },
   maxLength (length) {
     return Math.floor(length * 1.5)
+  },
+  tableBorder () {
+
   }
 })
 
