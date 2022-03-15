@@ -6,10 +6,17 @@ import './soundbutton.html'
 
 Template.soundbutton.onCreated(function () {
   const instance = this
+  instance.isPlaying = new ReactiveVar(false)
+  instance.tts = new ReactiveVar(null)
+  instance.text = new ReactiveVar(null)
+  instance.attributes = new ReactiveVar({})
 
   instance.autorun(() => {
     const reactiveData = Template.currentData()
-    updateAtts(reactiveData, instance)
+    const ttsReady = TTSEngine.isConfigured()
+    updateAtts({ data: reactiveData, instance, ttsReady })
+
+    if (!ttsReady) return
 
     const reactiveTTS = (reactiveData.tts || reactiveData.text)
     const currentTTS = (instance.tts.get() || instance.text.get())
@@ -28,29 +35,30 @@ Template.soundbutton.onCreated(function () {
   })
 })
 
-function updateAtts (data, instance) {
+function updateAtts ({ data, ttsReady, instance }) {
   const initialTTS = data.tts
   const initialText = data.text
-
+  const disabled = data.disabled || !ttsReady
   const btnType = getBsType(data.type, data.outline)
   const btnBlock = data.block ? 'btn-block' : ''
   const btnSize = (data.sm && 'btn-sm') || (data.lg && 'btn-lg') || ''
   const customClass = data.class || ''
+  const disabledClass = disabled ? 'disabled' : ''
   const activeClass = data.active ? 'active' : ''
   const borderClass = (data.border || data.outline === false)
     ? ''
     : 'border-0'
 
-  instance.isPlaying = new ReactiveVar(false)
-  instance.tts = new ReactiveVar(initialTTS)
-  instance.text = new ReactiveVar(initialText)
+  instance.isPlaying.set(false)
+  instance.tts.set(initialTTS)
+  instance.text.set(initialText)
 
-  instance.attributes = new ReactiveVar({
+  instance.attributes.set({
     id: data.id,
     title: data.title,
-    disabled: data.disabled || !TTSEngine.isAvailable(),
+    disabled: disabled,
     type: 'button',
-    class: `lea-sound-btn d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass}`,
+    class: `lea-sound-btn d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
     'data-tts': initialTTS,
     'data-text': initialText,
     'aria-label': data.title

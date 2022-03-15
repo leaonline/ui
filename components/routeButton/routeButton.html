@@ -5,14 +5,14 @@
         {{/if}}
         <a {{attributes}}>
 			{{#if leftIcon}}
-                <i class="fas fa fa-fw fa-{{icon}} align-middle {{iconClass}}"></i>
+                {{> icon name=icon class="self-align-middle" fw=true}}
             {{/if}}
             {{#if label}}
                 <span class="lea-text {{labelClass}}">{{label}}</span>
             {{/if}}
             {{> Template.contentBlock ..}}
             {{#if rightIcon}}
-                <i class="fas fa fa-fw fa-{{icon}} ml-1 align-middle {{iconClass}}"></i>
+                {{> icon name=icon class="self-align-middle ml-1" fw=true}}
             {{/if}}
         </a>
     </span>

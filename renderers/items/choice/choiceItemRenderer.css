@@ -5,3 +5,7 @@
 .choice-image {
     max-width: 5rem;
 }
+
+.choice-interaction {
+  user-select: none;
+}

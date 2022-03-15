@@ -33,5 +33,5 @@ Package.onTest(function (api) {
   api.use('dynamic-import')
   api.use(['lmieulet:meteor-legacy-coverage', 'lmieulet:meteor-coverage', 'meteortesting:mocha'])
   api.use('leaonline:corelib')
-  api.mainModule('ui-tests.js')
+  api.mainModule('ui-tests.js', 'client')
 })
