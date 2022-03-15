@@ -15,7 +15,7 @@ Template.actionButton.helpers({
 
     return {
       tts: data.tts,
-      text: data.label,
+      text: data.text || data.label,
       outline: typeof data.outline === 'boolean' ? data.outline : true,
       sm: data.sm,
       lg: data.lg,
