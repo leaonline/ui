@@ -1,5 +1,5 @@
 <template name="textGroup">
-	<div class="d-flex align-items-{{#if align}}align{{else}}start{{/if}} {{groupClass}}">
+	<div class="d-flex align-items-{{#if align}}{{align}}{{else}}start{{/if}} {{groupClass}}">
 		{{#if text}}
 			{{> soundbutton text=text outline=true type=type }}
 			{{> text src=text class=(join "ml-3" class)}}

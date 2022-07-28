@@ -209,14 +209,14 @@ describe('ClozeItemTokenizer', function () {
         isBlock: false,
         tts: 'bar',
         value: [{
-            flavor: 3,
-            hasPre: false,
-            hasSuf: false,
-            index: 0,
-            isToken: true,
-            length: 3,
-            value: 'foo'
-          }
+          flavor: 3,
+          hasPre: false,
+          hasSuf: false,
+          index: 0,
+          isToken: true,
+          length: 3,
+          value: 'foo'
+        }
         ]
       })
       expect(toTokens({ value: 'text$[foo]$bar' })).to.deep.equal({
@@ -275,109 +275,109 @@ describe('ClozeItemTokenizer', function () {
 {{blanks$[L]ara$Lara}} ist {{blanks$[h]eute$heute}} leider krank.`
 
       const tokens = ClozeItemTokenizer.tokenize({ text })
-      expect(tokens).to.deep.equal([ {
+      expect(tokens).to.deep.equal([{
         value: '',
         length: 0,
         isEmpty: true,
         index: 0
       }, {
+        isToken: true,
+        value: [{
           isToken: true,
-          value: [{
-              isToken: true,
-              value: 'L',
-              length: 1,
-              index: 0,
-              hasPre: false,
-              hasSuf: true,
-              flavor: 2
-            },
-            {
-              value: 'iebe',
-              length: 4,
-              index: 1
-            }
-          ],
-          length: 20,
-          index: 1,
-          flavor: 2,
-          tts: 'Liebe',
-          isBlock: false
+          value: 'L',
+          length: 1,
+          index: 0,
+          hasPre: false,
+          hasSuf: true,
+          flavor: 2
         },
         {
-          value: ' Frau Lang, ',
-          length: 12,
-          index: 2
-        },
-        {
-          isToken: true,
-          value: '//',
-          length: 2,
-          index: 3,
-          isNewLine: true
-        },
-        {
-          value: '',
-          length: 0,
-          isEmpty: true,
-          index: 4
-        },
-        {
-          isToken: true,
-          value: [{
-              isToken: true,
-              value: 'L',
-              length: 1,
-              index: 0,
-              hasPre: false,
-              hasSuf: true,
-              flavor: 2
-            },
-            {
-              value: 'ara',
-              length: 3,
-              index: 1
-            }
-          ],
-          length: 18,
-          index: 5,
-          flavor: 2,
-          tts: 'Lara',
-          isBlock: false
-        },
-        {
-          value: ' ist ',
-          length: 5,
-          index: 6
-        },
-        {
-          isToken: true,
-          value: [
-            {
-              isToken: true,
-              value: 'h',
-              length: 1,
-              index: 0,
-              hasPre: false,
-              hasSuf: true,
-              flavor: 2
-            },
-            {
-              value: 'eute',
-              length: 4,
-              index: 1
-            }
-          ],
-          length: 20,
-          index: 7,
-          flavor: 2,
-          tts: 'heute',
-          isBlock: false
-        },
-        {
-          value: ' leider krank.',
-          length: 14,
-          index: 8
+          value: 'iebe',
+          length: 4,
+          index: 1
         }
+        ],
+        length: 20,
+        index: 1,
+        flavor: 2,
+        tts: 'Liebe',
+        isBlock: false
+      },
+      {
+        value: ' Frau Lang, ',
+        length: 12,
+        index: 2
+      },
+      {
+        isToken: true,
+        value: '//',
+        length: 2,
+        index: 3,
+        isNewLine: true
+      },
+      {
+        value: '',
+        length: 0,
+        isEmpty: true,
+        index: 4
+      },
+      {
+        isToken: true,
+        value: [{
+          isToken: true,
+          value: 'L',
+          length: 1,
+          index: 0,
+          hasPre: false,
+          hasSuf: true,
+          flavor: 2
+        },
+        {
+          value: 'ara',
+          length: 3,
+          index: 1
+        }
+        ],
+        length: 18,
+        index: 5,
+        flavor: 2,
+        tts: 'Lara',
+        isBlock: false
+      },
+      {
+        value: ' ist ',
+        length: 5,
+        index: 6
+      },
+      {
+        isToken: true,
+        value: [
+          {
+            isToken: true,
+            value: 'h',
+            length: 1,
+            index: 0,
+            hasPre: false,
+            hasSuf: true,
+            flavor: 2
+          },
+          {
+            value: 'eute',
+            length: 4,
+            index: 1
+          }
+        ],
+        length: 20,
+        index: 7,
+        flavor: 2,
+        tts: 'heute',
+        isBlock: false
+      },
+      {
+        value: ' leider krank.',
+        length: 14,
+        index: 8
+      }
       ])
     })
     it('tokenizes a cloze text in table mode correctly', function () {
