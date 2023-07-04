@@ -39,7 +39,7 @@ and pass options as Object:
 
 ```js
 import { TaskRenderers } from '../../renderers/TaskRenderers'
-
+  
 TaskRenderers.init({
   markdown: {
     renderer: async txt => {
