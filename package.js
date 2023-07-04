@@ -28,5 +28,5 @@ Package.onTest(function (api) {
   api.use('random')
   api.use(['lmieulet:meteor-legacy-coverage', 'lmieulet:meteor-coverage', 'meteortesting:mocha'])
   api.use('leaonline:corelib')
-  api.mainModule('ui-tests.js', ['server','client'])
+  api.mainModule('ui-tests.js', ['server', 'client'])
 })
