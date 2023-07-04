@@ -82,4 +82,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: cd test-proxy && npm run ci
+      - run: cd test-proxy && npm run setup && npm run ci
