@@ -15,14 +15,36 @@ required in many of the lea.online applications.
 #### Renderers (Templates)
 
 All lea.online applications resolve around certain interactions, mostly them being part of several units.
-In order to dynamically display (and edit) these interactions, we use a set of dynamic renderers: 
+In order to dynamically display (and edit) these interactions, we use a set of dynamic renderers:
 
-- Factory - A factory to initialize a renderer by given name with given data
-- Text - renders plain text
-- Image - renders a lazy-loaded image
-- Item - render specific item types
-- Markdown - renders markdown
-- Page - renders a page with mixed and variable content
+| Name     | key        | Description                                                                                       |
+|----------|------------|---------------------------------------------------------------------------------------------------|
+| Factory  | `factory`  | A Blaze factory template to dynamically load and execute a renderer by given name with given data |
+| Page     | `page`     | renders a page with mixed and variable content                                                    
+| Text     | `text`     | renders plain text                                                                                |
+| Image    | `image`    | renders a lazy-loaded image                                                                       |
+| Item     | `item`     | render-factory for specific item types                                                            |
+| Markdown | `markdown` | renders markdown, requires a custom renderer function that uses the host app's markdown parser| 
+
+**Init task renderers**
+
+Initializing renderer allows to pass options by using their key
+and pass options as Object:
+
+```js
+import { TaskRenderers } from '../../renderers/TaskRenderers'
+
+TaskRenderers.init({
+  markdown: {
+    renderer: async txt => {
+      const mdOptions = { input: txt, renderer: defaultMarkdownRendererName }
+      return LeaMarkdown.parse(mdOptions)
+    }
+  }
+})
+  .catch(console.error)
+  .then(() => { /* core renderers loaded */ })
+```
 
 ## Run tests
 

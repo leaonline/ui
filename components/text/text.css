@@ -2,10 +2,6 @@
     text-decoration: underline;
 }
 
-.lea-text-token-active {
-    font-weight: bold;
-}
-
 .text-wrapper:hover {
     cursor: pointer;
 }

@@ -33,7 +33,7 @@ Template.TaskRendererFactory.onCreated(function () {
       return
     }
 
-    rendererContext.load()
+    rendererContext.load(rendererContext.__initOptions)
       .then(() => {
         loaded.set(content.subtype, rendererContext.template)
         if (content.onLoadComplete) content.onLoadComplete(content.subtype)

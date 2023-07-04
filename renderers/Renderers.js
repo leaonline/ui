@@ -149,8 +149,9 @@ const defaults = {
     label: 'taskRenderers.layout.markdown.title',
     icon: 'hashtag',
     template: 'markdownRenderer',
-    async load () {
-      return import('./markdown/markdownRenderer')
+    async load (options) {
+      const { Markdown } = await import('./markdown/markdownRenderer')
+      Markdown.init(options)
     }
   },
   image: {
@@ -219,20 +220,28 @@ export const TaskRenderers = {
     // should we do caching here or on a component level?
     return Array.from(rendererMap.values()).filter(el => el.group === group)
   },
-  init: async function () {
+  init: async function (options) {
     if (_initialized) return true
 
     // load the factory
     const factory = TaskRenderers.get(defaults.factory.name)
-    await factory.load()
+    await factory.load(factory.__initOptions)
 
     const pageRender = TaskRenderers.get(defaults.page.name)
-    await pageRender.load()
+    await pageRender.load(pageRender.__initOptions)
 
     // register the default item renderers
     const { CoreRenderers } = await import('./CoreRenderers')
-    CoreRenderers.forEach(rendererContext => {
-      rendererMap.set(rendererContext.name, rendererContext)
+    CoreRenderers.forEach(rendererCtx => {
+      rendererMap.set(rendererCtx.name, rendererCtx)
+    })
+
+    // once we have all renderer added to the map
+    // we can assign them init options
+    rendererMap.forEach(rendererCtx => {
+      if (rendererCtx.name in options) {
+        rendererCtx.__initOptions = options[rendererCtx.name]
+      }
     })
 
     _initialized = true
