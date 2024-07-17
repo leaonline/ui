@@ -1,7 +1,7 @@
 /* eslint-env meteor */
 Package.describe({
   name: 'leaonline:ui',
-  version: '1.1.0',
+  version: '2.0.0',
   // Brief, one-line summary of the package.
   summary: 'Common Blaze ui-components for .lea apps',
   // URL to the Git repository containing the source code for this package.
@@ -12,7 +12,7 @@ Package.describe({
 })
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.6')
+  api.versionsFrom(['3.0.1'])
 
   api.use([
     'ecmascript',
@@ -24,10 +24,15 @@ Package.onUse(function (api) {
 })
 
 Package.onTest(function (api) {
+  api.versionsFrom(['3.0.1'])
   api.use('ecmascript')
   api.use('random')
-  api.use(['lmieulet:meteor-legacy-coverage', 'lmieulet:meteor-coverage', 'meteortesting:mocha'])
-  api.use('leaonline:corelib')
-  api.use('leaonline:ui')
+  api.use([
+    //'lmieulet:meteor-legacy-coverage',
+    //'lmieulet:meteor-coverage',
+    'meteortesting:mocha@3.0.0-rc.1'
+  ])
+  api.use('leaonline:corelib@2.0.0')
+  api.use('leaonline:ui@2.0.0')
   api.mainModule('ui-tests.js', ['server', 'client'])
 })

@@ -27,6 +27,8 @@ export const Markdown = {}
 
 Markdown.renderer = async md => md
 
-Markdown.init = (options) => {
-  Markdown.renderer = options.renderer
+Markdown.init = (options = {}) => {
+  if (options.renderer) {
+    Markdown.renderer = options.renderer
+  }
 }

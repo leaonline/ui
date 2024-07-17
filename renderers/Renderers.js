@@ -220,7 +220,7 @@ export const TaskRenderers = {
     // should we do caching here or on a component level?
     return Array.from(rendererMap.values()).filter(el => el.group === group)
   },
-  init: async function (options) {
+  init: async function (options = {}) {
     if (_initialized) return true
 
     // load the factory
