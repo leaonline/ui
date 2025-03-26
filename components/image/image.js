@@ -6,7 +6,6 @@ import './image.html'
 
 const imageClass = 'lea-image'
 
-
 Template.image.onCreated(function () {
   const instance = this
   instance.id = Random.id(4)
@@ -34,8 +33,8 @@ Template.image.helpers({
 
     const base = Components.contentPath()
     const imageSrc = data.src.startsWith('http')
-        ? data.src
-        : `${base}${data.src}`
+      ? data.src
+      : `${base}${data.src}`
 
     return Object.assign(obj, {
       'data-id': instance.id,

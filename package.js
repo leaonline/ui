@@ -28,11 +28,11 @@ Package.onTest(function (api) {
   api.use('ecmascript')
   api.use('random')
   api.use([
-    //'lmieulet:meteor-legacy-coverage',
-    //'lmieulet:meteor-coverage',
-    'meteortesting:mocha@3.0.0-rc.1'
+    // 'lmieulet:meteor-legacy-coverage',
+    // 'lmieulet:meteor-coverage',
+    'meteortesting:mocha@3.2.0'
   ])
   api.use('leaonline:corelib@2.0.0')
-  api.use('leaonline:ui@2.0.0')
+  api.use('leaonline:ui@2.1.0')
   api.mainModule('ui-tests.js', ['server', 'client'])
 })
