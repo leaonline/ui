@@ -118,3 +118,11 @@ Components.autoLoad = function (additionalTemplates = {}) {
     console.info('[TemplateLoader]: register', key)
   })
 }
+
+let basePath = ''
+Components.contentPath = url => {
+  if (url) {
+    basePath = url
+  }
+  return basePath
+}

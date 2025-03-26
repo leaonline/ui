@@ -1,9 +1,11 @@
 import { Template } from 'meteor/templating'
+import { Components } from '../Components'
 import { Random } from 'meteor/random'
 import lozad from 'lozad'
 import './image.html'
 
 const imageClass = 'lea-image'
+
 
 Template.image.onCreated(function () {
   const instance = this
@@ -30,6 +32,11 @@ Template.image.helpers({
       }
     })
 
+    const base = Components.contentPath()
+    const imageSrc = data.src.startsWith('http')
+        ? data.src
+        : `${base}${data.src}`
+
     return Object.assign(obj, {
       'data-id': instance.id,
       title: data.title,
@@ -38,7 +45,7 @@ Template.image.helpers({
       width: data.width,
       height: data.height,
       class: classes,
-      'data-src': data.src
+      'data-src': imageSrc
     })
   }
 })
