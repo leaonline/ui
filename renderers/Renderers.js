@@ -98,7 +98,7 @@ const defaults = {
       value: {
         type: String,
         autoform: {
-          type: 'textarea',
+          type: 'textarea'
         }
       },
       padding: {
@@ -209,14 +209,14 @@ const defaults = {
         type: String,
         defaultValue: 'embed',
         autoform: {
-          type: 'hidden',
+          type: 'hidden'
         }
       },
       value: {
         type: String,
         autoform: {
           type: 'textarea',
-          rows: 8,
+          rows: 8
         }
       },
       width: {
