@@ -15,7 +15,6 @@ Template.TaskRendererFactory.onCreated(function () {
   instance.autorun(() => {
     const data = Template.currentData()
     const content = data.content || {}
-
     // skip current autorun if we have no content
     // or the template has already been loaded
     // for this current content type

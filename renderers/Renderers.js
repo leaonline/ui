@@ -98,7 +98,7 @@ const defaults = {
       value: {
         type: String,
         autoform: {
-          type: 'markdown'
+          type: 'textarea',
         }
       },
       padding: {
@@ -194,6 +194,49 @@ const defaults = {
       return import('./image/imageRenderer')
     }
   },
+  embed: {
+    name: 'embed',
+    group: RendererGroups.layout.name,
+    schema: ({ i18n }) => ({
+      type: {
+        type: String,
+        defaultValue: 'media',
+        autoform: {
+          type: 'hidden'
+        }
+      },
+      subtype: {
+        type: String,
+        defaultValue: 'embed',
+        autoform: {
+          type: 'hidden',
+        }
+      },
+      value: {
+        type: String,
+        autoform: {
+          type: 'textarea',
+          rows: 8,
+        }
+      },
+      width: {
+        type: String,
+        defaultValue: 'col-12',
+        autoform: {
+          firstOption: false,
+          options () {
+            return widthOptions(i18n)
+          }
+        }
+      }
+    }),
+    label: 'taskRenderers.layout.embed.title',
+    icon: 'code',
+    template: 'embeddedResourceRenderer',
+    async load () {
+      return import('./embed/embeddedResourceRenderer')
+    }
+  },
   document: {
     name: 'document',
     label: 'taskRenderers.document',
@@ -215,6 +258,7 @@ export const TaskRenderers = {
   get: key => {
     return rendererMap.get(key)
   },
+  all: () => [...rendererMap.values()],
   factory: () => Object.assign({}, defaults.factory),
   getGroup: (group) => {
     // should we do caching here or on a component level?
