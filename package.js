@@ -12,7 +12,7 @@ Package.describe({
 })
 
 Package.onUse(function (api) {
-  api.versionsFrom(['3.0.1'])
+  api.versionsFrom(['3.0.1', '3.4'])
 
   api.use([
     'ecmascript',
@@ -24,13 +24,13 @@ Package.onUse(function (api) {
 })
 
 Package.onTest(function (api) {
-  api.versionsFrom(['3.0.1'])
+  api.versionsFrom(['3.0.1', '3.4'])
   api.use('ecmascript')
   api.use('random')
   api.use([
-    // 'lmieulet:meteor-legacy-coverage',
-    // 'lmieulet:meteor-coverage',
-    'meteortesting:mocha@3.2.0'
+    'lmieulet:meteor-legacy-coverage@0.4.0',
+    'lmieulet:meteor-coverage@5.0.0',
+    'meteortesting:mocha@3.3.0'
   ])
   api.use('leaonline:corelib@2.0.0')
   api.use('leaonline:ui@2.1.0')

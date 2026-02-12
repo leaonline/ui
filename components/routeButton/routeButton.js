@@ -30,7 +30,7 @@ Template.routeButton.helpers({
     const bgClass = `lea-text lea-route-btn-${btnType}`
     const sm = data.sm ? 'btn-sm' : ''
     const lg = data.lg ? 'btn-lg' : ''
-    const ml = data.group ? '' : 'ml-2 '
+    const ml = data.group ? '' : 'ms-2 '
     const atts = {
       id: data.id,
       title: data.title,

@@ -10,6 +10,7 @@
   font-family: Semikolon, Arial, 'sans-serif';
   font-size: 22px;
   color: #212529;
+  min-width: 1em !important;
 }
 
 .cloze-input {

@@ -47,7 +47,7 @@ Template.actionButton.helpers({
     const atts = {
       id: data.id,
       title: data.title,
-      class: `lea-action-button ml-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${customClass}`,
+      class: `lea-action-button ms-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${customClass}`,
       'aria-label': data.label || data.title
     }
 

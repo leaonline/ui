@@ -80,7 +80,7 @@ Template.itemHighlightRenderer.helpers({
     const selection = instance.state.get('selection')
     const hoveredClass = !selection[index] && instance.state.get('hovered') === index ? 'highlight-hovered bg-light' : ''
     const selectedClass = selection[index] ? `highlight-selected px-1 rounded bg-${color}` : ''
-    const separatorClass = token.isSeparator ? 'ml-n2' : ''
+    const separatorClass = token.isSeparator ? 'ms-n2' : ''
     const isSpace = whiteSpace.test(token.value)
     const tokenClass = !isSpace || instance.state.get('includeSpace')
       ? 'highlight-token'

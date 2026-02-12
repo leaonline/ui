@@ -50,7 +50,7 @@
 
 <template name="clozeItemRenderValueToken">
     {{#if token.tts}}
-        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 mr-n1 align-baseline" }}
+        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 me-n1 align-baseline" }}
     {{/if}}
 
     {{#each valueToken in token.value}}
@@ -85,10 +85,12 @@
                        size="{{valueToken.length}}"
                        maxlength="{{maxLength valueToken.length}}">
         {{else if isSelect valueToken}}
-            <select class="cloze-select cloze-item cloze-select form-control form-control-lg w-auto d-inline my-1 p-0 border border-{{color}}"
+            <select class="cloze-select cloze-item cloze-select form-select form-select-lg w-auto text-center d-inline my-1 p-0 border border-{{color}}"
+                    aria-label="{{i18n "cloze.selectOption"}}"
                     data-tokenindex="{{token.index}}"
                     data-score="1"
-                    type="text" name="{{random}}" autocomplete="off"
+                    name="{{random}}"
+                    autocomplete="off"
                     style="{{#if valueToken.hasPre}}margin-left: -0.25rem;{{/if}} {{#if valueToken.hasSuf}}margin-right: -0.25rem;{{/if}}">
                 <option></option>
                 {{#each option in valueToken.value}}

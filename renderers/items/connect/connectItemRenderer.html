@@ -1,6 +1,6 @@
 <template name="connectItemRenderer">
     <div class="d-flex justify-content-start p-3 connect-root">
-        <div class="left connect-container mr-5">
+        <div class="left connect-container me-5">
             {{#each leftItem in value.left}}
                 <div class="d-flex my-2 connect-dropzone border border-secondary ">
                 {{#if leftItem.tts}}
@@ -23,7 +23,7 @@
             {{/each}}
         </div>
 
-        <div class="right connect-container ml-5">
+        <div class="right connect-container ms-5">
             {{#each rightItem in value.right}}
                 <div class="d-flex my-2 border border-secondary">
                     {{#if rightItem.tts}}
