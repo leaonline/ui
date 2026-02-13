@@ -10,8 +10,29 @@
   font-family: Semikolon, Arial, 'sans-serif';
   font-size: 22px;
   color: #212529;
-  min-width: 1em !important;
+  min-width: 1.5em !important;
 }
+
+/* show native arrow while placeholder (invalid) is present */
+.cloze-select:invalid {
+  -webkit-appearance: menulist-button;
+  appearance: menulist-button;
+  background-image: none;
+}
+
+/* hide arrow once a valid option selected */
+.cloze-select:valid {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+}
+
+/* hide for IE10+ / Edge */
+.cloze-select::-ms-expand { display: none; }
+
+/* Firefox explicit removal */
+.cloze-select { background-color: transparent; }
 
 .cloze-input {
   width: auto !important;

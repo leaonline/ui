@@ -1,7 +1,7 @@
+/* global IntersectionObserver */
 import { Template } from 'meteor/templating'
 import { Components } from '../Components'
 import { Random } from 'meteor/random'
-import lozad from 'lozad'
 import './image.html'
 
 const imageClass = 'lea-image'
@@ -51,25 +51,24 @@ Template.image.helpers({
 
 Template.image.onRendered(function () {
   const instance = this
-  const $image = instance.$(`[data-id="${instance.id}"]`)
-  const image = $image.get(0)
-
+  const image = instance.$(`[data-id="${instance.id}"]`).get(0)
   if (!image) {
     return
   }
 
-  const observer = lozad(image)
-  observer.observe()
+  const lazyLoad = (image) => {
+    image.src = image.getAttribute('data-src')
+    image.setAttribute('data-loaded', '1')
+    image.removeAttribute('data-src')
+  }
 
-  instance.autorun(function () {
-    const data = Template.currentData()
-    const newDataSrc = data.src
-    const dataSrc = $image.prop('src')
-
-    if (newDataSrc && dataSrc && newDataSrc !== dataSrc) {
-      $image.prop('src', '*')
-      $image.removeAttr('data-loaded')
-      observer.observe()
-    }
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        lazyLoad(entry.target)
+        observer.unobserve(entry.target)
+      }
+    })
   })
+  observer.observe(image)
 })

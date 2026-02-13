@@ -16,7 +16,7 @@ Package.onUse(function (api) {
 
   api.use([
     'ecmascript',
-    'templating',
+    'templating@1.4.4',
     'reactive-dict',
     'dynamic-import',
     'leaonline:corelib'
@@ -28,6 +28,8 @@ Package.onTest(function (api) {
   api.use('ecmascript')
   api.use('random')
   api.use([
+    'templating@1.4.4',
+    'jquery@3.0.0',
     'lmieulet:meteor-legacy-coverage@0.4.0',
     'lmieulet:meteor-coverage@5.0.0',
     'meteortesting:mocha@3.3.0'
