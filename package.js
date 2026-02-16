@@ -8,10 +8,10 @@ Package.describe({
   git: 'git@github.com:leaonline/ui.git',
   // By default, Meteor will default to using README.md for documentation.
   // To avoid submitting documentation, set this field to null.
-  documentation: 'README.md'
+  documentation: 'README.md',
 })
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
 
   api.use([
@@ -19,11 +19,11 @@ Package.onUse(function (api) {
     'templating@1.4.4',
     'reactive-dict',
     'dynamic-import',
-    'leaonline:corelib'
+    'leaonline:corelib',
   ])
 })
 
-Package.onTest(function (api) {
+Package.onTest((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
   api.use('ecmascript')
   api.use('random')
@@ -32,7 +32,7 @@ Package.onTest(function (api) {
     'jquery@3.0.0',
     'lmieulet:meteor-legacy-coverage@0.4.0',
     'lmieulet:meteor-coverage@5.0.0',
-    'meteortesting:mocha@3.3.0'
+    'meteortesting:mocha@3.3.0',
   ])
   api.use('leaonline:corelib@2.0.0')
   api.use('leaonline:ui@2.1.0')
