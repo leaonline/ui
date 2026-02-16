@@ -1,6 +1,6 @@
+import { TemplateLoader } from 'meteor/jkuester:template-loader'
 import { Meteor } from 'meteor/meteor'
 import { ReactiveVar } from 'meteor/reactive-var'
-import { TemplateLoader } from 'meteor/jkuester:template-loader'
 
 export const Components = {}
 
@@ -17,51 +17,51 @@ const internal = {}
 
 internal.soundbutton = {
   template: 'soundbutton',
-  async load () {
+  async load() {
     return import('./soundbutton/soundbutton')
-  }
+  },
 }
 
 internal.actionButton = {
   template: 'actionButton',
-  async load () {
+  async load() {
     return import('./actionButton/actionButton')
-  }
+  },
 }
 
 internal.routeButton = {
   template: 'routeButton',
-  async load () {
+  async load() {
     return import('./routeButton/routeButton')
-  }
+  },
 }
 
 internal.text = {
   template: 'text',
-  async load () {
+  async load() {
     return import('./text/text')
-  }
+  },
 }
 
 internal.textGroup = {
   template: 'textGroup',
-  async load () {
+  async load() {
     return import('./textgroup/textgroup')
-  }
+  },
 }
 
 internal.image = {
   template: 'image',
-  async load () {
+  async load() {
     return import('./image/image')
-  }
+  },
 }
 
 internal.icon = {
   template: 'icon',
-  async load () {
+  async load() {
     return import('./icon/icon')
-  }
+  },
 }
 
 Components.template = {
@@ -70,10 +70,10 @@ Components.template = {
   text: internal.text.template,
   textGroup: internal.textGroup.template,
   image: internal.image.template,
-  icon: internal.icon.template
+  icon: internal.icon.template,
 }
 
-async function _load (name) {
+async function _load(name) {
   log(`[Components]: try to load <${name}>`)
   if (!internal[name]) return false
   if (loaded[name]) {
@@ -86,25 +86,25 @@ async function _load (name) {
   return internal[name].load()
 }
 
-async function loadAll (names) {
-  return Promise.all(names.map(name => _load(name)))
+async function loadAll(names) {
+  return Promise.all(names.map((name) => _load(name)))
 }
 
-Components.load = function (names) {
+Components.load = (names) => {
   log('[Components]: loadall', names)
   const loaded = new ReactiveVar(false)
   loadAll(names)
     .then(() => {
       loaded.set(true)
     })
-    .catch(e => {
+    .catch((e) => {
       console.error('Error while loaing', names)
       console.error(e)
     })
   return loaded
 }
 
-Components.autoLoad = function (additionalTemplates = {}) {
+Components.autoLoad = (additionalTemplates = {}) => {
   console.info('[TemplateLoader]: enable')
   TemplateLoader.enable()
 
@@ -120,7 +120,7 @@ Components.autoLoad = function (additionalTemplates = {}) {
 }
 
 let basePath = ''
-Components.contentPath = url => {
+Components.contentPath = (url) => {
   if (url) {
     basePath = url
   }

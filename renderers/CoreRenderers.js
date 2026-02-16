@@ -1,7 +1,7 @@
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
+import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
 import { Connect } from 'meteor/leaonline:corelib/items/interactive/Connect'
 import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
-import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
 import { Scoring } from 'meteor/leaonline:corelib/scoring/Scoring'
 import { RendererGroups } from './RendererGroups'
 
@@ -15,9 +15,9 @@ allConfigs.push({
   label: Choice.label,
   icon: Choice.icon,
   template: 'choiceItemRenderer',
-  async load () {
+  async load() {
     return import('./items/choice/choiceItemRenderer')
-  }
+  },
 })
 
 allConfigs.push({
@@ -26,9 +26,9 @@ allConfigs.push({
   label: Connect.label,
   icon: Connect.icon,
   template: 'connectItemRenderer',
-  async load () {
+  async load() {
     return import('./items/connect/connectItemRenderer')
-  }
+  },
 })
 
 allConfigs.push({
@@ -37,9 +37,7 @@ allConfigs.push({
   label: Cloze.label,
   icon: Cloze.icon,
   template: 'clozeItemRenderer',
-  load: async function () {
-    return import('./items/cloze/clozeItemRenderer')
-  }
+  load: async () => import('./items/cloze/clozeItemRenderer'),
 })
 
 allConfigs.push({
@@ -48,20 +46,19 @@ allConfigs.push({
   label: Highlight.label,
   icon: Highlight.icon,
   template: 'itemHighlightRenderer',
-  async load () {
+  async load() {
     return import('./items/highlight/itemHighlightRenderer')
-  }
-
+  },
 })
 
 allConfigs.push({
   name: Scoring.name,
   template: 'itemScoringRenderer',
-  async load () {
+  async load() {
     return import('./scoring/scoring')
   },
-  exclude: true
+  exclude: true,
 })
 
-CoreRenderers.forEach = cb => allConfigs.forEach(cb)
+CoreRenderers.forEach = (cb) => allConfigs.forEach(cb)
 CoreRenderers.get = () => allConfigs

@@ -1,8 +1,8 @@
-import { Template } from 'meteor/templating'
 import { Blaze } from 'meteor/blaze'
+import { Template } from 'meteor/templating'
 import { Tracker } from 'meteor/tracker'
 
-const withDiv = function withDiv (callback) {
+const withDiv = function withDiv(callback) {
   const el = document.createElement('div')
   document.body.appendChild(el)
   try {
@@ -12,11 +12,14 @@ const withDiv = function withDiv (callback) {
   }
 }
 
-export const withRenderedTemplate = function withRenderedTemplate (template, data, callback) {
+export const withRenderedTemplate = function withRenderedTemplate(
+  template,
+  data,
+  callback,
+) {
   withDiv((el) => {
-    const ourTemplate = typeof template === 'string'
-      ? Template[template]
-      : template
+    const ourTemplate =
+      typeof template === 'string' ? Template[template] : template
     Blaze.renderWithData(ourTemplate, data, el)
     Tracker.flush()
     callback(el)
