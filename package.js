@@ -1,7 +1,7 @@
 /* eslint-env meteor */
 Package.describe({
   name: 'leaonline:ui',
-  version: '2.1.0',
+  version: '2.1.1',
   // Brief, one-line summary of the package.
   summary: 'Common Blaze ui-components for .lea apps',
   // URL to the Git repository containing the source code for this package.

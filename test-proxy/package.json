@@ -18,16 +18,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/eslint-parser": "^7.28.6",
+    "@biomejs/biome": "^2.3.15",
     "babel-plugin-istanbul": "^7.0.1",
     "chai": "^6.2.2",
-    "eslint-plugin-security": "^3.0.1",
     "jquery": "^4.0.0",
     "puppeteer": "^24.37.3",
     "simpl-schema": "^1.13.1",
-    "sinon": "^21.0.1",
-    "snazzy": "^9.0.0",
-    "standardx": "^7.0.0"
+    "sinon": "^21.0.1"
   },
   "babel": {
     "env": {
@@ -36,40 +33,6 @@
           "istanbul"
         ]
       }
-    }
-  },
-  "standardx": {
-    "globals": [
-      "AutoForm",
-      "arrayTracker",
-      "globalDefaultTemplate",
-      "defaultTypeTemplates",
-      "deps"
-    ],
-    "ignore": [
-      "**/test-proxy/"
-    ]
-  },
-  "eslintConfig": {
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "sourceType": "module",
-      "allowImportExportEverywhere": true
-    },
-    "plugins": [
-      "security"
-    ],
-    "extends": [
-      "plugin:security/recommended"
-    ],
-    "rules": {
-      "brace-style": [
-        "error",
-        "stroustrup",
-        {
-          "allowSingleLine": true
-        }
-      ]
     }
   }
 }

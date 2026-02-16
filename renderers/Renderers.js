@@ -101,6 +101,14 @@ const defaults = {
           type: 'textarea'
         }
       },
+      useTTS: {
+        type: Boolean,
+        optional: true,
+        defaultValue: false,
+        autoform: {
+          type: 'boolean-select'
+        }
+      },
       padding: {
         type: Number,
         optional: true,

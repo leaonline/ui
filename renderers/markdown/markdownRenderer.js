@@ -8,10 +8,10 @@ Template.markdownRenderer.onCreated(function () {
   instance.markdown = new ReactiveVar()
 
   instance.autorun(async () => {
-    const { value } = Template.currentData()
+    const data = Template.currentData()
 
-    if (typeof value === 'string') {
-      const rendered = await Markdown.renderer(value)
+    if (typeof data?.value === 'string') {
+      const rendered = await Markdown.renderer(data)
       instance.markdown.set(rendered)
     }
   })
