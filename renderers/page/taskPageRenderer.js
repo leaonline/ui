@@ -81,7 +81,7 @@ Template.taskPageRenderer.helpers({
     return Template.getState('waitForSubmit')
   },
   hasPrev () {
-    return Template.getState('hasPrev')
+    return Template.getState('isPreview') && Template.getState('currentPageCount') > 0
   },
   itemData (content) {
     const instance = Template.instance()
@@ -107,7 +107,7 @@ Template.taskPageRenderer.helpers({
   },
   showFinishButton () {
     const instance = Template.instance()
-    return !instance.state.get('isPreview') && !instance.state.get('hasNext')
+    return !instance.state.get('hasNext')
   },
   updating () {
     return Template.getState('updating')

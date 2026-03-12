@@ -70,7 +70,10 @@
                                     btnClass="lea-pagenav-button"
                                     data-action="back"
                                     type=currentType
-                                    label=(i18n "common.back") class="me-auto"}}
+                                    disabled=updating
+                                    icon="arrow-left"
+                                    title=(i18n "common.back")
+                                    class="me-auto"}}
                         {{/if}}
                         {{#if hasNext}}
                             {{> actionButton
