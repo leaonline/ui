@@ -12,7 +12,9 @@ Template.taskPageRenderer.onCreated(function () {
     const color = data.color || 'secondary'
     const currentPageCount = data.currentPageCount || 0
 
+
     instance.state.set('isPreview', data.isPreview)
+    instance.state.set('isStory', data.isStory)
     instance.state.set('sessionId', data.sessionId)
     instance.state.set('unitDoc', unitDoc)
 
@@ -107,7 +109,7 @@ Template.taskPageRenderer.helpers({
   },
   showFinishButton () {
     const instance = Template.instance()
-    return !instance.state.get('hasNext')
+    return !instance.state.get('hasNext') && !instance.state.get('isStory')
   },
   updating () {
     return Template.getState('updating')
