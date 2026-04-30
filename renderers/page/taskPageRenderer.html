@@ -75,7 +75,7 @@
                                     title=(i18n "common.back")
                                     class="me-auto"}}
                         {{/if}}
-                        {{#if hasNext}}
+                        {{#if showNext}}
                             {{> actionButton
                                     type=currentType
                                     outline=true
@@ -83,9 +83,25 @@
                                     data-action="next"
                                     type=currentType
                                     tts="common.forward"
+                                    label=(i18n "common.forward")
                                     icon="arrow-right"
+                                    iconPos="right"
                                     disabled=updating
                                     class="ms-auto ml-auto"}}
+                        {{/if}}
+                        {{#if showFeedback}}
+                            {{> actionButton
+                                type=currentType
+                                outline=true
+                                btnClass="lea-evaluate-btn"
+                                data-action="feedback"
+                                type=currentType
+                                tts="task.submit"
+                                iconPos="right"
+                                label=(i18n "task.submit")
+                                icon="paper-plane"
+                                disabled=updating
+                                class="ms-auto ml-auto"}}
                         {{/if}}
                     </div>
                 {{/with}}

@@ -14,6 +14,7 @@ const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
 Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
+
   instance.tokens = new ReactiveVar()
   instance.error = new ReactiveVar()
   instance.isTable = new ReactiveVar()
@@ -33,7 +34,7 @@ Template.clozeItemRenderer.onCreated(function () {
 
     // set the color of the current dimension
     // only if it has been passed with the data
-    const { value, color } = data
+    const { value, color, scores, readOnly } = data
 
     if (color) {
       instance.color.set(color)
@@ -62,8 +63,25 @@ Template.clozeItemRenderer.onCreated(function () {
         tokens.forEach(assignIndex)
       }
 
+      if (scores) {
+        debugger
+        // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
+        tokens.forEach(token => {
+          if (ClozeItemRendererUtils.isItem(token.flavor)) {
+            const score = scores.find(score => score.target == token.itemIndex)
+            if (score) {
+              token.wasScored = true
+              token.isValid = score.score
+              token.correctResponse = score.expected
+              token.color = score.isUndefined ? 'secondary' : token.isValid ? 'success' : 'danger'
+            }
+          }
+        })
+      }
+
       instance.tokens.set(tokens)
       instance.error.set(null)
+      instance.state.set({ readOnly })
     } catch (e) {
       instance.error.set(e)
     }
@@ -129,6 +147,9 @@ Template.clozeItemRenderer.helpers({
   },
   isEmpty (value) {
     return !value || value.length === 0
+  },
+  readOnly () {
+    return Template.getState('readOnly')
   }
 })
 

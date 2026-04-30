@@ -1,12 +1,13 @@
 <template name="choiceItemRenderer">
     <div class="choice-container lea-text w-100 px-md-2 px-lg-5 my-2">
         {{#each entry in values}}
-            <div class="d-flex align-items-center w-100 my-2 p-2 choice-entry choice-interaction {{#if hovered @index}}bg-light{{/if}} border border-{{#if selected @index}}{{getColor}}{{else}}light{{/if}}"
+            <div class="d-flex align-items-center w-100 my-2 p-2 {{#unless readOnly}}choice-entry{{/unless}} choice-interaction {{#if hovered @index}}bg-light{{/if}} border border-{{getColor @index}} {{#if isExpected @index}}choice-expected{{/if}}"
                  data-index="{{@index}}" data-name="{{entry.name}}">
                 <input type="{{choiceType}}"
                        id="{{entry.name}}-{{@index}}"
                        name="{{entry.name}}"
                        value="{{entry.index}}"
+                       disabled="{{#if readOnly}}disabled{{/if}}"
                        class="mx-2 choice-interaction choice-input radio-group-button"
                     checked="{{#if selected @index}}checked{{/if}}">
                 {{#if entry.tts}}

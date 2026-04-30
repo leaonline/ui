@@ -27,7 +27,9 @@ Template.choiceItemRenderer.onCreated(function () {
   instance.state.setDefault('hovered', null)
   instance.state.setDefault('color', 'secondary')
   instance.state.setDefault('isMultiple', null)
+  instance.state.setDefault('scoring', null)
   instance.state.setDefault('responseCache', null)
+  instance.state.setDefault('readOnly', false)
   instance.submitResponse = createSubmitResponses({
     onInput: instance.data.onInput,
     responseCache: {
@@ -38,14 +40,13 @@ Template.choiceItemRenderer.onCreated(function () {
 
   instance.autorun(function () {
     const data = Template.currentData()
-    const { value } = data
-    const { color } = data
+    const { value, color, readOnly, scores } = data
 
     if (typeof value !== 'object') {
       return instance.state.set({ color: 'primary' })
     }
 
-    const isMultiple = data.value.flavor === Choice.flavors.multiple.value
+    const isMultiple = value.flavor === Choice.flavors.multiple.value
 
     // then we process the choices to ensure that
     // event when shuffled, thier original index remains
@@ -57,14 +58,46 @@ Template.choiceItemRenderer.onCreated(function () {
     })
 
     // assign the values plain or shuffled
-    const values = data.value.shuffle
+    const values = value.shuffle
       ? shuffle(mapped)
       : mapped
 
+    if (scores) {
+      const selected = instance.state.get('selected')
+      const scoring = []
+      scoring.length = values.length
+
+      values.forEach(entry => {
+        const index = entry.index
+        const isSelected = isMultiple ? selected?.includes?.(index) : selected === index
+        const isExpected = !isSelected && scores.some(score => score.correctResponse.includes(index))
+        const scoreEntry = scores.find(score => score.correctResponse.includes(index))
+        const color = isSelected ? (scoreEntry ? 'success' : 'danger') : isExpected ? 'secondary' : 'light'
+        scoring[index] = { index, isExpected, color }
+      })
+
+      instance.state.set({ scoring })
+    } else {
+      instance.state.set({ scoring: null })
+    }
+
     instance.state.set({
-      values, currentColor: color, isMultiple
+      values, currentColor: color, isMultiple, readOnly
     })
   })
+
+  // helpers
+  instance.isSelected = index => {
+    const selected = instance.state.get('selected')
+
+    if (typeof selected === 'undefined' || selected === null) {
+      return false
+    }
+
+    return instance.state.get('isMultiple')
+      ? selected?.includes?.(index)
+      : selected === index
+  }
 })
 
 Template.choiceItemRenderer.onDestroyed(function () {
@@ -78,7 +111,6 @@ Template.choiceItemRenderer.onDestroyed(function () {
 
 Template.choiceItemRenderer.onRendered(function () {
   const instance = this
-
   instance.getResponse = () => {
     const responses = instance.state.get('isMultiple')
       ? multipleResponse(instance)
@@ -131,18 +163,30 @@ Template.choiceItemRenderer.helpers({
   },
   selected (index) {
     const instance = Template.instance()
-    const selected = instance.state.get('selected')
-
-    if (typeof selected === 'undefined' || selected === null) {
-      return false
+    return instance.isSelected(index)
+  },
+  isExpected(index) {
+    return Template.instance().state.get('scoring')?.[index]?.isExpected
+  },
+  getColor (index) {
+    const instance = Template.instance()
+    const scoring = instance.state.get('scoring')
+    if (scoring) {
+      const entry = scoring[index]
+      return entry.color
     }
 
-    return instance.state.get('isMultiple')
-      ? selected?.includes?.(index)
-      : selected === index
+    if (instance.isSelected(index)) {
+      return instance.state.get('color')
+    }
+
+    return 'light'
   },
-  getColor () {
-    return Template.instance().state.get('color')
+  readOnly () {
+    return Template.instance().state.get('readOnly')
+  },
+  scoring () {
+    return Template.instance().state.get('scoring')
   }
 })
 
@@ -151,6 +195,9 @@ Template.choiceItemRenderer.events({
     event.stopPropagation()
   },
   'click .choice-interaction' (event, templateInstance) {
+    if (templateInstance.state.get('readOnly')) {
+      return
+    }
     const $target = templateInstance.$(event.currentTarget)
     const indexStr = $target.data('index')
     const name = $target.data('name')

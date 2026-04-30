@@ -9,3 +9,25 @@
 .choice-interaction {
   user-select: none;
 }
+
+
+.choice-expected{
+    position: relative;
+    border-color: transparent !important;
+    background: linear-gradient(90deg, var(--bs-secondary) 50%, transparent 50%) repeat-x,
+    linear-gradient(90deg, var(--bs-secondary) 50%, transparent 50%) repeat-x,
+    linear-gradient(0deg, var(--bs-secondary) 50%, transparent 50%) repeat-y,
+    linear-gradient(0deg, var(--bs-secondary) 50%, transparent 50%) repeat-y;
+    background-size: 20px 2px, 20px 2px, 2px 20px, 2px 20px;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    animation: marching-ants 1s linear infinite;
+}
+
+@keyframes marching-ants {
+    0% {
+        background-position: 0 0, 0 100%, 0 0, 100% 0;
+    }
+    100% {
+        background-position: 40px 0, -40px 100%, 0 -40px, 100% 40px;
+    }
+}
