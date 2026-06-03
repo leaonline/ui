@@ -3,6 +3,8 @@ import { ReactiveDict } from 'meteor/reactive-dict'
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { shuffle } from 'meteor/leaonline:corelib/utils/shuffle'
 import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { getExplanations } from '../utils/getExplanations'
+import '../explanation/itemExplanations'
 import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import './choiceItemRenderer.css'
@@ -40,7 +42,7 @@ Template.choiceItemRenderer.onCreated(function () {
 
   instance.autorun(function () {
     const data = Template.currentData()
-    const { value, color, readOnly, scores } = data
+    const { value, color, readOnly, isLearning, scores } = data
 
     if (typeof value !== 'object') {
       return instance.state.set({ color: 'primary' })
@@ -63,6 +65,7 @@ Template.choiceItemRenderer.onCreated(function () {
       : mapped
 
     if (scores) {
+      const explanations = getExplanations({ value, scores })
       const selected = instance.state.get('selected')
       const scoring = []
       scoring.length = values.length
@@ -76,13 +79,13 @@ Template.choiceItemRenderer.onCreated(function () {
         scoring[index] = { index, isExpected, color }
       })
 
-      instance.state.set({ scoring })
+      instance.state.set({ scoring, explanations })
     } else {
-      instance.state.set({ scoring: null })
+      instance.state.set({ scoring: null, explanations: null })
     }
 
     instance.state.set({
-      values, currentColor: color, isMultiple, readOnly
+      values, currentColor: color, isMultiple, readOnly, isLearning
     })
   })
 
@@ -173,7 +176,7 @@ Template.choiceItemRenderer.helpers({
     const scoring = instance.state.get('scoring')
     if (scoring) {
       const entry = scoring[index]
-      return entry.color
+      if (entry?.color) return entry.color
     }
 
     if (instance.isSelected(index)) {
@@ -187,6 +190,9 @@ Template.choiceItemRenderer.helpers({
   },
   scoring () {
     return Template.instance().state.get('scoring')
+  },
+  explanations () {
+    return Template.instance().state.get('explanations')
   }
 })
 

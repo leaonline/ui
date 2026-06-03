@@ -33,9 +33,10 @@ Template.text.onCreated(function () {
 Template.text.helpers({
   attributes () {
     const data = Template.instance().data
+    const textClass = data.bold ? 'lea-text-bold' : 'lea-text'
     const additionalClass = data.class || ''
     return {
-      class: `lea-text text-wrapper ${additionalClass}`
+      class: `${textClass} text-wrapper ${additionalClass}`
     }
   },
   tokens () {

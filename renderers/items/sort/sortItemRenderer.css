@@ -1,16 +1,4 @@
-.highlight-entry {
-  white-space: pre;
-}
-
-.highlight-token {
-  cursor: pointer;
-}
-
-.item-highlight-container {
-  user-select: none;
-}
-
-.highlight-expected {
+.sort-expected {
   position: relative;
   border-color: transparent !important;
   background: linear-gradient(90deg, var(--bs-secondary) 50%, transparent 50%) repeat-x,

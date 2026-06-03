@@ -58,7 +58,9 @@
             {{/unless}}
         {{/each}}
     </div>
-
+    {{#if explanations}}
+        {{> itemExplanations explanations=explanations color=color}}
+    {{/if}}
     {{! autoform }}
     <input type="hidden" {{atts}}>
 </template>

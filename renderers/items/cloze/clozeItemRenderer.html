@@ -46,6 +46,9 @@
             </div>
         {{/with}}
     </div>
+    {{#if explanations}}
+        {{> itemExplanations explanations=explanations color=color}}
+    {{/if}}
 </template>
 
 <template name="clozeItemRenderValueToken">

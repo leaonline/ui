@@ -5,10 +5,10 @@
 		{{/with}}
         <button {{attributes}}>
 			{{#if leftIcon}}
-                {{> icon name=icon class="self-align-middle" fw=true}}
+                {{> icon name=icon class="self-align-middle me-1" fw=true}}
             {{/if}}
             {{#if label}}
-                <span class="lea-text">{{label}}</span>
+                <span class="lea-text w-100">{{label}}</span>
             {{/if}}
 			{{> Template.contentBlock ..}}
 			{{#if rightIcon}}

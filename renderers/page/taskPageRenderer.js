@@ -10,7 +10,10 @@ Template.taskPageRenderer.onCreated(function () {
   const parseData = data => {
     const unitDoc = data.doc
     const color = data.color || 'secondary'
-    const currentPageCount = data.currentPageCount || 0
+    let currentPageCount = data.currentPageCount || 0
+    if (currentPageCount >= unitDoc.pages?.length) {
+      currentPageCount = 0
+    }
     const showScoring = data.isLearning && !data.isStory && !!data.onEvaluate
     const showCorrectResponse = data.isLearning && !data.isStory  && !!data.onEvaluate
 

@@ -2,9 +2,11 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
-import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
 import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { getExplanations } from '../utils/getExplanations'
+import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
 import './clozeItemRenderer.html'
@@ -65,6 +67,7 @@ Template.clozeItemRenderer.onCreated(function () {
 
       if (scores) {
         debugger
+        const explanations = getExplanations({ value, scores })
         // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
         tokens.forEach(token => {
           if (ClozeItemRendererUtils.isItem(token.flavor)) {
@@ -77,6 +80,9 @@ Template.clozeItemRenderer.onCreated(function () {
             }
           }
         })
+        instance.state.set({ explanations })
+      } else {
+        instance.state.set({ explanations: null })
       }
 
       instance.tokens.set(tokens)
@@ -150,6 +156,9 @@ Template.clozeItemRenderer.helpers({
   },
   readOnly () {
     return Template.getState('readOnly')
+  },
+  explanations () {
+    return Template.instance().state.get('explanations')
   }
 })
 

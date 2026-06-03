@@ -1,10 +1,12 @@
 import { Template } from 'meteor/templating'
+import { dataTarget } from '../../../utils/eventUtils'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { getExplanations } from '../utils/getExplanations'
+import '../explanation/itemExplanations'
 import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import './connectItemRenderer.css'
 import './connectItemRenderer.html'
-import { dataTarget } from '../../../utils/eventUtils'
-import { createSubmitResponses } from '../utils/createSubmitResponses'
 
 Template.connectItemRenderer.onCreated(function () {
   const instance = this
@@ -66,6 +68,7 @@ Template.connectItemRenderer.onCreated(function () {
     const { value, color, readOnly, scores } = data
     if (scores) {
       const connections = instance.state.get('connections') ?? []
+      const explanations = getExplanations({ value, scores })
 
       // step 1 - check status of made connections
       connections.forEach((connection) => {
@@ -120,7 +123,9 @@ Template.connectItemRenderer.onCreated(function () {
         }
       })
 
-      instance.state.set({ connections })
+      instance.state.set({ connections, explanations })
+    } else {
+      instance.state.set({ explanations: null })
     }
     instance.state.set({ color, readOnly })
   })
@@ -189,6 +194,9 @@ Template.connectItemRenderer.helpers({
   },
   connections () {
     return Template.getState('connections')
+  },
+  explanations () {
+    return Template.instance().state.get('explanations')
   }
 })
 
