@@ -34,7 +34,7 @@ Template.taskPageRenderer.onCreated(function () {
       const userId = Meteor.userId()
       currentPage.content = currentPage.content.map(entry => {
         //entry.unitDoc = unitDoc
-        entry.uniId = unitDoc._id
+        entry.unitId = unitDoc._id
         entry.page = currentPageCount
         entry.sessionId = data.sessionId
         entry.userId = userId
