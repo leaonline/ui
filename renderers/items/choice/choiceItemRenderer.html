@@ -14,7 +14,7 @@
                  class="mx-2 choice-interaction choice-input radio-group-button"
                  checked="{{#if selected @index}}checked{{/if}}">
             {{#if entry.tts}}
-                {{> soundbutton type=getColor outline=true text=entry.tts class="choice-soundbutton"}}
+                {{> soundbutton type=dimensionColor outline=true text=entry.tts class="choice-soundbutton"}}
             {{/if}}
             {{#if entry.image}}
                 {{> image src=entry.image class="choice-interaction choice-image"  cors="Anonymous"}}

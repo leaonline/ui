@@ -185,6 +185,9 @@ Template.choiceItemRenderer.helpers({
 
     return 'light'
   },
+  dimensionColor () {
+    return Template.currentData()?.color ?? 'secondary'
+  },
   readOnly () {
     return Template.instance().state.get('readOnly')
   },

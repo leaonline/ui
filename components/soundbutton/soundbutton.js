@@ -121,8 +121,7 @@ Template.soundbutton.events({
         TTSEngine.play({ id, text, onEnd })
         templateInstance.isPlaying.set(true)
       } catch (e) {
-        console.error(e)
-        // TODO noitfy?
+        console.error(`error in soundbutton; id=${id}; text=${text}`, e)
       }
     }
   }
