@@ -2,6 +2,11 @@
     max-width: 8rem !important;
 }
 
+.connect-root {
+    /* Line coordinates are calculated relative to this element. */
+    position: relative;
+}
+
 .connect-draggable {
     cursor: grabbing;
 }

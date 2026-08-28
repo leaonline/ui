@@ -6,7 +6,7 @@
                 {{#if leftItem.tts}}
                     {{> soundbutton text=tts}}
                 {{/if}}
-                <div class="p-3 {{#unless readOnly}}connect-draggable{{/unless}} border {{#if hover "left" @index}}bg-light border-{{color}}{{else}}bg-white border-secondary{{/if}}"
+                <div class="p-3 connect-source {{#unless readOnly}}connect-draggable{{/unless}} border {{#if hover "left" @index}}bg-light border-{{color}}{{else}}bg-white border-secondary{{/if}}"
                      draggable="{{#unless readOnly}}true{{/unless}}"
                      data-side="left"
                      data-index={{@index}}>

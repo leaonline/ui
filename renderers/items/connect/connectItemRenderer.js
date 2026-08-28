@@ -37,11 +37,12 @@ Template.connectItemRenderer.onCreated(function () {
 
   instance.createLine = ({ from, to, source, target, color }) => {
     // get the root position
-    const root = document.querySelector('.connect-root')
+    const root = instance.root
+    if (!root) { return null }
     const rootRect = root.getBoundingClientRect()
 
-    const rx = rootRect.x
-    const ry = rootRect.y
+    const rx = rootRect.left
+    const ry = rootRect.top
 
     // get the source position
     const x1 = (source.left - rx) + source.width + 10
@@ -60,6 +61,31 @@ Template.connectItemRenderer.onCreated(function () {
     const height = rootRect.height
 
     return { from, to, x1, y1, x2, y2, cx, cy, color, width, height }
+  }
+
+  instance.findEndpoint = (selector, index) =>
+    instance.root?.querySelector(`${selector}[data-index="${index}"]`)
+
+  instance.updateLinePositions = () => {
+    const connections = instance.state.get('connections') ?? []
+    let changed = false
+    const positioned = connections.map(connection => {
+      const source = instance.findEndpoint('.connect-source', connection.from)
+      const target = instance.findEndpoint('.connect-dropzone', connection.to)
+      if (!source || !target) { return connection }
+
+      changed = true
+      return {
+        ...connection,
+        ...instance.createLine({
+          ...connection,
+          source: source.getBoundingClientRect(),
+          target: target.getBoundingClientRect()
+        })
+      }
+    })
+
+    if (changed) { instance.state.set('connections', positioned) }
   }
 
   // autorun to initialize connections from response
@@ -97,8 +123,8 @@ Template.connectItemRenderer.onCreated(function () {
           // if it does not have a connection, then we get the elements by their index
           // and calculate the line coordinates
           if (!hasConnection) {
-            const source = document.querySelector(`.connect-draggable[data-index="${left}"]`)
-            const target = document.querySelector(`.connect-dropzone[data-index="${right}"]`)
+            const source = instance.findEndpoint('.connect-source', left)
+            const target = instance.findEndpoint('.connect-dropzone', right)
 
             if (source && target) {
               const line = instance.createLine({
@@ -133,6 +159,20 @@ Template.connectItemRenderer.onCreated(function () {
 
 Template.connectItemRenderer.onRendered(function () {
   const instance = this
+  instance.root = instance.find('.connect-root')
+
+  instance.scheduleLineUpdate = () => {
+    cancelAnimationFrame(instance.resizeFrame)
+    instance.resizeFrame = requestAnimationFrame(() => instance.updateLinePositions())
+  }
+
+  if (window.ResizeObserver) {
+    instance.resizeObserver = new window.ResizeObserver(instance.scheduleLineUpdate)
+    instance.resizeObserver.observe(instance.root)
+    instance.root.querySelectorAll('.connect-source, .connect-dropzone')
+      .forEach(element => instance.resizeObserver.observe(element))
+  }
+  window.addEventListener('resize', instance.scheduleLineUpdate)
 
   instance.autorun(() => {
     const data = Template.currentData()
@@ -147,8 +187,8 @@ Template.connectItemRenderer.onRendered(function () {
         const { responses = [] } = cachedData
         responses.forEach(response => {
           const [from, to] = response.split(',')
-          const source = document.querySelector(`.connect-draggable[data-index="${from}"]`)
-          const target = document.querySelector(`.connect-dropzone[data-index="${to}"]`)
+          const source = instance.findEndpoint('.connect-source', from)
+          const target = instance.findEndpoint('.connect-dropzone', to)
 
           if (source && target) {
             const line = instance.createLine({
@@ -169,6 +209,9 @@ Template.connectItemRenderer.onRendered(function () {
 
 Template.connectItemRenderer.onDestroyed(function () {
   const instance = this
+  window.removeEventListener('resize', instance.scheduleLineUpdate)
+  instance.resizeObserver?.disconnect()
+  cancelAnimationFrame(instance.resizeFrame)
   instance.dragged = null
   instance.submitResponse({
     responses: instance.getResponse(),
