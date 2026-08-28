@@ -51,7 +51,10 @@ Template.clozeItemRenderer.onCreated(function () {
     // since it can happen fast to enter some unexpected pattern for this component
     // we try the parsing and catch any exception and display it as an error below
     try {
-      const tokens = ClozeItemTokenizer.tokenize(value)
+      const tokens = ClozeItemTokenizer.tokenize({
+          ...value,
+          itemId: data.contentId
+      })
       let index = 0
       const assignIndex = token => {
         if (Object.hasOwnProperty.call(token, 'flavor')) {
@@ -66,12 +69,11 @@ Template.clozeItemRenderer.onCreated(function () {
       }
 
       if (scores) {
-        debugger
         const explanations = getExplanations({ value, scores })
         // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
         tokens.forEach(token => {
           if (ClozeItemRendererUtils.isItem(token.flavor)) {
-            const score = scores.find(score => score.target == token.itemIndex)
+            const score = scores.find(score => score.itemId === token.itemId && score.target == token.itemIndex)
             if (score) {
               token.wasScored = true
               token.isValid = score.score
