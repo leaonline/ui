@@ -2,9 +2,11 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
-import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
 import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { getExplanations } from '../utils/getExplanations'
+import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
 import './clozeItemRenderer.html'
@@ -14,6 +16,7 @@ const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
 Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
+
   instance.tokens = new ReactiveVar()
   instance.error = new ReactiveVar()
   instance.isTable = new ReactiveVar()
@@ -33,7 +36,7 @@ Template.clozeItemRenderer.onCreated(function () {
 
     // set the color of the current dimension
     // only if it has been passed with the data
-    const { value, color } = data
+    const { value, color, scores, readOnly } = data
 
     if (color) {
       instance.color.set(color)
@@ -48,7 +51,10 @@ Template.clozeItemRenderer.onCreated(function () {
     // since it can happen fast to enter some unexpected pattern for this component
     // we try the parsing and catch any exception and display it as an error below
     try {
-      const tokens = ClozeItemTokenizer.tokenize(value)
+      const tokens = ClozeItemTokenizer.tokenize({
+          ...value,
+          itemId: data.contentId
+      })
       let index = 0
       const assignIndex = token => {
         if (Object.hasOwnProperty.call(token, 'flavor')) {
@@ -62,8 +68,28 @@ Template.clozeItemRenderer.onCreated(function () {
         tokens.forEach(assignIndex)
       }
 
+      if (scores) {
+        const explanations = getExplanations({ value, scores })
+        // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
+        tokens.forEach(token => {
+          if (ClozeItemRendererUtils.isItem(token.flavor)) {
+            const score = scores.find(score => score.itemId === token.itemId && score.target == token.itemIndex)
+            if (score) {
+              token.wasScored = true
+              token.isValid = score.score
+              token.correctResponse = score.expected
+              token.color = score.isUndefined ? 'secondary' : token.isValid ? 'success' : 'danger'
+            }
+          }
+        })
+        instance.state.set({ explanations })
+      } else {
+        instance.state.set({ explanations: null })
+      }
+
       instance.tokens.set(tokens)
       instance.error.set(null)
+      instance.state.set({ readOnly })
     } catch (e) {
       instance.error.set(e)
     }
@@ -129,6 +155,12 @@ Template.clozeItemRenderer.helpers({
   },
   isEmpty (value) {
     return !value || value.length === 0
+  },
+  readOnly () {
+    return Template.getState('readOnly')
+  },
+  explanations () {
+    return Template.instance().state.get('explanations')
   }
 })
 

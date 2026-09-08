@@ -1,14 +1,15 @@
 <template name="connectItemRenderer">
-    <div class="d-flex justify-content-start p-3 connect-root">
+    <div class="d-flex justify-content-between p-3 connect-root">
         <div class="left connect-container me-5">
             {{#each leftItem in value.left}}
-                <div class="d-flex my-2 connect-dropzone border border-secondary ">
+                <div class="d-flex my-2">
                 {{#if leftItem.tts}}
                     {{> soundbutton text=tts}}
                 {{/if}}
-                <div class="p-3 connect-draggable"
-                     draggable="true"
-                     data-side="left" data-index={{@index}}>
+                <div class="p-3 connect-source {{#unless readOnly}}connect-draggable{{/unless}} border {{#if hover "left" @index}}bg-light border-{{color}}{{else}}bg-white border-secondary{{/if}}"
+                     draggable="{{#unless readOnly}}true{{/unless}}"
+                     data-side="left"
+                     data-index={{@index}}>
                     {{#if leftItem.image}}
                         {{> image src=leftItem.image
                                 class="connect-image"
@@ -25,28 +26,41 @@
 
         <div class="right connect-container ms-5">
             {{#each rightItem in value.right}}
-                <div class="d-flex my-2 border border-secondary">
+                <div class="d-flex align-items-center my-2">
                     {{#if rightItem.tts}}
                         {{> soundbutton text=tts}}
                     {{/if}}
-                    <div class="p-3" data-side="left" data-index={{@index}}>
+                    <div class="p-3 dropzone connect-dropzone p-4 border border-2 {{#if dragging}}border-{{color}} dashed{{else}}border-secondary{{/if}} mr-2 {{#if dragOver @index}}bg-{{color}}{{else}}bg-white{{/if}}" data-index={{@index}}>
                         {{#if rightItem.image}}
                             {{> image src=leftItem.image
                                     alt="left image"
+                                    class="dropzone-child"
                                     cors="Anonymous"}}
                         {{/if}}
                         {{#if rightItem.text}}
-                            <span class="d-block">{{rightItem.text}}</span>
+                            <span class="d-block dropzone-child">{{rightItem.text}}</span>
                         {{/if}}
-                    </div>
-                    <div class="p-4 connect-dropzone bg-light">
-
                     </div>
                 </div>
             {{/each}}
         </div>
-    </div>
 
+        {{#each line in connections}}
+            <svg class="connect-line" width="{{line.width}}" height="{{line.height}}" viewBox="0 0 {{line.width}} {{line.height}}" aria-hidden="true" style="width: {{line.width}}px; height: {{line.height}}px;">
+                <line x1="{{line.x1}}" y1="{{line.y1}}" x2="{{line.x2}}" y2="{{line.y2}}" stroke="{{line.color}}" stroke-dasharray="5,5" stroke-linecap="round" stroke-width="2"/>
+            </svg>
+            {{#unless readOnly}}
+            <button title="{{i18n "common.remove"}}" class="btn btn-sm btn-secondary rounded-circle connect-remove-btn"
+                    data-from="{{line.from}}"
+                    data-to="{{line.to}}"
+                    style="position: absolute; left: {{line.cx}}px; top: {{line.cy}}px;">{{> icon name="times"}}
+            </button>
+            {{/unless}}
+        {{/each}}
+    </div>
+    {{#if explanations}}
+        {{> itemExplanations explanations=explanations color=color}}
+    {{/if}}
     {{! autoform }}
     <input type="hidden" {{atts}}>
 </template>

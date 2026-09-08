@@ -10,21 +10,83 @@ Template.taskPageRenderer.onCreated(function () {
   const parseData = data => {
     const unitDoc = data.doc
     const color = data.color || 'secondary'
-    const currentPageCount = data.currentPageCount || 0
+    let currentPageCount = data.currentPageCount || 0
+    if (currentPageCount >= unitDoc.pages?.length) {
+      currentPageCount = 0
+    }
+    const showScoring = data.isLearning && !data.isStory && !!data.onEvaluate
+    const showCorrectResponse = data.isLearning && !data.isStory  && !!data.onEvaluate
 
-
-    instance.state.set('isPreview', data.isPreview)
-    instance.state.set('isStory', data.isStory)
-    instance.state.set('sessionId', data.sessionId)
-    instance.state.set('unitDoc', unitDoc)
+    instance.state.set({
+      isPreview: data.isPreview,
+      isStory: data.isStory,
+      sessionId: data.sessionId,
+      showScoring,
+      showCorrectResponse,
+      scoring: null,
+      feedback: null,
+      wasScored: false,
+      unitDoc
+    })
 
     if (unitDoc.pages) {
-      instance.state.set('maxPages', unitDoc.pages.length)
-      instance.state.set('currentPageCount', currentPageCount)
-      instance.state.set('currentPage', unitDoc.pages[currentPageCount])
-      instance.state.set('hasNext', unitDoc.pages.length > currentPageCount + 1)
+      const currentPage = unitDoc.pages[currentPageCount]
+      const userId = Meteor.userId()
+      const hasItems = currentPage?.content?.some(entry => entry.type === 'item')
+
+      currentPage.content = currentPage.content.map(entry => {
+        //entry.unitDoc = unitDoc
+        entry.unitId = unitDoc._id
+        entry.page = currentPageCount
+        entry.sessionId = data.sessionId
+        entry.userId = userId
+        entry.color = color
+        return entry
+      })
+
+      instance.state.set({
+        hasItems,
+        currentPage,
+        currentPageCount,
+        maxPages: unitDoc.pages.length,
+        hasNext: unitDoc.pages.length > currentPageCount + 1,
+      })
+
     }
+
     instance.state.set('color', color)
+
+    /**
+     * determine whether to show the "forward" button
+     * @return {boolean}
+     */
+    instance.showNext = () => {
+      const hasNext = instance.state.get('hasNext')
+      if (!hasNext) return false
+
+      const hasItems = instance.state.get('hasItems')
+      if (!hasItems) return true
+
+      const showScoring = instance.state.get('showScoring')
+      const showCorrectResponse = instance.state.get('showCorrectResponse')
+      const wasScored = instance.state.get('wasScored')
+
+      return wasScored || (!showScoring && !showCorrectResponse)
+    }
+
+    /**
+     * determine whether to show the "check for feedback" button
+     * @return {boolean}
+     */
+    instance.showFeedback = () => {
+      const hasItems = instance.state.get('hasItems')
+      if (!hasItems) return false
+
+      const showScoring = instance.state.get('showScoring')
+      const showCorrectResponse = instance.state.get('showCorrectResponse')
+      const wasScored = instance.state.get('wasScored')
+      return (showScoring || showCorrectResponse) && !wasScored
+    }
   }
 
   instance.autorun(() => {
@@ -76,8 +138,17 @@ Template.taskPageRenderer.helpers({
   maxPages () {
     return Template.getState('maxPages')
   },
-  hasNext () {
-    return Template.getState('hasNext')
+  showNext () {
+    return Template.instance().showNext()
+  },
+  showScoring () {
+    return Template.getState('showScoring')
+  },
+  showCorrectResponse () {
+    return Template.getState('showCorrectResponse')
+  },
+  showFeedback () {
+    return Template.instance().showFeedback()
   },
   waitForSubmit () {
     return Template.getState('waitForSubmit')
@@ -87,24 +158,13 @@ Template.taskPageRenderer.helpers({
   },
   itemData (content) {
     const instance = Template.instance()
-    const sessionId = instance.state.get('sessionId')
-    const unitDoc = instance.state.get('unitDoc')
-    const isPreview = instance.state.get('isPreview')
-    const page = instance.state.get('currentPageCount')
-    const unitId = unitDoc._id
-    const userId = Meteor.userId()
-    const color = instance.state.get('color')
-    const { onInput } = instance.data
-    const { onLoad } = instance.data
-
+    const { onInput, onLoad, onEvaluate } = instance.data
     return Object.assign({}, content, {
-      userId,
-      sessionId,
-      unitId,
-      page,
-      color,
-      onInput: !isPreview ? onInput : undefined,
-      onLoad: !isPreview ? onLoad : undefined
+      onInput,
+      onLoad,
+      onEvaluate,
+      scores: instance.state.get('scoring'),
+      readOnly: instance.state.get('wasScored')
     })
   },
   showFinishButton () {
@@ -169,5 +229,14 @@ Template.taskPageRenderer.events({
       templateInstance.state.set('finishing', true)
       templateInstance.onFinish()
     }
+  },
+  'click .lea-evaluate-btn': async function (event, templateInstance) {
+    event.preventDefault()
+    if (templateInstance.data.onEvaluate) {
+      const scoring = await templateInstance.data.onEvaluate()
+      templateInstance.state.set({ scoring })
+    }
+
+    templateInstance.state.set({ wasScored: true })
   }
 })

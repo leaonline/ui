@@ -1,0 +1,16 @@
+<template name="itemExplanations">
+  <div class="choice-explanation-container w-100 px-md-2 px-lg-5 my-4">
+    <div class="choice-explanation border border-secondary p-3">
+        {{> textGroup
+                text=(i18n "task.explanation")
+                class="lea-text-bold"
+                type=color}}
+        {{#each explanation in explanations}}
+            {{> textGroup
+                    text=explanation
+                    class="w-100"
+                    type=color}}
+        {{/each}}
+    </div>
+  </div>
+</template>

@@ -1,0 +1,28 @@
+<template name="sortItemRenderer">
+  <div class="row">
+    <div class="col p-1">
+  <ul class="sortable-root list-group border border-{{color}}">
+    {{#each item in values}}
+        <li class="list-group-item {{item.validationClass}}" data-index="{{@index}}">
+            {{item.text}}
+        </li>
+    {{/each}}
+  </ul>
+    </div>
+    {{#if expected}}
+    <div class="col sort-expected p-1">
+        <ul class="sortable-root list-group">
+            {{#each item in expected}}
+                <li class="list-group-item">
+                    {{item.text}}
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+    {{/if}}
+  </div>
+  <input type="hidden" class="sortable-input">
+    {{#if explanations}}
+        {{> itemExplanations explanations=explanations color=color}}
+    {{/if}}
+</template>

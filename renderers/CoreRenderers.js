@@ -1,6 +1,7 @@
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
 import { Connect } from 'meteor/leaonline:corelib/items/interactive/Connect'
+import { Sort } from 'meteor/leaonline:corelib/items/sort/Sort'
 import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
 import { Scoring } from 'meteor/leaonline:corelib/scoring/Scoring'
 import { RendererGroups } from './RendererGroups'
@@ -28,6 +29,17 @@ allConfigs.push({
   template: 'connectItemRenderer',
   async load() {
     return import('./items/connect/connectItemRenderer')
+  },
+})
+
+allConfigs.push({
+  name: Sort.name,
+  group: RendererGroups.items.name,
+  label: Sort.label,
+  icon: Sort.icon,
+  template: 'sortItemRenderer',
+  async load() {
+    return import('./items/sort/sortItemRenderer')
   },
 })
 

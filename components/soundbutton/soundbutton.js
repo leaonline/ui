@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
 import { getBsType } from '../../utils/bootstrapUtils'
 import './soundbutton.html'
+import './soundbutton.css'
 
 Template.soundbutton.onCreated(function () {
   const instance = this
@@ -40,7 +41,7 @@ function updateAtts ({ data, ttsReady, instance }) {
   const initialText = data.text
   const disabled = data.disabled || !ttsReady
   const btnType = getBsType(data.type, data.outline)
-  const btnBlock = data.block ? 'btn-block' : ''
+  const btnBlock = data.block ? 'block' : ''
   const btnSize = (data.sm && 'btn-sm') || (data.lg && 'btn-lg') || ''
   const customClass = data.class || ''
   const disabledClass = disabled ? 'disabled' : ''
@@ -58,7 +59,7 @@ function updateAtts ({ data, ttsReady, instance }) {
     title: data.title,
     disabled: disabled,
     type: 'button',
-    class: `lea-sound-btn d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
+    class: `lea-sound-btn p-1 d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
     'data-tts': initialTTS,
     'data-text': initialText,
     'aria-label': data.title
@@ -121,8 +122,7 @@ Template.soundbutton.events({
         TTSEngine.play({ id, text, onEnd })
         templateInstance.isPlaying.set(true)
       } catch (e) {
-        console.error(e)
-        // TODO noitfy?
+        console.error(`error in soundbutton; id=${id}; text=${text}`, e)
       }
     }
   }

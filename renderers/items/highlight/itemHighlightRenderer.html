@@ -8,4 +8,7 @@
             <span {{tokenAtts @index token}}>{{token.value}}</span>
         {{/each}}
     </div>
+    {{#if explanations}}
+        {{> itemExplanations explanations=explanations color=color}}
+    {{/if}}
 </template>
