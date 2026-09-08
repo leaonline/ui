@@ -32,6 +32,8 @@ Template.taskPageRenderer.onCreated(function () {
     if (unitDoc.pages) {
       const currentPage = unitDoc.pages[currentPageCount]
       const userId = Meteor.userId()
+      const hasItems = currentPage?.content?.some(entry => entry.type === 'item')
+
       currentPage.content = currentPage.content.map(entry => {
         //entry.unitDoc = unitDoc
         entry.unitId = unitDoc._id
@@ -43,6 +45,7 @@ Template.taskPageRenderer.onCreated(function () {
       })
 
       instance.state.set({
+        hasItems,
         currentPage,
         currentPageCount,
         maxPages: unitDoc.pages.length,
@@ -53,9 +56,16 @@ Template.taskPageRenderer.onCreated(function () {
 
     instance.state.set('color', color)
 
+    /**
+     * determine whether to show the "forward" button
+     * @return {boolean}
+     */
     instance.showNext = () => {
       const hasNext = instance.state.get('hasNext')
       if (!hasNext) return false
+
+      const hasItems = instance.state.get('hasItems')
+      if (!hasItems) return true
 
       const showScoring = instance.state.get('showScoring')
       const showCorrectResponse = instance.state.get('showCorrectResponse')
@@ -64,7 +74,14 @@ Template.taskPageRenderer.onCreated(function () {
       return wasScored || (!showScoring && !showCorrectResponse)
     }
 
+    /**
+     * determine whether to show the "check for feedback" button
+     * @return {boolean}
+     */
     instance.showFeedback = () => {
+      const hasItems = instance.state.get('hasItems')
+      if (!hasItems) return false
+
       const showScoring = instance.state.get('showScoring')
       const showCorrectResponse = instance.state.get('showCorrectResponse')
       const wasScored = instance.state.get('wasScored')
