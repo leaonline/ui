@@ -136,12 +136,12 @@ Template.choiceItemRenderer.onRendered(function () {
     if (typeof data.onLoad === 'function') {
       const cachedData = data.onLoad(data)
 
-      if (cachedData) {
+      if (cachedData?.responses) {
         const { responses } = cachedData
         const selected = isMultiple
           ? responses.map(parseResponse).filter(nonNull)
           : parseResponse(responses[0])
-        instance.state.set('selected', selected)
+        instance.state.set({ selected })
       }
     }
   })
