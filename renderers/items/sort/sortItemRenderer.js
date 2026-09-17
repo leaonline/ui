@@ -82,7 +82,7 @@ Template.sortItemRenderer.onRendered(function () {
       responses.push('__undefined__')
     }
 
-    return responses
+    return [responses.join(',')]
   }
 
   const color = instance.state.get('color')
@@ -100,6 +100,10 @@ Template.sortItemRenderer.onRendered(function () {
       })
       instance.state.set('indexes', indexes)
       instance.$('.sortable-input').val(indexes.join(','))
+      instance.submitResponse({
+        responses: instance.getResponse(),
+        data: instance.data
+      })
     },
   })
 
