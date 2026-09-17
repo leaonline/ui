@@ -8,6 +8,7 @@ import '../explanation/itemExplanations'
 import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import './choiceItemRenderer.css'
+import '../common/itemRenderer.css'
 import './choiceItemRenderer.html'
 
 const parseResponse = responseStr => {
@@ -42,7 +43,7 @@ Template.choiceItemRenderer.onCreated(function () {
 
   instance.autorun(function () {
     const data = Template.currentData()
-    const { value, color, readOnly, isLearning, scores } = data
+    const { value, color, readOnly, isLearning, scores, contentId } = data
 
     if (typeof value !== 'object') {
       return instance.state.set({ color: 'primary' })
@@ -70,12 +71,17 @@ Template.choiceItemRenderer.onCreated(function () {
       const scoring = []
       scoring.length = values.length
 
+      // XXX: to support multiple items on a single page we need to make sure
+      // we compare the indexes only for scores that have the itemId that
+      // matches the current item's contentId
       values.forEach(entry => {
         const index = entry.index
         const isSelected = isMultiple ? selected?.includes?.(index) : selected === index
-        const isExpected = !isSelected && scores.some(score => score.correctResponse.includes(index))
-        const scoreEntry = scores.find(score => score.correctResponse.includes(index))
-        const color = isSelected ? (scoreEntry ? 'success' : 'danger') : isExpected ? 'secondary' : 'light'
+        const scoreEntry = scores.find(score => score.itemId === contentId && score.correctResponse.includes(index))
+        const isExpected = !isSelected && !!scoreEntry
+        const color = isSelected
+          ? (scoreEntry ? 'success' : 'danger')
+          : isExpected ? 'secondary' : 'light'
         scoring[index] = { index, isExpected, color }
       })
 

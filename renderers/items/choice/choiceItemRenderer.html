@@ -4,7 +4,7 @@
         <div class="d-flex align-items-center w-100 my-2 p-2 {{#unless
                 readOnly}}choice-entry{{/unless}} choice-interaction {{#if hovered
                                                                            @index}}bg-light{{/if}} border border-{{getColor
-                @index}} {{#if isExpected @index}}choice-expected{{/if}}"
+                @index}} {{#if isExpected @index}}item-border-expected{{/if}}"
              data-index="{{@index}}" data-name="{{entry.name}}">
           <input type="{{choiceType}}"
                  id="{{entry.name}}-{{@index}}"

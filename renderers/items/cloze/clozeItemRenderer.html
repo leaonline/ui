@@ -53,7 +53,7 @@
 
 <template name="clozeItemRenderValueToken">
     {{#if token.tts}}
-        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 me-n1 align-baseline" }}
+        {{> soundbutton outline=true lg=true type=color text=token.tts class="h-100 me-n1 align-baseline cloze-tts-btn" }}
     {{/if}}
 
     {{#each valueToken in token.value}}
@@ -73,6 +73,9 @@
                    spellcheck="false"
                    size="{{valueToken.length}}"
                    maxlength="{{maxLength valueToken.length}}">
+            {{#if shouldShowCorrectResponse token}}
+                <span class="item-border-expected p-2 lea-text">{{token.expected}}</span>
+            {{/if}}
         {{else if isEmpty valueToken}}
                 <input type="text"
                        name="{{random}}"
@@ -103,6 +106,9 @@
                     <option class="cloze-option" value="{{@index}}">{{option}}</option>
                 {{/each}}
             </select>
+            {{#if shouldShowCorrectResponse token}}
+                <span class="item-border-expected p-2 lea-text">{{token.expected}}</span>
+            {{/if}}
         {{else if isText valueToken}}
             <span class="cloze-text-block" data-score="0">{{valueToken.value}}</span>
         {{else}}

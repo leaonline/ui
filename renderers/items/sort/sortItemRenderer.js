@@ -6,7 +6,7 @@ import '../explanation/itemExplanations'
 import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import '../explanation/itemExplanations'
-import './sortItemRenderer.css'
+import '../common/itemRenderer.css'
 import './sortItemRenderer.html'
 
 Template.sortItemRenderer.onCreated(function () {
@@ -29,7 +29,7 @@ Template.sortItemRenderer.onCreated(function () {
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const { value, color, readOnly, scores } = data
+    const { value, color, readOnly, scores, contentId } = data
 
     if (typeof value !== 'object') {
       return instance.state.set({ color: 'primary' })
@@ -44,7 +44,7 @@ Template.sortItemRenderer.onCreated(function () {
 
     if (scores) {
       const indexes = instance.state.get('indexes') || []
-      const entry = scores[0]
+      const entry = scores.find(s => s.itemId === contentId)
       const { correctResponse } = entry
       let isValid = correctResponse.length === indexes.length
       correctResponse.forEach((val, index) => {

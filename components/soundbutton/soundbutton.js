@@ -41,7 +41,7 @@ function updateAtts ({ data, ttsReady, instance }) {
   const initialText = data.text
   const disabled = data.disabled || !ttsReady
   const btnType = getBsType(data.type, data.outline)
-  const btnBlock = data.block ? 'block' : ''
+  const btnBlock = data.block ? 'd-block w-100' : ''
   const btnSize = (data.sm && 'btn-sm') || (data.lg && 'btn-lg') || ''
   const customClass = data.class || ''
   const disabledClass = disabled ? 'disabled' : ''
@@ -59,7 +59,7 @@ function updateAtts ({ data, ttsReady, instance }) {
     title: data.title,
     disabled: disabled,
     type: 'button',
-    class: `lea-sound-btn p-1 d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
+    class: `lea-sound-btn align-baseline p-1 d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
     'data-tts': initialTTS,
     'data-text': initialText,
     'aria-label': data.title

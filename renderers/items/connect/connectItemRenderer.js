@@ -91,7 +91,7 @@ Template.connectItemRenderer.onCreated(function () {
   // autorun to initialize connections from response
   instance.autorun(function () {
     const data = Template.currentData()
-    const { value, color, readOnly, scores } = data
+    const { value, color, readOnly, scores, contentId } = data
     if (scores) {
       const connections = instance.state.get('connections') ?? []
       const explanations = getExplanations({ value, scores })
@@ -100,14 +100,10 @@ Template.connectItemRenderer.onCreated(function () {
       connections.forEach((connection) => {
         if (connection.validated) { return }
         const { from, to } = connection
-        const valid = scores.some(({ correctResponse }) => {
-          if (typeof correctResponse[0] === 'object') {
+        const valid = scores.some(({ itemId, correctResponse }) => {
+          if (itemId === contentId && typeof correctResponse[0] === 'object') {
             return correctResponse.some(({ left, right }) => left == from && right == to)
           }
-          else {
-            console.warn('Unexpected correctResponse format', correctResponse)
-          }
-
         })
         connection.validated = true
         connection.color = valid ? `var(--bs-success)` : 'var(--bs-danger)'
@@ -115,8 +111,8 @@ Template.connectItemRenderer.onCreated(function () {
 
       // step 2 - add potentially missed connections
 
-      scores.forEach(({ correctResponse }) => {
-        if (correctResponse.length < 2) { return }
+      scores.forEach(({ itemId, correctResponse }) => {
+        if (itemId !== contentId || correctResponse.length < 2) { return }
         const evaluate = (left, right) => {
           const hasConnection = connections.find(c => c.from == left && c.to == right)
 

@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+import { Random } from 'meteor/random'
 import {
   ClozeItemTokenizer,
   tokenizeBlanks,
@@ -149,18 +150,26 @@ describe('ClozeItemTokenizer', function () {
     })
   })
   describe(toTokens.name, function () {
+    let itemId
+    let fn
+    beforeEach(() => {
+      itemId = Random.id(6)
+      fn = toTokens({ itemId })
+    })
     it('throws on unexpected flavour', function () {
       const flavour = Math.random().toString(16)
-      expect(() => toTokens({ value: `${flavour}$foo$bar` }))
+      expect(() => fn({ value: `${flavour}$foo$bar` }))
         .to.throw(`Unexpected flavor - ${flavour}`)
     })
     it('allows to map splits to renderable tokens', function () {
-      expect(toTokens({ value: '//' })).to.deep.equal({
+      expect(fn({ value: '//' })).to.deep.equal({
         value: '//',
-        isNewLine: true
+        isNewLine: true,
+        itemId
       })
-      expect(toTokens({ value: 'noseparator' })).to.deep.equal({ value: 'noseparator' })
-      expect(toTokens({ value: 'blanks$foo$bar' })).to.deep.equal({
+      expect(fn({ value: 'noseparator' })).to.deep.equal({ itemId, value: 'noseparator' })
+      expect(fn({ value: 'blanks$foo$bar' })).to.deep.equal({
+        itemId,
         flavor: 2,
         isBlock: false,
         tts: 'bar',
@@ -172,7 +181,8 @@ describe('ClozeItemTokenizer', function () {
           }
         ]
       })
-      expect(toTokens({ value: 'blanks$[foo]$bar' })).to.deep.equal({
+      expect(fn({ value: 'blanks$[foo]$bar' })).to.deep.equal({
+        itemId,
         flavor: 2,
         isBlock: false,
         tts: 'bar',
@@ -188,7 +198,8 @@ describe('ClozeItemTokenizer', function () {
           }
         ]
       })
-      expect(toTokens({ value: 'select$[foo|baz]$bar' })).to.deep.equal({
+      expect(fn({ value: 'select$[foo|baz]$bar' })).to.deep.equal({
+        itemId,
         flavor: 1,
         isBlock: false,
         tts: 'bar',
@@ -204,7 +215,8 @@ describe('ClozeItemTokenizer', function () {
           }
         ]
       })
-      expect(toTokens({ value: 'empty$[foo]$bar' })).to.deep.equal({
+      expect(fn({ value: 'empty$[foo]$bar' })).to.deep.equal({
+        itemId,
         flavor: 3,
         isBlock: false,
         tts: 'bar',
@@ -219,7 +231,8 @@ describe('ClozeItemTokenizer', function () {
         }
         ]
       })
-      expect(toTokens({ value: 'text$[foo]$bar' })).to.deep.equal({
+      expect(fn({ value: 'text$[foo]$bar' })).to.deep.equal({
+        itemId,
         flavor: 4,
         isBlock: false,
         tts: 'bar',
@@ -237,7 +250,8 @@ describe('ClozeItemTokenizer', function () {
       })
     })
     it('supports options but optional', function () {
-      expect(toTokens({ value: 'blanks$foo$bar$color=primary' })).to.deep.equal({
+      expect(fn({ value: 'blanks$foo$bar$color=primary' })).to.deep.equal({
+        itemId,
         flavor: 2,
         isBlock: false,
         tts: 'bar',
@@ -252,7 +266,8 @@ describe('ClozeItemTokenizer', function () {
       })
 
       // multiple split by &
-      expect(toTokens({ value: 'blanks$foo$bar$color=primary&border=dark' })).to.deep.equal({
+      expect(fn({ value: 'blanks$foo$bar$color=primary&border=dark' })).to.deep.equal({
+        itemId,
         flavor: 2,
         isBlock: false,
         tts: 'bar',
@@ -270,17 +285,23 @@ describe('ClozeItemTokenizer', function () {
   })
 
   describe(ClozeItemTokenizer.tokenize.name, function () {
+    let itemId
+    beforeEach(() => {
+      itemId = Random.id(6)
+    })
     it('tokenizes a default cloze text correctly', function () {
       const text = `{{blanks$[L]iebe$Liebe}} Frau Lang, 
 {{blanks$[L]ara$Lara}} ist {{blanks$[h]eute$heute}} leider krank.`
 
-      const tokens = ClozeItemTokenizer.tokenize({ text })
+      const tokens = ClozeItemTokenizer.tokenize({ itemId, text })
       expect(tokens).to.deep.equal([{
         value: '',
         length: 0,
         isEmpty: true,
-        index: 0
+        index: 0,
+        itemId
       }, {
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -304,11 +325,13 @@ describe('ClozeItemTokenizer', function () {
         isBlock: false
       },
       {
+        itemId,
         value: ' Frau Lang, ',
         length: 12,
         index: 2
       },
       {
+        itemId,
         isToken: true,
         value: '//',
         length: 2,
@@ -316,12 +339,14 @@ describe('ClozeItemTokenizer', function () {
         isNewLine: true
       },
       {
+        itemId,
         value: '',
         length: 0,
         isEmpty: true,
         index: 4
       },
       {
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -345,11 +370,13 @@ describe('ClozeItemTokenizer', function () {
         isBlock: false
       },
       {
+        itemId,
         value: ' ist ',
         length: 5,
         index: 6
       },
       {
+        itemId,
         isToken: true,
         value: [
           {
@@ -374,6 +401,7 @@ describe('ClozeItemTokenizer', function () {
         isBlock: false
       },
       {
+        itemId,
         value: ' leider krank.',
         length: 14,
         index: 8
@@ -383,12 +411,14 @@ describe('ClozeItemTokenizer', function () {
     it('tokenizes a cloze text in table mode correctly', function () {
       const text = `Die Zahl:  || 41 || {{blanks$[26]$}} || 19 || {{blanks$[21]$}} || {{blanks$[44]$}}           
 Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
-      const tokens = ClozeItemTokenizer.tokenize({ text, isTable: true })
+      const tokens = ClozeItemTokenizer.tokenize({ itemId, text, isTable: true })
       expect(tokens).to.deep.equal([[{
+        itemId,
         value: 'Die Zahl:',
         length: 9,
         index: 0
-      }, { value: '41', length: 2, index: 0 }, { // ||
+      }, { itemId, value: '41', length: 2, index: 0 }, { // ||
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -404,7 +434,8 @@ Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
         flavor: 2,
         tts: '',
         isBlock: false
-      }, { value: '19', length: 2, index: 0 }, { // ||
+      }, { itemId, value: '19', length: 2, index: 0 }, { // ||
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -421,6 +452,7 @@ Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
         tts: '',
         isBlock: false
       }, {
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -437,10 +469,12 @@ Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
         tts: '',
         isBlock: false
       }], [{
+        itemId,
         value: 'Das Doppelte:',
         length: 13,
         index: 0
       }, {
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -456,7 +490,8 @@ Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
         flavor: 2,
         tts: '',
         isBlock: false
-      }, { value: '52', length: 2, index: 0 }, { // ||
+      }, {itemId,  value: '52', length: 2, index: 0 }, { // ||
+        itemId,
         isToken: true,
         value: [{
           isToken: true,
@@ -472,7 +507,8 @@ Das Doppelte: || {{blanks$[82]$}} || 52  || {{blanks$[38]$}} || 42 || 88`
         flavor: 2,
         tts: '',
         isBlock: false
-      }, { value: '42', length: 2, index: 0 }, { // ||
+      }, { itemId, value: '42', length: 2, index: 0 }, { // ||
+        itemId,
         value: '88',
         length: 2,
         index: 0

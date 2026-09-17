@@ -9,6 +9,7 @@ import { getExplanations } from '../utils/getExplanations'
 import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
+import '../common/itemRenderer.css'
 import './clozeItemRenderer.html'
 
 const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
@@ -71,14 +72,40 @@ Template.clozeItemRenderer.onCreated(function () {
       if (scores) {
         const explanations = getExplanations({ value, scores })
         // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
+        // XXX: we have introduced the itemId (=contentId) as additional search filter
+        // to support scoring feedback when multiple items exist on a given page
         tokens.forEach(token => {
           if (ClozeItemRendererUtils.isItem(token.flavor)) {
             const score = scores.find(score => score.itemId === token.itemId && score.target == token.itemIndex)
             if (score) {
               token.wasScored = true
               token.isValid = score.score
-              token.correctResponse = score.expected
-              token.color = score.isUndefined ? 'secondary' : token.isValid ? 'success' : 'danger'
+              token.correctResponse = score.expected ? String(score.expected) : ''
+              token.color = token.isValid ? 'success' : 'danger'
+              token.isUndefined = score.isUndefined
+
+              // to render the "expected" term/word, we need to
+              // find the expected word from the token, because the correctResponse
+              // only contains a RegEx pattern
+              const expected = token.value?.length > 1
+                  ? token.value[token.itemIndex]?.value
+                  : token.value[0]?.value
+              const showExpected = !token.isValid && expected
+
+              // variant A: select
+              if (showExpected && Array.isArray(expected)) {
+                const index = score.correctResponse instanceof RegExp
+                  ? Number(score.correctResponse.source)
+                  : Number(score.correctResponse)
+                if (Number.isInteger(index)) {
+                  token.expected = expected[index]
+                }
+              }
+
+              // variant B: blanks - use value directly
+              if (showExpected && typeof expected === 'string') {
+                token.expected = expected
+              }
             }
           }
         })
@@ -191,6 +218,9 @@ Template.clozeItemRenderValueToken.helpers({
   },
   tableBorder () {
 
+  },
+  shouldShowCorrectResponse (token) {
+    return token.wasScored && !token.isValid && token.expected
   }
 })
 

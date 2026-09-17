@@ -8,6 +8,7 @@ import { getExplanations } from '../utils/getExplanations'
 import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './itemHighlightRenderer.css'
+import '../common/itemRenderer.css'
 import './itemHighlightRenderer.html'
 
 const separatorChars = /[.,;:?!]+/g
@@ -54,7 +55,7 @@ Template.itemHighlightRenderer.onCreated(function () {
 
     // set the color of the current dimension
     // only if it has been passed with the data
-    const { color } = data
+    const { color, contentId } = data
     instance.state.set('color', color || 'primary')
 
     const { value, scores, readOnly } = data
@@ -75,22 +76,27 @@ Template.itemHighlightRenderer.onCreated(function () {
       const selection = instance.state.get('selection') ?? []
       scores.forEach(entry => {
         // for each correct response, check if the corresponding token is selected
-        const { correctResponse } = entry
-        correctResponse.forEach(index => {
-          const isSelected = selection[index]
-          if (isSelected) {
-            tokens[index].validationClass = 'bg-success text-white'
-          } else {
-            tokens[index].validationClass = 'p-1 rounded border highlight-expected'
-          }
-        })
+        const { correctResponse, itemId } = entry
 
-        // highlight any selected tokens that are not correct responses
-        Object.keys(selection).forEach(index => {
-          if (selection[index] && !correctResponse.includes(Number(index))) {
-            tokens[index].validationClass = 'bg-danger text-white'
-          }
-        })
+        // match only scores for this current item
+        if (itemId === contentId) {
+          correctResponse.forEach(index => {
+            const isSelected = selection[index]
+            if (isSelected) {
+              tokens[index].validationClass = 'bg-success text-white'
+            }
+            else {
+              tokens[index].validationClass = 'p-1 rounded border item-border-expected'
+            }
+          })
+
+          // highlight any selected tokens that are not correct responses
+          Object.keys(selection).forEach(index => {
+            if (selection[index] && !correctResponse.includes(Number(index))) {
+              tokens[index].validationClass = 'bg-danger text-white'
+            }
+          })
+        }
       })
       instance.state.set({ explanations })
     } else {
@@ -130,7 +136,7 @@ Template.itemHighlightRenderer.helpers({
     const color = instance.state.get('color')
     const selection = instance.state.get('selection')
     const hoveredClass = !selection[index] && instance.state.get('hovered') == index ? 'highlight-hovered bg-light' : ''
-    const selectedClass = selection[index] ? `highlight-selected px-1 rounded ${token.validationClass ? '' : `bg-${color}`}` : ''
+    const selectedClass = selection[index] ? `highlight-selected px-1 rounded ${token.validationClass ? '' : `bg-${color} text-white`}` : ''
     const separatorClass = token.isSeparator ? 'ms-n2' : ''
     const isSpace = whiteSpace.test(token.value)
     const tokenClass = !readOnly && (!isSpace || instance.state.get('includeSpace'))
