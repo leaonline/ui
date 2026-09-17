@@ -2,11 +2,14 @@ import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
 import { Random } from 'meteor/random'
-import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
 import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { getExplanations } from '../utils/getExplanations'
+import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
+import '../common/itemRenderer.css'
 import './clozeItemRenderer.html'
 
 const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
@@ -14,6 +17,7 @@ const CELL_SKIP = '<<>>' // TODO MOVE TO TOKENIZER
 Template.clozeItemRenderer.onCreated(function () {
   const instance = this
   instance.state = new ReactiveDict()
+
   instance.tokens = new ReactiveVar()
   instance.error = new ReactiveVar()
   instance.isTable = new ReactiveVar()
@@ -33,7 +37,7 @@ Template.clozeItemRenderer.onCreated(function () {
 
     // set the color of the current dimension
     // only if it has been passed with the data
-    const { value, color } = data
+    const { value, color, scores, readOnly } = data
 
     if (color) {
       instance.color.set(color)
@@ -48,7 +52,10 @@ Template.clozeItemRenderer.onCreated(function () {
     // since it can happen fast to enter some unexpected pattern for this component
     // we try the parsing and catch any exception and display it as an error below
     try {
-      const tokens = ClozeItemTokenizer.tokenize(value)
+      const tokens = ClozeItemTokenizer.tokenize({
+          ...value,
+          itemId: data.contentId
+      })
       let index = 0
       const assignIndex = token => {
         if (Object.hasOwnProperty.call(token, 'flavor')) {
@@ -62,8 +69,54 @@ Template.clozeItemRenderer.onCreated(function () {
         tokens.forEach(assignIndex)
       }
 
+      if (scores) {
+        const explanations = getExplanations({ value, scores })
+        // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
+        // XXX: we have introduced the itemId (=contentId) as additional search filter
+        // to support scoring feedback when multiple items exist on a given page
+        tokens.forEach(token => {
+          if (ClozeItemRendererUtils.isItem(token.flavor)) {
+            const score = scores.find(score => score.itemId === token.itemId && score.target == token.itemIndex)
+            if (score) {
+              token.wasScored = true
+              token.isValid = score.score
+              token.correctResponse = score.expected ? String(score.expected) : ''
+              token.color = token.isValid ? 'success' : 'danger'
+              token.isUndefined = score.isUndefined
+
+              // to render the "expected" term/word, we need to
+              // find the expected word from the token, because the correctResponse
+              // only contains a RegEx pattern
+              const expected = token.value?.length > 1
+                  ? token.value[token.itemIndex]?.value
+                  : token.value[0]?.value
+              const showExpected = !token.isValid && expected
+
+              // variant A: select
+              if (showExpected && Array.isArray(expected)) {
+                const index = score.correctResponse instanceof RegExp
+                  ? Number(score.correctResponse.source)
+                  : Number(score.correctResponse)
+                if (Number.isInteger(index)) {
+                  token.expected = expected[index]
+                }
+              }
+
+              // variant B: blanks - use value directly
+              if (showExpected && typeof expected === 'string') {
+                token.expected = expected
+              }
+            }
+          }
+        })
+        instance.state.set({ explanations })
+      } else {
+        instance.state.set({ explanations: null })
+      }
+
       instance.tokens.set(tokens)
       instance.error.set(null)
+      instance.state.set({ readOnly })
     } catch (e) {
       instance.error.set(e)
     }
@@ -129,6 +182,12 @@ Template.clozeItemRenderer.helpers({
   },
   isEmpty (value) {
     return !value || value.length === 0
+  },
+  readOnly () {
+    return Template.getState('readOnly')
+  },
+  explanations () {
+    return Template.instance().state.get('explanations')
   }
 })
 
@@ -159,6 +218,9 @@ Template.clozeItemRenderValueToken.helpers({
   },
   tableBorder () {
 
+  },
+  shouldShowCorrectResponse (token) {
+    return token.wasScored && !token.isValid && token.expected
   }
 })
 

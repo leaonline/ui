@@ -11,6 +11,10 @@ Package.describe({
   documentation: 'README.md',
 })
 
+Npm.depends({
+  'sortablejs': '1.15.7',
+})
+
 Package.onUse((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
 

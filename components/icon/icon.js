@@ -12,7 +12,7 @@ Template.icon.onCreated(function () {
     const name = data.name
     const regular = data.far && 'far'
     const solid = data.fas && 'fas'
-    const type = regular || solid || 'fas'
+    const type = regular || solid || 'far'
     const scale = data.scale ? `fa-${data.scale}x` : ''
     const classAtts = `fa ${type} ${fw} fa-${name} ${pulse} ${spinning} ${scale}`
 

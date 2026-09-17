@@ -17,16 +17,16 @@ const tokenize = createSimpleTokenizer(startPattern, closePattern)
 // PUBLIC
 // =============================================================================
 
-ClozeItemTokenizer.tokenize = ({ text, flavor, isTable }) => {
+ClozeItemTokenizer.tokenize = ({ text, flavor, isTable, itemId }) => {
   if (isTable) {
     return text.split(newLineRegExp).map(row => {
       return row.split(tableSeparator).map(cell => {
-        return tokenize(cell.trim()).map(toTokens, { flavor })
+        return tokenize(cell.trim()).map(toTokens({ itemId }), { flavor })
       }).flat().filter(cell => cell.length > 0)
     })
   } else {
     const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
-    return tokenize(preprocessedValue).map(toTokens, { flavor })
+    return tokenize(preprocessedValue).map(toTokens({ itemId }), { flavor })
   }
 }
 
@@ -73,7 +73,11 @@ const tokenizeText = (flavor, value) => tokenizeValueEntry(value)
     return token
   })
 
-const toTokens = entry => {
+const toTokens = ({ itemId }) => entry => {
+  if (!entry.itemId) {
+      entry.itemId = itemId
+  }
+
   // we simply indicate newlines within
   // our brackets to avoid complex parsing
   if (entry.value.includes('//')) {
