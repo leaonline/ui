@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
-        node-version: '20'
+        node-version: 22
 
     - name: cache dependencies
       uses: actions/cache@v4
@@ -28,8 +28,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - run: cd test-proxy && npm ci
-    - run: cd test-proxy && npm run lint:code
+    - run: |
+        cd test-proxy
+        npm ci
+        npm run lint
 
   tests:
     name: Meteor ${{ matrix.meteor }} tests
@@ -37,10 +39,10 @@ jobs:
     needs: [lintcode]
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout leaonline:corelib repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: leaonline/corelib
           path: github/corelib
@@ -58,4 +60,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: cd test-proxy && npm run setup && npm run ci
+      - run: |
+          cd test-proxy
+          npm run setup
+          npm run ci
