@@ -11,3 +11,6 @@ ClozeItemRendererUtils.isEmpty = flavor => flavor === Cloze.flavor.empty.value
 ClozeItemRendererUtils.isText = flavor => flavor === Cloze.flavor.text.value
 
 ClozeItemRendererUtils.getFlavor = flavor => Cloze.flavor[flavor]?.value
+
+ClozeItemRendererUtils.isItem = flavor =>
+  ClozeItemRendererUtils.isBlank(flavor) || ClozeItemRendererUtils.isSelect(flavor)

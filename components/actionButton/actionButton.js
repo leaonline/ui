@@ -34,20 +34,27 @@ Template.actionButton.helpers({
     const { data } = instance
     return data.icon && data.iconPos === 'right'
   },
+  iconClass (base) {
+    const instance = Template.instance()
+    const { data } = instance
+    const custom = data.iconClass ?? ''
+    return `${base} ${custom}`
+  },
   attributes () {
     const instance = Template.instance()
     const { data } = instance
 
     const btnType = getBsType(data.type, data.outline)
-    const btnBlock = data.block ? 'btn-block' : ''
+    const btnBlock = data.block ? 'w-100' : ''
     const customClass = data.btnClass || ''
     const activeClass = data.active ? 'active' : ''
-    const bgClass = `lea-text lea-action-btn-${btnType}`
-
+    const defaultBg = `lea-action-btn-${btnType}`
+    const bgClass = `lea-text ${defaultBg}`
+    const hasIconClass = data.icon ? 'd-flex justify-content-between align-items-center': ''
     const atts = {
       id: data.id,
       title: data.title,
-      class: `lea-action-button ms-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${customClass}`,
+      class: `lea-action-button shadow-sm ms-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${hasIconClass} ${customClass}`,
       'aria-label': data.label || data.title
     }
 

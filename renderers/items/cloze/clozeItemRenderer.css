@@ -42,3 +42,8 @@
 .cell-border {
   border-width: 3px !important;
 }
+
+.cloze-expected {
+  white-space: normal;
+  word-break: break-word;
+}

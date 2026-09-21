@@ -24,7 +24,7 @@ Template.routeButton.helpers({
     const { data } = instance
 
     const btnType = getBsType(data.type, data.outline)
-    const btnBlock = data.block ? 'btn-block' : ''
+    const btnBlock = data.block ? 'w-100' : ''
     const customClass = data.btnClass || ''
     const activeClass = data.active ? 'active' : ''
     const bgClass = `lea-text lea-route-btn-${btnType}`
@@ -34,7 +34,7 @@ Template.routeButton.helpers({
     const atts = {
       id: data.id,
       title: data.title,
-      class: `lea-route-button ${ml} btn btn-${btnType} ${btnBlock} ${bgClass} ${sm} ${lg} ${activeClass} ${customClass}`,
+      class: `lea-route-button shadow-sm ms-2 ${ml} btn btn-${btnType} ${btnBlock} ${bgClass} ${sm} ${lg} ${activeClass} ${customClass}`,
       'aria-label': data.label || data.title
     }
 
