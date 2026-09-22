@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating'
-import './icon.html'
 import { IconUtils } from './IconUtils'
+import './icon.html'
 
 Template.icon.onCreated(function () {
   const instance = this

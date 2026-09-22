@@ -21,6 +21,7 @@
     "@biomejs/biome": "^2.3.15",
     "babel-plugin-istanbul": "^7.0.1",
     "chai": "^6.2.2",
+    "easy-speech": "^2.4.0",
     "jquery": "^4.0.0",
     "puppeteer": "^24.37.3",
     "simpl-schema": "^1.13.1",

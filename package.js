@@ -24,7 +24,9 @@ Package.onUse((api) => {
     'reactive-dict',
     'dynamic-import',
     'leaonline:corelib',
-  ])
+    'jkuester:template-states',
+    'jkuester:template-loader'
+  ], 'client')
 })
 
 Package.onTest((api) => {
@@ -40,5 +42,5 @@ Package.onTest((api) => {
   ])
   api.use('leaonline:corelib@2.0.0')
   api.use('leaonline:ui@2.1.0')
-  api.mainModule('ui-tests.js', ['server', 'client'])
+  api.mainModule('ui-tests.js', ['client'])
 })
