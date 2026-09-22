@@ -70,45 +70,23 @@ Template.clozeItemRenderer.onCreated(function () {
       }
 
       if (scores) {
-        const explanations = getExplanations({ value, scores })
         // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
         // XXX: we have introduced the itemId (=contentId) as additional search filter
         // to support scoring feedback when multiple items exist on a given page
-        tokens.forEach(token => {
-          if (ClozeItemRendererUtils.isItem(token.flavor)) {
-            const score = scores.find(score => score.itemId === token.itemId && score.target == token.itemIndex)
-            if (score) {
-              token.wasScored = true
-              token.isValid = score.score
-              token.correctResponse = score.expected ? String(score.expected) : ''
-              token.color = token.isValid ? 'success' : 'danger'
-              token.isUndefined = score.isUndefined
-
-              // to render the "expected" term/word, we need to
-              // find the expected word from the token, because the correctResponse
-              // only contains a RegEx pattern
-              const expected = token.value?.length > 1
-                  ? token.value[token.itemIndex]?.value
-                  : token.value[0]?.value
-              const showExpected = !token.isValid && expected
-
-              // variant A: select
-              if (showExpected && Array.isArray(expected)) {
-                const index = score.correctResponse instanceof RegExp
-                  ? Number(score.correctResponse.source)
-                  : Number(score.correctResponse)
-                if (Number.isInteger(index)) {
-                  token.expected = expected[index]
-                }
-              }
-
-              // variant B: blanks - use value directly
-              if (showExpected && typeof expected === 'string') {
-                token.expected = expected
-              }
-            }
+        const assignFeedback = token => {
+          const feedback = ClozeItemRendererUtils.getFeedbackForToken({ scores, token })
+          if (feedback) {
+            Object.assign(token, feedback)
           }
-        })
+        }
+
+        if (isTable) {
+          tokens.forEach(row => row.forEach(assignFeedback))
+        } else {
+          tokens.forEach(assignFeedback)
+        }
+
+        const explanations = getExplanations({ value, scores })
         instance.state.set({ explanations })
       } else {
         instance.state.set({ explanations: null })

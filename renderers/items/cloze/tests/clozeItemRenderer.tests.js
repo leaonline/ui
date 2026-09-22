@@ -2,7 +2,6 @@
 import { expect } from 'chai'
 import { withRenderedTemplate } from '../../../../tests/blazeHelpers.tests'
 import '../clozeItemRenderer'
-// import { TTSEngine } from 'meteor/leaonline:corelib'
 
 const template = 'clozeItemRenderer'
 
