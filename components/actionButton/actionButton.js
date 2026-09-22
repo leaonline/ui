@@ -5,7 +5,7 @@ import '../soundbutton/soundbutton'
 import './actionButton.html'
 
 Template.actionButton.helpers({
-  soundButtonAtts () {
+  soundButtonAtts() {
     // tts=tts text=label outline=true sm=sm lg=lg type=type active=active class=sndBtnClass
     const instance = Template.instance()
     const { data } = instance
@@ -21,26 +21,26 @@ Template.actionButton.helpers({
       lg: data.lg,
       type: data.type || 'secondary',
       active: data.active,
-      class: data.sndBtnClass
+      class: data.sndBtnClass,
     }
   },
-  leftIcon () {
+  leftIcon() {
     const instance = Template.instance()
     const { data } = instance
     return data.icon && data.iconPos !== 'right'
   },
-  rightIcon () {
+  rightIcon() {
     const instance = Template.instance()
     const { data } = instance
     return data.icon && data.iconPos === 'right'
   },
-  iconClass (base) {
+  iconClass(base) {
     const instance = Template.instance()
     const { data } = instance
     const custom = data.iconClass ?? ''
     return `${base} ${custom}`
   },
-  attributes () {
+  attributes() {
     const instance = Template.instance()
     const { data } = instance
 
@@ -50,12 +50,14 @@ Template.actionButton.helpers({
     const activeClass = data.active ? 'active' : ''
     const defaultBg = `lea-action-btn-${btnType}`
     const bgClass = `lea-text ${defaultBg}`
-    const hasIconClass = data.icon ? 'd-flex justify-content-between align-items-center': ''
+    const hasIconClass = data.icon
+      ? 'd-flex justify-content-between align-items-center'
+      : ''
     const atts = {
       id: data.id,
       title: data.title,
       class: `lea-action-button shadow-sm ms-2 btn btn-${btnType} ${btnBlock} ${bgClass} ${activeClass} ${hasIconClass} ${customClass}`,
-      'aria-label': data.label || data.title
+      'aria-label': data.label || data.title,
     }
 
     if (data.href) {
@@ -66,14 +68,14 @@ Template.actionButton.helpers({
       atts.disabled = ''
     }
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       if (key.indexOf('data-') === -1) return
       atts[key] = data[key]
     })
 
     return atts
   },
-  groupAttributes () {
+  groupAttributes() {
     const instance = Template.instance()
     const { data } = instance
 
@@ -83,7 +85,7 @@ Template.actionButton.helpers({
     return {
       id: data.id,
       title: data.title,
-      class: `${defaultClass} ${customClass}`
+      class: `${defaultClass} ${customClass}`,
     }
-  }
+  },
 })

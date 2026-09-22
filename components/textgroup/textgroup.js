@@ -4,11 +4,11 @@ import '../soundbutton/soundbutton'
 import './textgroup.html'
 
 Template.textGroup.helpers({
-  join (...args) {
+  join(...args) {
     args.pop()
     return args.join(' ')
   },
-  noAutoText (autoText) {
+  noAutoText(autoText) {
     return autoText === false
-  }
+  },
 })

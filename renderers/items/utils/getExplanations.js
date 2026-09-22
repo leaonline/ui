@@ -6,10 +6,12 @@
  * @param scores {object[]}
  * @return {string[]}
  */
-export const getExplanations = ({ value, scores }) =>  {
+export const getExplanations = ({ value, scores }) => {
   let explanations = []
   if (!Array.isArray(scores)) return explanations
-  explanations = scores.filter(score => !!score.explanation).map(score => score.explanation)
+  explanations = scores
+    .filter((score) => !!score.explanation)
+    .map((score) => score.explanation)
   if (value?.explanation) {
     explanations.unshift(value.explanation)
   }

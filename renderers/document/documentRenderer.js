@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating'
 import './documentRenderer.html'
 
-function replacer (key, value) {
+function replacer(key, value) {
   let val = value
 
   if (typeof val === 'string') {
@@ -18,9 +18,9 @@ function replacer (key, value) {
 }
 
 Template.documentRenderer.helpers({
-  parsedDoc () {
+  parsedDoc() {
     const { doc } = Template.instance().data
 
     return JSON.stringify(doc, replacer, 2)
-  }
+  },
 })

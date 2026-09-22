@@ -8,10 +8,13 @@ import { check, Match } from 'meteor/check'
  */
 export const createSubmitResponses = ({ onInput, responseCache = {} } = {}) => {
   check(onInput, Match.Maybe(Function))
-  check(responseCache, Match.ObjectIncluding({
-    get: Function,
-    set: Function
-  }))
+  check(
+    responseCache,
+    Match.ObjectIncluding({
+      get: Function,
+      set: Function,
+    }),
+  )
 
   return ({ responses, data = {} } = {}) => {
     check(responses, Array)
@@ -33,7 +36,7 @@ export const createSubmitResponses = ({ onInput, responseCache = {} } = {}) => {
     responseCache.set(strResponses)
     return onInput({
       responses,
-      ...data
+      ...data,
     })
   }
 }

@@ -1,6 +1,6 @@
-import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
 import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
+import { ReactiveVar } from 'meteor/reactive-var'
+import { Template } from 'meteor/templating'
 import { getBsType } from '../../utils/bootstrapUtils'
 import './soundbutton.html'
 import './soundbutton.css'
@@ -19,8 +19,8 @@ Template.soundbutton.onCreated(function () {
 
     if (!ttsReady) return
 
-    const reactiveTTS = (reactiveData.tts || reactiveData.text)
-    const currentTTS = (instance.tts.get() || instance.text.get())
+    const reactiveTTS = reactiveData.tts || reactiveData.text
+    const currentTTS = instance.tts.get() || instance.text.get()
 
     if (reactiveTTS !== currentTTS) {
       // if the TTS target changed reactively
@@ -36,7 +36,7 @@ Template.soundbutton.onCreated(function () {
   })
 })
 
-function updateAtts ({ data, ttsReady, instance }) {
+function updateAtts({ data, ttsReady, instance }) {
   const initialTTS = data.tts
   const initialText = data.text
   const disabled = data.disabled || !ttsReady
@@ -46,9 +46,7 @@ function updateAtts ({ data, ttsReady, instance }) {
   const customClass = data.class || ''
   const disabledClass = disabled ? 'disabled' : ''
   const activeClass = data.active ? 'active' : ''
-  const borderClass = (data.border || data.outline === false)
-    ? ''
-    : 'border-0'
+  const borderClass = data.border || data.outline === false ? '' : 'border-0'
 
   instance.isPlaying.set(false)
   instance.tts.set(initialTTS)
@@ -62,7 +60,7 @@ function updateAtts ({ data, ttsReady, instance }) {
     class: `lea-sound-btn align-baseline p-1 d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
     'data-tts': initialTTS,
     'data-text': initialText,
-    'aria-label': data.title
+    'aria-label': data.title,
   })
 }
 
@@ -76,7 +74,7 @@ Template.soundbutton.onDestroyed(function () {
 })
 
 Template.soundbutton.helpers({
-  attributes () {
+  attributes() {
     const instance = Template.instance()
     const isPlaying = instance.isPlaying.get()
     const atts = Object.assign({}, instance.attributes.get())
@@ -89,18 +87,18 @@ Template.soundbutton.helpers({
     atts['aria-hidden'] = true
     return atts
   },
-  isPlaying () {
+  isPlaying() {
     return Template.instance().isPlaying.get()
-  }
+  },
 })
 
 Template.soundbutton.events({
-  'mousedown .lea-sound-btn' (event, templateInstance) {
+  'mousedown .lea-sound-btn'(event, templateInstance) {
     event.preventDefault()
     event.stopPropagation()
     event.stopImmediatePropagation()
   },
-  'click .lea-sound-btn' (event, templateInstance) {
+  'click .lea-sound-btn'(event, templateInstance) {
     event.preventDefault()
     event.stopPropagation()
     event.stopImmediatePropagation()
@@ -125,5 +123,5 @@ Template.soundbutton.events({
         console.error(`error in soundbutton; id=${id}; text=${text}`, e)
       }
     }
-  }
+  },
 })

@@ -1,5 +1,5 @@
-import { Template } from 'meteor/templating'
 import { ReactiveDict } from 'meteor/reactive-dict'
+import { Template } from 'meteor/templating'
 import Sortable from 'sortablejs'
 import { createSubmitResponses } from '../utils/createSubmitResponses'
 import '../explanation/itemExplanations'
@@ -17,14 +17,14 @@ Template.sortItemRenderer.onCreated(function () {
     indexes: [],
     color: 'secondary',
     responseCache: null,
-    readOnly: false
+    readOnly: false,
   })
   instance.submitResponse = createSubmitResponses({
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.state.get('responseCache'),
-      set: val => instance.state.set('responseCache', val)
-    }
+      set: (val) => instance.state.set('responseCache', val),
+    },
   })
 
   instance.autorun(() => {
@@ -44,7 +44,7 @@ Template.sortItemRenderer.onCreated(function () {
 
     if (scores) {
       const indexes = instance.state.get('indexes') || []
-      const entry = scores.find(s => s.itemId === contentId)
+      const entry = scores.find((s) => s.itemId === contentId)
       const { correctResponse } = entry
       let isValid = correctResponse.length === indexes.length
       correctResponse.forEach((val, index) => {
@@ -55,7 +55,9 @@ Template.sortItemRenderer.onCreated(function () {
           isValid = false
         }
       })
-      const expected = isValid ? null : correctResponse.map((index) => values[index])
+      const expected = isValid
+        ? null
+        : correctResponse.map((index) => values[index])
       const color = isValid ? 'success' : 'danger'
       const explanations = []
       if (value.explanation) {
@@ -68,7 +70,9 @@ Template.sortItemRenderer.onCreated(function () {
     }
 
     instance.state.set({
-      values, currentColor: color, readOnly
+      values,
+      currentColor: color,
+      readOnly,
     })
   })
 })
@@ -91,9 +95,9 @@ Template.sortItemRenderer.onRendered(function () {
     ghostClass: `bg-${color}`,
     dragClass: `bg-${color}`,
     chosenClass: `bg-${color}`,
-    onSort: function (/**Event*/evt) {
+    onSort: (/**Event*/ evt) => {
       const indexes = []
-      evt.to.childNodes.forEach(node => {
+      evt.to.childNodes.forEach((node) => {
         if (node.dataset?.index) {
           indexes.push(node.dataset.index)
         }
@@ -102,7 +106,7 @@ Template.sortItemRenderer.onRendered(function () {
       instance.$('.sortable-input').val(indexes.join(','))
       instance.submitResponse({
         responses: instance.getResponse(),
-        data: instance.data
+        data: instance.data,
       })
     },
   })
@@ -130,40 +134,40 @@ Template.sortItemRenderer.onDestroyed(function () {
   const instance = this
   instance.submitResponse({
     responses: instance.getResponse(),
-    data: instance.data
+    data: instance.data,
   })
   instance.state.clear()
 })
 
 Template.sortItemRenderer.helpers({
-  values () {
+  values() {
     const instance = Template.instance()
     return instance.state.get('values')
   },
-  expected () {
+  expected() {
     const instance = Template.instance()
     return instance.state.get('expected')
   },
-  hovered (index) {
+  hovered(index) {
     const instance = Template.instance()
     return instance.state.get('hovered') === index
   },
-  selected (index) {
+  selected(index) {
     const instance = Template.instance()
     return instance.isSelected(index)
   },
-  isExpected (index) {
+  isExpected(index) {
     return Template.instance().state.get('scoring')?.[index]?.isExpected
   },
-  color () {
+  color() {
     const instance = Template.instance()
     return instance.state.get('color')
   },
-  explanations () {
+  explanations() {
     const instance = Template.instance()
     return instance.state.get('explanations')
   },
-  getColor (index) {
+  getColor(index) {
     const instance = Template.instance()
     const scoring = instance.state.get('scoring')
     if (scoring) {
@@ -177,10 +181,10 @@ Template.sortItemRenderer.helpers({
 
     return 'light'
   },
-  readOnly () {
+  readOnly() {
     return Template.instance().state.get('readOnly')
   },
-  scoring () {
+  scoring() {
     return Template.instance().state.get('scoring')
   },
 })

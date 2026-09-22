@@ -1,7 +1,7 @@
-import { Template } from 'meteor/templating'
-import { ReactiveDict } from 'meteor/reactive-dict'
 import { Choice } from 'meteor/leaonline:corelib/items/choice/Choice'
 import { shuffle } from 'meteor/leaonline:corelib/utils/shuffle'
+import { ReactiveDict } from 'meteor/reactive-dict'
+import { Template } from 'meteor/templating'
 import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { getExplanations } from '../utils/getExplanations'
 import '../explanation/itemExplanations'
@@ -11,16 +11,18 @@ import './choiceItemRenderer.css'
 import '../common/itemRenderer.css'
 import './choiceItemRenderer.html'
 
-const parseResponse = responseStr => {
-  if (responseStr === '__undefined__' ||
+const parseResponse = (responseStr) => {
+  if (
+    responseStr === '__undefined__' ||
     typeof responseStr === 'undefined' ||
-    responseStr === null) {
+    responseStr === null
+  ) {
     return null
   }
   return Number.parseInt(responseStr, 10)
 }
 
-const nonNull = value => value !== null
+const nonNull = (value) => value !== null
 
 Template.choiceItemRenderer.onCreated(function () {
   const instance = this
@@ -37,11 +39,11 @@ Template.choiceItemRenderer.onCreated(function () {
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.state.get('responseCache'),
-      set: val => instance.state.set('responseCache', val)
-    }
+      set: (val) => instance.state.set('responseCache', val),
+    },
   })
 
-  instance.autorun(function () {
+  instance.autorun(() => {
     const data = Template.currentData()
     const { value, color, readOnly, isLearning, scores, contentId } = data
 
@@ -61,9 +63,7 @@ Template.choiceItemRenderer.onCreated(function () {
     })
 
     // assign the values plain or shuffled
-    const values = value.shuffle
-      ? shuffle(mapped)
-      : mapped
+    const values = value.shuffle ? shuffle(mapped) : mapped
 
     if (scores) {
       const explanations = getExplanations({ value, scores })
@@ -74,14 +74,23 @@ Template.choiceItemRenderer.onCreated(function () {
       // XXX: to support multiple items on a single page we need to make sure
       // we compare the indexes only for scores that have the itemId that
       // matches the current item's contentId
-      values.forEach(entry => {
+      values.forEach((entry) => {
         const index = entry.index
-        const isSelected = isMultiple ? selected?.includes?.(index) : selected === index
-        const scoreEntry = scores.find(score => score.itemId === contentId && score.correctResponse.includes(index))
+        const isSelected = isMultiple
+          ? selected?.includes?.(index)
+          : selected === index
+        const scoreEntry = scores.find(
+          (score) =>
+            score.itemId === contentId && score.correctResponse.includes(index),
+        )
         const isExpected = !isSelected && !!scoreEntry
         const color = isSelected
-          ? (scoreEntry ? 'success' : 'danger')
-          : isExpected ? 'secondary' : 'light'
+          ? scoreEntry
+            ? 'success'
+            : 'danger'
+          : isExpected
+            ? 'secondary'
+            : 'light'
         scoring[index] = { index, isExpected, color }
       })
 
@@ -91,12 +100,16 @@ Template.choiceItemRenderer.onCreated(function () {
     }
 
     instance.state.set({
-      values, currentColor: color, isMultiple, readOnly, isLearning
+      values,
+      currentColor: color,
+      isMultiple,
+      readOnly,
+      isLearning,
     })
   })
 
   // helpers
-  instance.isSelected = index => {
+  instance.isSelected = (index) => {
     const selected = instance.state.get('selected')
 
     if (typeof selected === 'undefined' || selected === null) {
@@ -113,7 +126,7 @@ Template.choiceItemRenderer.onDestroyed(function () {
   const instance = this
   instance.submitResponse({
     responses: instance.getResponse(),
-    data: instance.data
+    data: instance.data,
   })
   instance.state.clear()
 })
@@ -154,30 +167,28 @@ Template.choiceItemRenderer.onRendered(function () {
 })
 
 Template.choiceItemRenderer.helpers({
-  isMultiple () {
+  isMultiple() {
     return Template.instance().state.get('isMultiple')
   },
-  choiceType () {
-    return Template.instance().state.get('isMultiple')
-      ? 'checkbox'
-      : 'radio'
+  choiceType() {
+    return Template.instance().state.get('isMultiple') ? 'checkbox' : 'radio'
   },
-  values () {
+  values() {
     const instance = Template.instance()
     return instance.state.get('values')
   },
-  hovered (index) {
+  hovered(index) {
     const instance = Template.instance()
     return instance.state.get('hovered') === index
   },
-  selected (index) {
+  selected(index) {
     const instance = Template.instance()
     return instance.isSelected(index)
   },
   isExpected(index) {
     return Template.instance().state.get('scoring')?.[index]?.isExpected
   },
-  getColor (index) {
+  getColor(index) {
     const instance = Template.instance()
     const scoring = instance.state.get('scoring')
     if (scoring) {
@@ -191,25 +202,25 @@ Template.choiceItemRenderer.helpers({
 
     return 'light'
   },
-  dimensionColor () {
+  dimensionColor() {
     return Template.currentData()?.color ?? 'secondary'
   },
-  readOnly () {
+  readOnly() {
     return Template.instance().state.get('readOnly')
   },
-  scoring () {
+  scoring() {
     return Template.instance().state.get('scoring')
   },
-  explanations () {
+  explanations() {
     return Template.instance().state.get('explanations')
-  }
+  },
 })
 
 Template.choiceItemRenderer.events({
-  'click .choice-soundbutton' (event) {
+  'click .choice-soundbutton'(event) {
     event.stopPropagation()
   },
-  'click .choice-interaction' (event, templateInstance) {
+  'click .choice-interaction'(event, templateInstance) {
     if (templateInstance.state.get('readOnly')) {
       return
     }
@@ -252,23 +263,23 @@ Template.choiceItemRenderer.events({
 
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
-      data: templateInstance.data
+      data: templateInstance.data,
     })
   },
-  'mouseenter .choice-entry' (event, templateInstance) {
+  'mouseenter .choice-entry'(event, templateInstance) {
     const index = templateInstance.$(event.currentTarget).data('index')
     const hovered = Number.parseInt(index, 10)
     templateInstance.state.set('hovered', hovered)
   },
-  'mouseleave .choice-entry' (event, templateInstance) {
+  'mouseleave .choice-entry'(event, templateInstance) {
     templateInstance.state.set('hovered', null)
-  }
+  },
 })
 
-function singleResponse (templateInstance) {
+function singleResponse(templateInstance) {
   const responses = []
 
-  templateInstance.$('input:radio').each(function (index, radioButton) {
+  templateInstance.$('input:radio').each((index, radioButton) => {
     const $rb = templateInstance.$(radioButton)
     if ($rb.is(':checked')) {
       responses[0] = $rb.val()
@@ -278,10 +289,10 @@ function singleResponse (templateInstance) {
   return responses
 }
 
-function multipleResponse (templateInstance) {
+function multipleResponse(templateInstance) {
   const responses = []
 
-  templateInstance.$('input:checkbox').each(function (index, checkbox) {
+  templateInstance.$('input:checkbox').each((index, checkbox) => {
     const $cb = templateInstance.$(checkbox)
     if ($cb.is(':checked')) {
       responses.push($cb.val())

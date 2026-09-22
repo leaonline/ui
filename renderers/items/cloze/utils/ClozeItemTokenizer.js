@@ -19,10 +19,13 @@ const tokenize = createSimpleTokenizer(startPattern, closePattern)
 
 ClozeItemTokenizer.tokenize = ({ text, flavor, isTable, itemId }) => {
   if (isTable) {
-    return text.split(newLineRegExp).map(row => {
-      return row.split(tableSeparator).map(cell => {
-        return tokenize(cell.trim()).map(toTokens({ itemId }), { flavor })
-      }).flat().filter(cell => cell.length > 0)
+    return text.split(newLineRegExp).map((row) => {
+      return row
+        .split(tableSeparator)
+        .flatMap((cell) => {
+          return tokenize(cell.trim()).map(toTokens({ itemId }), { flavor })
+        })
+        .filter((cell) => cell.length > 0)
     })
   } else {
     const preprocessedValue = text.replace(newLineRegExp, newLineReplacer)
@@ -36,98 +39,103 @@ ClozeItemTokenizer.tokenize = ({ text, flavor, isTable, itemId }) => {
 
 const tokenizeValueEntry = createSimpleTokenizer('[', ']')
 
-const tokenizeBlanks = (flavor, value) => tokenizeValueEntry(value)
-  .filter(entry => entry.length > 0)
-  .map((token, index, arr) => {
-    if (token.isToken) {
-      token.hasPre = index > 0
-      token.hasSuf = index < arr.length - 1
-      token.flavor = flavor
-    }
-    token.index = index
-    return token
-  })
-
-const tokenizeSelect = (flavor, value) => tokenizeValueEntry(value)
-  .filter(entry => entry.length > 0)
-  .map((token, index, arr) => {
-    if (token.isToken) {
-      token.value = token.value.split(optionsSeparator)
-      token.hasPre = index > 0
-      token.hasSuf = index < arr.length - 1
-      token.flavor = flavor
-    }
-    token.index = index
-    return token
-  })
-
-const tokenizeText = (flavor, value) => tokenizeValueEntry(value)
-  .filter(entry => entry.length > 0)
-  .map((token, index) => {
-    if (token.isToken) {
-      token.hasPre = false
-      token.hasSuf = false
-      token.flavor = flavor
-    }
-    token.index = index
-    return token
-  })
-
-const toTokens = ({ itemId }) => entry => {
-  if (!entry.itemId) {
-      entry.itemId = itemId
-  }
-
-  // we simply indicate newlines within
-  // our brackets to avoid complex parsing
-  if (entry.value.includes('//')) {
-    entry.isNewLine = true
-    return entry
-  }
-
-  if (entry.value.length === 0) {
-    entry.isEmpty = true
-    return entry
-  }
-
-  // for normal text tokens we don't need
-  // further processing of content here
-  if (entry.value.indexOf(separator) === -1) {
-    return entry
-  }
-
-  // if this is an interactive token
-  // we process ist from the value split
-  const split = entry.value.split('$')
-  const flavorKey = split[0]
-  const flavor = ClozeItemRendererUtils.getFlavor(flavorKey)
-
-  if (!flavor) {
-    throw new Error(`Unexpected flavor - ${flavorKey}`)
-  }
-
-  entry.flavor = flavor
-  entry.value = getTokenValueForFlavor(entry.flavor, split[1])
-  entry.tts = split[2]
-
-  // optionally we can parse some configurations
-  if (split[3]) {
-    const configs = split[3].split('&')
-    configs.forEach(configPair => {
-      const configSplit = configPair.split('=')
-      if (configSplit.length < 2) {
-        return console.warn('Invalid config:', configPair)
+const tokenizeBlanks = (flavor, value) =>
+  tokenizeValueEntry(value)
+    .filter((entry) => entry.length > 0)
+    .map((token, index, arr) => {
+      if (token.isToken) {
+        token.hasPre = index > 0
+        token.hasSuf = index < arr.length - 1
+        token.flavor = flavor
       }
-      entry[configSplit[0]] = configSplit[1]
+      token.index = index
+      return token
     })
+
+const tokenizeSelect = (flavor, value) =>
+  tokenizeValueEntry(value)
+    .filter((entry) => entry.length > 0)
+    .map((token, index, arr) => {
+      if (token.isToken) {
+        token.value = token.value.split(optionsSeparator)
+        token.hasPre = index > 0
+        token.hasSuf = index < arr.length - 1
+        token.flavor = flavor
+      }
+      token.index = index
+      return token
+    })
+
+const tokenizeText = (flavor, value) =>
+  tokenizeValueEntry(value)
+    .filter((entry) => entry.length > 0)
+    .map((token, index) => {
+      if (token.isToken) {
+        token.hasPre = false
+        token.hasSuf = false
+        token.flavor = flavor
+      }
+      token.index = index
+      return token
+    })
+
+const toTokens =
+  ({ itemId }) =>
+  (entry) => {
+    if (!entry.itemId) {
+      entry.itemId = itemId
+    }
+
+    // we simply indicate newlines within
+    // our brackets to avoid complex parsing
+    if (entry.value.includes('//')) {
+      entry.isNewLine = true
+      return entry
+    }
+
+    if (entry.value.length === 0) {
+      entry.isEmpty = true
+      return entry
+    }
+
+    // for normal text tokens we don't need
+    // further processing of content here
+    if (entry.value.indexOf(separator) === -1) {
+      return entry
+    }
+
+    // if this is an interactive token
+    // we process ist from the value split
+    const split = entry.value.split('$')
+    const flavorKey = split[0]
+    const flavor = ClozeItemRendererUtils.getFlavor(flavorKey)
+
+    if (!flavor) {
+      throw new Error(`Unexpected flavor - ${flavorKey}`)
+    }
+
+    entry.flavor = flavor
+    entry.value = getTokenValueForFlavor(entry.flavor, split[1])
+    entry.tts = split[2]
+
+    // optionally we can parse some configurations
+    if (split[3]) {
+      const configs = split[3].split('&')
+      configs.forEach((configPair) => {
+        const configSplit = configPair.split('=')
+        if (configSplit.length < 2) {
+          return console.warn('Invalid config:', configPair)
+        }
+        entry[configSplit[0]] = configSplit[1]
+      })
+    }
+
+    // a block entry has no value and is used, for example, to
+    // render a d-block tts-button to read the whole text
+    entry.isBlock = !entry.value || entry.value.length === 0
+
+    return entry
   }
-
-  // a block entry has no value and is used, for example, to
-  // render a d-block tts-button to read the whole text
-  entry.isBlock = !entry.value || entry.value.length === 0
-
-  return entry
-}
 
 const getTokenValueForFlavor = (flavor, rawValue = '') => {
   if (ClozeItemRendererUtils.isBlank(flavor)) {
@@ -154,5 +162,5 @@ export {
   tokenizeSelect,
   tokenizeText,
   toTokens,
-  getTokenValueForFlavor
+  getTokenValueForFlavor,
 }

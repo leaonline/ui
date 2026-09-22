@@ -1,5 +1,5 @@
-import { Template } from 'meteor/templating'
 import { Meteor } from 'meteor/meteor'
+import { Template } from 'meteor/templating'
 import '../factory/TaskRendererFactory'
 import '../../components/actionButton/actionButton'
 import './taskPageRenderer.html'
@@ -7,7 +7,7 @@ import './taskPageRenderer.html'
 Template.taskPageRenderer.onCreated(function () {
   const instance = this
 
-  const parseData = data => {
+  const parseData = (data) => {
     const unitDoc = data.doc
     const color = data.color || 'secondary'
     let currentPageCount = data.currentPageCount || 0
@@ -15,7 +15,8 @@ Template.taskPageRenderer.onCreated(function () {
       currentPageCount = 0
     }
     const showScoring = data.isLearning && !data.isStory && !!data.onEvaluate
-    const showCorrectResponse = data.isLearning && !data.isStory  && !!data.onEvaluate
+    const showCorrectResponse =
+      data.isLearning && !data.isStory && !!data.onEvaluate
 
     instance.state.set({
       isPreview: data.isPreview,
@@ -26,15 +27,17 @@ Template.taskPageRenderer.onCreated(function () {
       scoring: null,
       feedback: null,
       wasScored: false,
-      unitDoc
+      unitDoc,
     })
 
     if (unitDoc.pages) {
       const currentPage = unitDoc.pages[currentPageCount]
       const userId = Meteor.userId()
-      const hasItems = currentPage?.content?.some(entry => entry.type === 'item')
+      const hasItems = currentPage?.content?.some(
+        (entry) => entry.type === 'item',
+      )
 
-      currentPage.content = currentPage.content.map(entry => {
+      currentPage.content = currentPage.content.map((entry) => {
         //entry.unitDoc = unitDoc
         entry.unitId = unitDoc._id
         entry.page = currentPageCount
@@ -51,7 +54,6 @@ Template.taskPageRenderer.onCreated(function () {
         maxPages: unitDoc.pages.length,
         hasNext: unitDoc.pages.length > currentPageCount + 1,
       })
-
     }
 
     instance.state.set('color', color)
@@ -98,65 +100,68 @@ Template.taskPageRenderer.onCreated(function () {
 })
 
 Template.taskPageRenderer.helpers({
-  loadComplete () {
+  loadComplete() {
     const instance = Template.instance()
     return instance.state.get('unitDoc')
   },
-  unitDoc () {
+  unitDoc() {
     return Template.getState('unitDoc')
   },
-  currentType () {
+  currentType() {
     return Template.getState('color')
   },
-  dimension () {
+  dimension() {
     return Template.getState('dimension')
   },
-  currentPage () {
+  currentPage() {
     return Template.getState('currentPage')
   },
-  hasPages () {
+  hasPages() {
     const unitDoc = Template.getState('unitDoc')
     return unitDoc?.pages?.length > 0
   },
-  currentStimuli (unitDoc) {
+  currentStimuli(unitDoc) {
     if (!unitDoc) return
 
     return unitDoc.story || unitDoc.stimuli
   },
-  currentInstructions (unitDoc) {
+  currentInstructions(unitDoc) {
     const instance = Template.instance()
     const currentPage = instance.state.get('currentPage')
-    if (currentPage && currentPage?.instructions) {
+    if (currentPage?.instructions) {
       return currentPage.instructions
     }
 
     return unitDoc.instructions
   },
-  currentPageCount () {
+  currentPageCount() {
     return Template.getState('currentPageCount') + 1
   },
-  maxPages () {
+  maxPages() {
     return Template.getState('maxPages')
   },
-  showNext () {
+  showNext() {
     return Template.instance().showNext()
   },
-  showScoring () {
+  showScoring() {
     return Template.getState('showScoring')
   },
-  showCorrectResponse () {
+  showCorrectResponse() {
     return Template.getState('showCorrectResponse')
   },
-  showFeedback () {
+  showFeedback() {
     return Template.instance().showFeedback()
   },
-  waitForSubmit () {
+  waitForSubmit() {
     return Template.getState('waitForSubmit')
   },
-  hasPrev () {
-    return Template.getState('isPreview') && Template.getState('currentPageCount') > 0
+  hasPrev() {
+    return (
+      Template.getState('isPreview') &&
+      Template.getState('currentPageCount') > 0
+    )
   },
-  itemData (content) {
+  itemData(content) {
     const instance = Template.instance()
     const { onInput, onLoad, onEvaluate } = instance.data
     return Object.assign({}, content, {
@@ -164,23 +169,23 @@ Template.taskPageRenderer.helpers({
       onLoad,
       onEvaluate,
       scores: instance.state.get('scoring'),
-      readOnly: instance.state.get('wasScored')
+      readOnly: instance.state.get('wasScored'),
     })
   },
-  showFinishButton () {
+  showFinishButton() {
     const instance = Template.instance()
     return !instance.state.get('hasNext') && !instance.state.get('isStory')
   },
-  updating () {
+  updating() {
     return Template.getState('updating')
   },
-  finishing () {
+  finishing() {
     return Template.getState('finishing')
-  }
+  },
 })
 
 Template.taskPageRenderer.events({
-  'click .lea-pagenav-button' (event, templateInstance) {
+  'click .lea-pagenav-button'(event, templateInstance) {
     event.preventDefault()
     const action = templateInstance.$(event.currentTarget).data('action')
     const unitDoc = templateInstance.state.get('unitDoc')
@@ -190,17 +195,19 @@ Template.taskPageRenderer.events({
     if (action === 'next') {
       newPage.currentPageCount = currentPageCount + 1
       newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
+      newPage.hasNext = newPage.currentPageCount + 1 < unitDoc.pages.length
     }
 
     if (action === 'back') {
       newPage.currentPageCount = currentPageCount - 1
       newPage.currentPage = unitDoc.pages[newPage.currentPageCount]
-      newPage.hasNext = (newPage.currentPageCount + 1) < unitDoc.pages.length
+      newPage.hasNext = newPage.currentPageCount + 1 < unitDoc.pages.length
     }
 
     if (!newPage.currentPage) {
-      throw new Error(`Undefined page for current index ${newPage.currentPageCount}`)
+      throw new Error(
+        `Undefined page for current index ${newPage.currentPageCount}`,
+      )
     }
 
     const $current = templateInstance.$('.lea-unit-current-content-container')
@@ -222,7 +229,7 @@ Template.taskPageRenderer.events({
       }, 100)
     }
   },
-  'click .lea-pagenav-finish-button' (event, templateInstance) {
+  'click .lea-pagenav-finish-button'(event, templateInstance) {
     event.preventDefault()
 
     if (!templateInstance.state.get('finishing') && templateInstance.onFinish) {
@@ -230,7 +237,7 @@ Template.taskPageRenderer.events({
       templateInstance.onFinish()
     }
   },
-  'click .lea-evaluate-btn': async function (event, templateInstance) {
+  'click .lea-evaluate-btn': async (event, templateInstance) => {
     event.preventDefault()
     if (templateInstance.data.onEvaluate) {
       const scoring = await templateInstance.data.onEvaluate()
@@ -238,5 +245,5 @@ Template.taskPageRenderer.events({
     }
 
     templateInstance.state.set({ wasScored: true })
-  }
+  },
 })

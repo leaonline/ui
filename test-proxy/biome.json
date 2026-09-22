@@ -6,7 +6,14 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"packages/ui/components/**/*.js",
+			"packages/ui/renderers/**/*.js",
+			"packages/ui/tests/**/*.js",
+			"packages/ui/utils/**/*.js",
+			"*.md"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -23,6 +30,10 @@
 			"complexity": {
 				"noForEach": "off",
 				"noUselessThisAlias": "off"
+			},
+			"suspicious": {
+				"noDoubleEquals": "warn",
+				"useIterableCallbackReturn": "warn"
 			}
 		}
 	},

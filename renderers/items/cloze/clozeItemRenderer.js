@@ -1,11 +1,11 @@
+import { Random } from 'meteor/random'
+import { ReactiveDict } from 'meteor/reactive-dict'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
-import { ReactiveDict } from 'meteor/reactive-dict'
-import { Random } from 'meteor/random'
-import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
-import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
 import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { getExplanations } from '../utils/getExplanations'
+import { ClozeItemRendererUtils } from './utils/ClozeItemRendererUtils'
+import { ClozeItemTokenizer } from './utils/ClozeItemTokenizer'
 import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
 import './clozeItemRenderer.css'
@@ -28,8 +28,8 @@ Template.clozeItemRenderer.onCreated(function () {
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.responseCache.get(),
-      set: val => instance.responseCache.set(val)
-    }
+      set: (val) => instance.responseCache.set(val),
+    },
   })
 
   instance.autorun(() => {
@@ -53,18 +53,18 @@ Template.clozeItemRenderer.onCreated(function () {
     // we try the parsing and catch any exception and display it as an error below
     try {
       const tokens = ClozeItemTokenizer.tokenize({
-          ...value,
-          itemId: data.contentId
+        ...value,
+        itemId: data.contentId,
       })
       let index = 0
-      const assignIndex = token => {
-        if (Object.hasOwnProperty.call(token, 'flavor')) {
+      const assignIndex = (token) => {
+        if (Object.hasOwn(token, 'flavor')) {
           token.itemIndex = index++
         }
       }
 
       if (isTable) {
-        tokens.forEach(row => row.forEach(assignIndex))
+        tokens.forEach((row) => row.forEach(assignIndex))
       } else {
         tokens.forEach(assignIndex)
       }
@@ -73,15 +73,18 @@ Template.clozeItemRenderer.onCreated(function () {
         // in scoring cloze items, we iterate over the tokens and assign the score to the token if it exists
         // XXX: we have introduced the itemId (=contentId) as additional search filter
         // to support scoring feedback when multiple items exist on a given page
-        const assignFeedback = token => {
-          const feedback = ClozeItemRendererUtils.getFeedbackForToken({ scores, token })
+        const assignFeedback = (token) => {
+          const feedback = ClozeItemRendererUtils.getFeedbackForToken({
+            scores,
+            token,
+          })
           if (feedback) {
             Object.assign(token, feedback)
           }
         }
 
         if (isTable) {
-          tokens.forEach(row => row.forEach(assignFeedback))
+          tokens.forEach((row) => row.forEach(assignFeedback))
         } else {
           tokens.forEach(assignFeedback)
         }
@@ -108,7 +111,7 @@ Template.clozeItemRenderer.onRendered(function () {
   if (typeof data.onLoad === 'function') {
     const cachedData = data.onLoad(data)
     if (cachedData?.responses) {
-      instance.$('.cloze-item').each(function (index, input) {
+      instance.$('.cloze-item').each((index, input) => {
         const response = cachedData.responses[index]
         if (response && response !== '__undefined__') {
           instance.$(input).val(response)
@@ -119,7 +122,7 @@ Template.clozeItemRenderer.onRendered(function () {
 
   instance.getResponse = () => {
     const responses = []
-    instance.$('.cloze-item').each(function (index, input) {
+    instance.$('.cloze-item').each((index, input) => {
       const value = instance.$(input).val()
       responses.push(value || '__undefined__')
     })
@@ -131,79 +134,77 @@ Template.clozeItemRenderer.onDestroyed(function () {
   const instance = this
   instance.submitResponse({
     responses: instance.getResponse(),
-    data: instance.data
+    data: instance.data,
   })
   instance.state.clear()
 })
 
 Template.clozeItemRenderer.helpers({
-  tokens () {
+  tokens() {
     return Template.instance().tokens.get()
   },
-  color () {
+  color() {
     return Template.instance().color.get()
   },
-  error () {
+  error() {
     return Template.instance().error.get()
   },
-  isTable () {
+  isTable() {
     return Template.instance().isTable.get()
   },
-  hasTableBorder () {
+  hasTableBorder() {
     return Template.instance().hasTableBorder.get()
   },
-  tableRows () {
+  tableRows() {
     return Template.instance().tokens.get()
   },
-  isCellSkip (value) {
+  isCellSkip(value) {
     return value === CELL_SKIP
   },
-  isEmpty (value) {
+  isEmpty(value) {
     return !value || value.length === 0
   },
-  readOnly () {
+  readOnly() {
     return Template.getState('readOnly')
   },
-  explanations () {
+  explanations() {
     return Template.instance().state.get('explanations')
-  }
+  },
 })
 
 Template.clozeItemRenderValueToken.helpers({
-  loadComplete () {
+  loadComplete() {
     return Template.instance().state.get('loadComplete')
   },
-  isBlank (token) {
+  isBlank(token) {
     return ClozeItemRendererUtils.isBlank(token.flavor)
   },
-  isSelect (token) {
+  isSelect(token) {
     return ClozeItemRendererUtils.isSelect(token.flavor)
   },
-  isEmpty (token) {
+  isEmpty(token) {
     return ClozeItemRendererUtils.isEmpty(token.flavor)
   },
-  isText (token) {
+  isText(token) {
     return ClozeItemRendererUtils.isText(token.flavor)
   },
-  random () {
+  random() {
     return Random.id(10)
   },
-  inputWidth (length) {
+  inputWidth(length) {
     return length * 1.5
   },
-  maxLength (length) {
+  maxLength(length) {
     return Math.floor(length * 1.5)
   },
-  tableBorder () {
-
-  },
-  shouldShowCorrectResponse (token) {
+  tableBorder() {},
+  shouldShowCorrectResponse(token) {
     return token.wasScored && !token.isValid && token.expected
-  }
+  },
 })
 
 Template.clozeItemRenderer.events({
-  'input .cloze-input' (event, templateInstance) {
+  'input .cloze-input'(event, templateInstance) {
     const $target = templateInstance.$(event.currentTarget)
     const $container = templateInstance.$('.cloze-container')
     const isTable = templateInstance.isTable.get()
@@ -222,21 +223,19 @@ Template.clozeItemRenderer.events({
     const valueIndex = $target.data('valueindex')
     const tokens = templateInstance.tokens.get()
     const originalSize = tokens[tokenIndex].value[valueIndex].length
-    const newSize = value.length > originalSize
-      ? value.length
-      : originalSize
+    const newSize = value.length > originalSize ? value.length : originalSize
     $target.attr('size', newSize)
   },
-  'blur .cloze-input' (event, templateInstance) {
+  'blur .cloze-input'(event, templateInstance) {
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
-      data: templateInstance.data
+      data: templateInstance.data,
     })
   },
-  'change .cloze-select' (event, templateInstance) {
+  'change .cloze-select'(event, templateInstance) {
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
-      data: templateInstance.data
+      data: templateInstance.data,
     })
-  }
+  },
 })

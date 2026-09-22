@@ -1,5 +1,5 @@
-import { Template } from 'meteor/templating'
 import { ReactiveVar } from 'meteor/reactive-var'
+import { Template } from 'meteor/templating'
 import './markdownRenderer.css'
 import './markdownRenderer.html'
 
@@ -18,14 +18,14 @@ Template.markdownRenderer.onCreated(function () {
 })
 
 Template.markdownRenderer.helpers({
-  render () {
+  render() {
     return Template.instance().markdown.get()
-  }
+  },
 })
 
 export const Markdown = {}
 
-Markdown.renderer = async md => md
+Markdown.renderer = async (md) => md
 
 Markdown.init = (options = {}) => {
   if (options.renderer) {

@@ -17,7 +17,7 @@ Template.connectItemRenderer.onCreated(function () {
     connections: null,
     dragging: false,
     dragOver: null,
-    readOnly: null
+    readOnly: null,
   })
 
   instance.state.setDefault('responseCache', null)
@@ -26,35 +26,37 @@ Template.connectItemRenderer.onCreated(function () {
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.state.get('responseCache'),
-      set: val => instance.state.set('responseCache', val)
-    }
+      set: (val) => instance.state.set('responseCache', val),
+    },
   })
 
   instance.getResponse = () => {
     const connections = instance.state.get('connections') ?? []
-    return connections.map(c => `${c.from},${c.to}`)
+    return connections.map((c) => `${c.from},${c.to}`)
   }
 
   instance.createLine = ({ from, to, source, target, color }) => {
     // get the root position
     const root = instance.root
-    if (!root) { return null }
+    if (!root) {
+      return null
+    }
     const rootRect = root.getBoundingClientRect()
 
     const rx = rootRect.left
     const ry = rootRect.top
 
     // get the source position
-    const x1 = (source.left - rx) + source.width + 10
-    const y1 = (source.top - ry) + source.height / 2
+    const x1 = source.left - rx + source.width + 10
+    const y1 = source.top - ry + source.height / 2
 
     // get the dropzone position
-    const x2 = (target.left - rx)
-    const y2 = (target.top - ry) + target.height / 2
+    const x2 = target.left - rx
+    const y2 = target.top - ry + target.height / 2
 
     // center remove button on the middle of the line
     const cx = (x1 + x2) / 2
-    const cy = ((y1 + y2) / 2) - 10
+    const cy = (y1 + y2) / 2 - 10
 
     // measure width and height of the svg container
     const width = rootRect.width
@@ -69,10 +71,12 @@ Template.connectItemRenderer.onCreated(function () {
   instance.updateLinePositions = () => {
     const connections = instance.state.get('connections') ?? []
     let changed = false
-    const positioned = connections.map(connection => {
+    const positioned = connections.map((connection) => {
       const source = instance.findEndpoint('.connect-source', connection.from)
       const target = instance.findEndpoint('.connect-dropzone', connection.to)
-      if (!source || !target) { return connection }
+      if (!source || !target) {
+        return connection
+      }
 
       changed = true
       return {
@@ -80,16 +84,18 @@ Template.connectItemRenderer.onCreated(function () {
         ...instance.createLine({
           ...connection,
           source: source.getBoundingClientRect(),
-          target: target.getBoundingClientRect()
-        })
+          target: target.getBoundingClientRect(),
+        }),
       }
     })
 
-    if (changed) { instance.state.set('connections', positioned) }
+    if (changed) {
+      instance.state.set('connections', positioned)
+    }
   }
 
   // autorun to initialize connections from response
-  instance.autorun(function () {
+  instance.autorun(() => {
     const data = Template.currentData()
     const { value, color, readOnly, scores, contentId } = data
     if (scores) {
@@ -98,11 +104,15 @@ Template.connectItemRenderer.onCreated(function () {
 
       // step 1 - check status of made connections
       connections.forEach((connection) => {
-        if (connection.validated) { return }
+        if (connection.validated) {
+          return
+        }
         const { from, to } = connection
         const valid = scores.some(({ itemId, correctResponse }) => {
           if (itemId === contentId && typeof correctResponse[0] === 'object') {
-            return correctResponse.some(({ left, right }) => left == from && right == to)
+            return correctResponse.some(
+              ({ left, right }) => left == from && right == to,
+            )
           }
         })
         connection.validated = true
@@ -112,9 +122,13 @@ Template.connectItemRenderer.onCreated(function () {
       // step 2 - add potentially missed connections
 
       scores.forEach(({ itemId, correctResponse }) => {
-        if (itemId !== contentId || correctResponse.length < 2) { return }
+        if (itemId !== contentId || correctResponse.length < 2) {
+          return
+        }
         const evaluate = (left, right) => {
-          const hasConnection = connections.find(c => c.from == left && c.to == right)
+          const hasConnection = connections.find(
+            (c) => c.from == left && c.to == right,
+          )
 
           // if it does not have a connection, then we get the elements by their index
           // and calculate the line coordinates
@@ -128,7 +142,7 @@ Template.connectItemRenderer.onCreated(function () {
                 to: right,
                 source: source.getBoundingClientRect(),
                 target: target.getBoundingClientRect(),
-                color: `var(--bs-secondary)`
+                color: `var(--bs-secondary)`,
               })
               line.validated = true
               connections.push(line)
@@ -139,8 +153,7 @@ Template.connectItemRenderer.onCreated(function () {
           correctResponse.forEach(({ left, right }) => {
             evaluate(left, right)
           })
-        }
-        else {
+        } else {
           console.warn('Unexpected correctResponse format', correctResponse)
         }
       })
@@ -159,14 +172,19 @@ Template.connectItemRenderer.onRendered(function () {
 
   instance.scheduleLineUpdate = () => {
     cancelAnimationFrame(instance.resizeFrame)
-    instance.resizeFrame = requestAnimationFrame(() => instance.updateLinePositions())
+    instance.resizeFrame = requestAnimationFrame(() =>
+      instance.updateLinePositions(),
+    )
   }
 
   if (window.ResizeObserver) {
-    instance.resizeObserver = new window.ResizeObserver(instance.scheduleLineUpdate)
+    instance.resizeObserver = new window.ResizeObserver(
+      instance.scheduleLineUpdate,
+    )
     instance.resizeObserver.observe(instance.root)
-    instance.root.querySelectorAll('.connect-source, .connect-dropzone')
-      .forEach(element => instance.resizeObserver.observe(element))
+    instance.root
+      .querySelectorAll('.connect-source, .connect-dropzone')
+      .forEach((element) => instance.resizeObserver.observe(element))
   }
   window.addEventListener('resize', instance.scheduleLineUpdate)
 
@@ -179,9 +197,11 @@ Template.connectItemRenderer.onRendered(function () {
       const cachedData = data.onLoad(data) ?? {}
 
       if (cachedData) {
-        const connections = Tracker.nonreactive(() => instance.state.get('connections') ?? [])
+        const connections = Tracker.nonreactive(
+          () => instance.state.get('connections') ?? [],
+        )
         const { responses = [] } = cachedData
-        responses.forEach(response => {
+        responses.forEach((response) => {
           const [from, to] = response.split(',')
           const source = instance.findEndpoint('.connect-source', from)
           const target = instance.findEndpoint('.connect-dropzone', to)
@@ -192,7 +212,7 @@ Template.connectItemRenderer.onRendered(function () {
               to,
               source: source.getBoundingClientRect(),
               target: target.getBoundingClientRect(),
-              color: `var(--bs-${data.color})`
+              color: `var(--bs-${data.color})`,
             })
             connections.push(line)
           }
@@ -211,70 +231,70 @@ Template.connectItemRenderer.onDestroyed(function () {
   instance.dragged = null
   instance.submitResponse({
     responses: instance.getResponse(),
-    data: instance.data
+    data: instance.data,
   })
   instance.state.clear()
 })
 
 Template.connectItemRenderer.helpers({
-  hover (side, index) {
+  hover(side, index) {
     const data = Template.getState('hover') ?? {}
     return data.side === side && data.index == index
   },
-  color () {
+  color() {
     return Template.currentData().color
   },
-  dragging () {
+  dragging() {
     return Template.getState('dragging')
   },
-  dragOver (index) {
+  dragOver(index) {
     const data = Template.getState('dragOver') ?? {}
     return data.index == index
   },
-  connections () {
+  connections() {
     return Template.getState('connections')
   },
-  explanations () {
+  explanations() {
     return Template.instance().state.get('explanations')
-  }
+  },
 })
 
 Template.connectItemRenderer.events({
-  'mouseenter .connect-draggable' (event, templateInstance) {
+  'mouseenter .connect-draggable'(event, templateInstance) {
     const side = dataTarget(event, 'side')
     const index = dataTarget(event, 'index')
     templateInstance.state.set('hover', { side, index })
   },
-  'mouseleave .connect-draggable' (event, templateInstance) {
+  'mouseleave .connect-draggable'(event, templateInstance) {
     templateInstance.state.set('hover', null)
   },
-  'drag' (event, templateInstance) {
+  drag(event, templateInstance) {
     // console.log('drag')
   },
-  'dragstart .connect-draggable' (event, templateInstance) {
+  'dragstart .connect-draggable'(event, templateInstance) {
     event.originalEvent.dataTransfer.setData('text/plain', null)
     templateInstance.dragged = event.target
     templateInstance.state.set('dragging', true)
   },
-  'dragend .connect-draggable' (event, templateInstance) {
+  'dragend .connect-draggable'(event, templateInstance) {
     templateInstance.state.set('dragging', false)
   },
-  'dragover' (event, templateInstance) {
+  dragover(event, templateInstance) {
     event.preventDefault()
   },
-  'dragenter .connect-dropzone' (event, templateInstance) {
+  'dragenter .connect-dropzone'(event, templateInstance) {
     event.preventDefault()
     if (event.currentTarget.className.includes('dropzone')) {
       const index = dataTarget(event, 'index')
       templateInstance.state.set('dragOver', { index })
     }
   },
-  'dragleave .connect-dropzone' (event, templateInstance) {
+  'dragleave .connect-dropzone'(event, templateInstance) {
     if (event.currentTarget.className.includes('dropzone')) {
       templateInstance.state.set('dragOver', null)
     }
   },
-  'drop' (event, templateInstance) {
+  drop(event, templateInstance) {
     event.preventDefault()
 
     // add a new line
@@ -282,8 +302,12 @@ Template.connectItemRenderer.events({
       const dropIndex = dataTarget(event, 'index')
       const childIndex = templateInstance.dragged.dataset.index
       const connections = templateInstance.state.get('connections') ?? []
-      const existing = connections.find(c => c.from == childIndex && c.to == dropIndex)
-      if (existing) { return }
+      const existing = connections.find(
+        (c) => c.from == childIndex && c.to == dropIndex,
+      )
+      if (existing) {
+        return
+      }
 
       // get the draggable position
       const source = templateInstance.dragged.getBoundingClientRect()
@@ -296,25 +320,31 @@ Template.connectItemRenderer.events({
         to: dropIndex,
         source,
         target,
-        color: `var(--bs-${Template.currentData().color})`
+        color: `var(--bs-${Template.currentData().color})`,
       })
       connections.push(child)
 
-      templateInstance.state.set({ connections, dragging: false, dragOver: null })
+      templateInstance.state.set({
+        connections,
+        dragging: false,
+        dragOver: null,
+      })
 
       // submit response
       templateInstance.submitResponse({
         responses: templateInstance.getResponse(),
-        data: templateInstance.data
+        data: templateInstance.data,
       })
     }
   },
-  'click .connect-remove-btn' (event, templateInstance) {
+  'click .connect-remove-btn'(event, templateInstance) {
     event.preventDefault()
     const from = dataTarget(event, 'from')
     const to = dataTarget(event, 'to')
     const connections = templateInstance.state.get('connections') ?? []
-    const newConnections = connections.filter(c => !(c.from == from && c.to == to))
+    const newConnections = connections.filter(
+      (c) => !(c.from == from && c.to == to),
+    )
     templateInstance.state.set('connections', newConnections)
-  }
+  },
 })

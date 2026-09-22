@@ -5,21 +5,21 @@ import '../soundbutton/soundbutton'
 import './routeButton.html'
 
 Template.routeButton.helpers({
-  sound () {
+  sound() {
     const instance = Template.instance()
     return instance.data.sound !== false
   },
-  leftIcon () {
+  leftIcon() {
     const instance = Template.instance()
     const { data } = instance
     return data.icon && data.iconPos !== 'right'
   },
-  rightIcon () {
+  rightIcon() {
     const instance = Template.instance()
     const { data } = instance
     return data.icon && data.iconPos === 'right'
   },
-  attributes () {
+  attributes() {
     const instance = Template.instance()
     const { data } = instance
 
@@ -35,25 +35,23 @@ Template.routeButton.helpers({
       id: data.id,
       title: data.title,
       class: `lea-route-button shadow-sm ms-2 ${ml} btn btn-${btnType} ${btnBlock} ${bgClass} ${sm} ${lg} ${activeClass} ${customClass}`,
-      'aria-label': data.label || data.title
+      'aria-label': data.label || data.title,
     }
 
-    atts.href = data.href
-      ? data.href
-      : ''
+    atts.href = data.href ? data.href : ''
 
     if (data.target) {
       atts.target = data.target
     }
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       if (key.indexOf('data-') === -1) return
       atts[key] = data[key]
     })
 
     return atts
   },
-  groupAttributes () {
+  groupAttributes() {
     const instance = Template.instance()
     const { data } = instance
 
@@ -64,11 +62,11 @@ Template.routeButton.helpers({
     const atts = {
       id: data.id,
       title: data.title,
-      class: `${defaultClass} ${groupClass} ${customClass}`
+      class: `${defaultClass} ${groupClass} ${customClass}`,
     }
 
     if (groupClass) atts.role = 'group'
 
     return atts
-  }
+  },
 })

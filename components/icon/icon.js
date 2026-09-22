@@ -19,19 +19,19 @@ Template.icon.onCreated(function () {
     instance.state.set('iconAtts', {
       class: classAtts,
       title: data.title,
-      'aria-title': data.title
+      'aria-title': data.title,
     })
   })
 })
 
 Template.icon.helpers({
-  iconAtts () {
+  iconAtts() {
     return Template.getState('iconAtts')
   },
-  spanAtts () {
+  spanAtts() {
     const data = Template.instance().data
     return {
-      class: data.class
+      class: data.class,
     }
-  }
+  },
 })

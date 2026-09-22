@@ -1,7 +1,8 @@
 /* global IntersectionObserver */
+
+import { Random } from 'meteor/random'
 import { Template } from 'meteor/templating'
 import { Components } from '../Components'
-import { Random } from 'meteor/random'
 import './image.html'
 
 const imageClass = 'lea-image'
@@ -12,7 +13,7 @@ Template.image.onCreated(function () {
 })
 
 Template.image.helpers({
-  attributes () {
+  attributes() {
     const instance = Template.instance()
     const { data } = instance
     const customClasses = data.class || ''
@@ -25,7 +26,7 @@ Template.image.helpers({
       obj.crossorigin = cors
     }
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       if (key.includes('data-') || key.includes('aria-')) {
         obj[key] = data[key]
       }
@@ -44,9 +45,9 @@ Template.image.helpers({
       width: data.width,
       height: data.height,
       class: classes,
-      'data-src': imageSrc
+      'data-src': imageSrc,
     })
-  }
+  },
 })
 
 Template.image.onRendered(function () {

@@ -1,9 +1,9 @@
-import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
-import { ReactiveDict } from 'meteor/reactive-dict'
 import { Highlight } from 'meteor/leaonline:corelib/items/highlight/Highlight'
-import { createSubmitResponses } from '../utils/createSubmitResponses'
+import { ReactiveDict } from 'meteor/reactive-dict'
+import { ReactiveVar } from 'meteor/reactive-var'
+import { Template } from 'meteor/templating'
 import { dataTarget } from '../../../utils/eventUtils'
+import { createSubmitResponses } from '../utils/createSubmitResponses'
 import { getExplanations } from '../utils/getExplanations'
 import '../explanation/itemExplanations'
 import '../../../components/soundbutton/soundbutton'
@@ -23,14 +23,14 @@ Template.itemHighlightRenderer.onCreated(function () {
     onInput: instance.data.onInput,
     responseCache: {
       get: () => instance.responseCache.get(),
-      set: val => instance.responseCache.set(val)
-    }
+      set: (val) => instance.responseCache.set(val),
+    },
   })
 
   instance.getResponse = () => {
     const selection = instance.state.get('selection')
     const responses = []
-    Object.keys(selection).forEach(index => {
+    Object.keys(selection).forEach((index) => {
       const value = selection[index]
       if (value) {
         responses.push(index)
@@ -47,7 +47,7 @@ Template.itemHighlightRenderer.onCreated(function () {
   instance.state.set({
     selection: {},
     color: 'primary',
-    hovered: null
+    hovered: null,
   })
 
   instance.autorun(() => {
@@ -63,35 +63,35 @@ Template.itemHighlightRenderer.onCreated(function () {
 
     const { text, tts, includeSpace } = value
     const tokens = [...text.matchAll(Highlight.pattern)]
-      .map(token => token[0].replace(groupPattern, ''))
-      .map(token => {
+      .map((token) => token[0].replace(groupPattern, ''))
+      .map((token) => {
         return separatorChars.test(token)
           ? { value: token, isSeparator: true }
           : { value: token }
       })
 
-    let scoring = null
+    const scoring = null
     if (scores) {
       const explanations = getExplanations({ scores, value })
       const selection = instance.state.get('selection') ?? []
-      scores.forEach(entry => {
+      scores.forEach((entry) => {
         // for each correct response, check if the corresponding token is selected
         const { correctResponse, itemId } = entry
 
         // match only scores for this current item
         if (itemId === contentId) {
-          correctResponse.forEach(index => {
+          correctResponse.forEach((index) => {
             const isSelected = selection[index]
             if (isSelected) {
               tokens[index].validationClass = 'bg-success text-white'
-            }
-            else {
-              tokens[index].validationClass = 'p-1 rounded border item-border-expected'
+            } else {
+              tokens[index].validationClass =
+                'p-1 rounded border item-border-expected'
             }
           })
 
           // highlight any selected tokens that are not correct responses
-          Object.keys(selection).forEach(index => {
+          Object.keys(selection).forEach((index) => {
             if (selection[index] && !correctResponse.includes(Number(index))) {
               tokens[index].validationClass = 'bg-danger text-white'
             }
@@ -103,7 +103,13 @@ Template.itemHighlightRenderer.onCreated(function () {
       instance.state.set({ explanations: null })
     }
 
-    instance.state.set({ scoring, readOnly, tokens, ttsText: tts ? text : null, includeSpace })
+    instance.state.set({
+      scoring,
+      readOnly,
+      tokens,
+      ttsText: tts ? text : null,
+      includeSpace,
+    })
   })
 })
 
@@ -127,51 +133,57 @@ Template.itemHighlightRenderer.onRendered(function () {
 })
 
 Template.itemHighlightRenderer.helpers({
-  tokens () {
+  tokens() {
     return Template.instance().state.get('tokens')
   },
-  tokenAtts (index, token) {
+  tokenAtts(index, token) {
     const instance = Template.instance()
     const readOnly = instance.state.get('readOnly')
     const color = instance.state.get('color')
     const selection = instance.state.get('selection')
-    const hoveredClass = !selection[index] && instance.state.get('hovered') == index ? 'highlight-hovered bg-light' : ''
-    const selectedClass = selection[index] ? `highlight-selected px-1 rounded ${token.validationClass ? '' : `bg-${color} text-white`}` : ''
+    const hoveredClass =
+      !selection[index] && instance.state.get('hovered') == index
+        ? 'highlight-hovered bg-light'
+        : ''
+    const selectedClass = selection[index]
+      ? `highlight-selected px-1 rounded ${token.validationClass ? '' : `bg-${color} text-white`}`
+      : ''
     const separatorClass = token.isSeparator ? 'ms-n2' : ''
     const isSpace = whiteSpace.test(token.value)
-    const tokenClass = !readOnly && (!isSpace || instance.state.get('includeSpace'))
-      ? 'highlight-token'
-      : ''
+    const tokenClass =
+      !readOnly && (!isSpace || instance.state.get('includeSpace'))
+        ? 'highlight-token'
+        : ''
     const validationClass = token.validationClass ? token.validationClass : ''
     return {
       class: `highlight-entry ${tokenClass} ${hoveredClass} ${selectedClass} ${separatorClass} ${validationClass}`,
       'data-index': index,
-      'data-isSpace': isSpace
+      'data-isSpace': isSpace,
     }
   },
-  ttsText () {
+  ttsText() {
     return Template.instance().state.get('ttsText')
   },
-  readOnly () {
+  readOnly() {
     return Template.instance().state.get('readOnly')
   },
-  explanations () {
+  explanations() {
     return Template.instance().state.get('explanations')
-  }
+  },
 })
 
 Template.itemHighlightRenderer.events({
-  'mouseenter .highlight-token' (event, templateInstance) {
+  'mouseenter .highlight-token'(event, templateInstance) {
     event.preventDefault()
     const hovered = dataTarget(event, 'index')
     templateInstance.state.set({ hovered })
   },
-  'mouseout .highlight-token' (event, templateInstance) {
+  'mouseout .highlight-token'(event, templateInstance) {
     event.preventDefault()
     const hovered = null
     templateInstance.state.set({ hovered })
   },
-  'click .highlight-token' (event, templateInstance) {
+  'click .highlight-token'(event, templateInstance) {
     event.preventDefault()
     const index = dataTarget(event, 'index')
     const selection = templateInstance.state.get('selection')
@@ -179,7 +191,7 @@ Template.itemHighlightRenderer.events({
     templateInstance.state.set({ selection })
     templateInstance.submitResponse({
       responses: templateInstance.getResponse(),
-      data: templateInstance.data
+      data: templateInstance.data,
     })
-  }
+  },
 })

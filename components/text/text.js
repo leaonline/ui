@@ -1,7 +1,7 @@
-import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
-import { dataTarget } from '../../utils/eventUtils'
 import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
+import { ReactiveVar } from 'meteor/reactive-var'
+import { Template } from 'meteor/templating'
+import { dataTarget } from '../../utils/eventUtils'
 import './text.css'
 import './text.html'
 
@@ -14,12 +14,12 @@ Template.text.onCreated(function () {
 
   instance.play = (...indices) => {
     const isPlaying = _isPlaying.get()
-    indices.forEach(index => {
+    indices.forEach((index) => {
       isPlaying[index] = true
     })
     _isPlaying.set(isPlaying)
   }
-  instance.stop = index => {
+  instance.stop = (index) => {
     const isPlaying = _isPlaying.get()
     isPlaying[index] = false
     _isPlaying.set(isPlaying)
@@ -27,22 +27,22 @@ Template.text.onCreated(function () {
   instance.clear = () => {
     _isPlaying.set({})
   }
-  instance.isPlaying = index => _isPlaying.get()[index]
+  instance.isPlaying = (index) => _isPlaying.get()[index]
 })
 
 Template.text.helpers({
-  attributes () {
+  attributes() {
     const data = Template.instance().data
     const textClass = data.bold ? 'lea-text-bold' : 'lea-text'
     const additionalClass = data.class || ''
     return {
-      class: `${textClass} text-wrapper ${additionalClass}`
+      class: `${textClass} text-wrapper ${additionalClass}`,
     }
   },
-  tokens () {
+  tokens() {
     return Template.instance().data.src.split(whiteSpace)
   },
-  tokenAttributes (currentIndex) {
+  tokenAttributes(currentIndex) {
     const instance = Template.instance()
     const { data } = instance
     const fill = (data.fill && 'flex-fill') || ''
@@ -50,12 +50,14 @@ Template.text.helpers({
     const playingClass = instance.isPlaying(currentIndex)
       ? 'lea-text-bold text-primary'
       : ''
-    return { class: `lea-text-token ${fill} ${playingClass} ${customTokenClass}` }
-  }
+    return {
+      class: `lea-text-token ${fill} ${playingClass} ${customTokenClass}`,
+    }
+  },
 })
 
 Template.text.events({
-  'click .lea-text-token' (event, templateInstance) {
+  'click .lea-text-token'(event, templateInstance) {
     event.preventDefault()
     templateInstance.clear()
 
@@ -65,5 +67,5 @@ Template.text.events({
 
     TTSEngine.play({ text, onEnd })
     templateInstance.play(index)
-  }
+  },
 })
