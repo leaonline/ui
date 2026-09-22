@@ -6,6 +6,14 @@ import { Cloze } from 'meteor/leaonline:corelib/items/text/Cloze'
 import { Scoring } from 'meteor/leaonline:corelib/scoring/Scoring'
 import { RendererGroups } from './RendererGroups'
 
+/**
+ * Defines the item renderers for our core item types
+ * (choice, highlight, connect, sort, cloze).
+ * Each renderer definition object contains an async load function
+ * that enables for lazy import via dynamic import.
+ *
+ * @type {object}
+ */
 export const CoreRenderers = {}
 
 const allConfigs = []

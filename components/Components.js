@@ -2,6 +2,12 @@ import { TemplateLoader } from 'meteor/jkuester:template-loader'
 import { Meteor } from 'meteor/meteor'
 import { ReactiveVar } from 'meteor/reactive-var'
 
+/**
+ * Collection of registered base components.
+ * Uses jkuester:template-loader TemplateLoader to lazy load components without
+ * the need for a manual import in every template.
+ * @type {object}
+ */
 export const Components = {}
 
 Components.debug = false
