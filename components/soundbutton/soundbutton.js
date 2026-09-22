@@ -1,7 +1,7 @@
 import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
-import { getBsType } from '../../utils/bootstrapUtils'
+import { SoundButtonUtils } from './SoundButtonUtils'
 import './soundbutton.html'
 import './soundbutton.css'
 
@@ -39,29 +39,13 @@ Template.soundbutton.onCreated(function () {
 function updateAtts({ data, ttsReady, instance }) {
   const initialTTS = data.tts
   const initialText = data.text
-  const disabled = data.disabled || !ttsReady
-  const btnType = getBsType(data.type, data.outline)
-  const btnBlock = data.block ? 'd-block w-100' : ''
-  const btnSize = (data.sm && 'btn-sm') || (data.lg && 'btn-lg') || ''
-  const customClass = data.class || ''
-  const disabledClass = disabled ? 'disabled' : ''
-  const activeClass = data.active ? 'active' : ''
-  const borderClass = data.border || data.outline === false ? '' : 'border-0'
 
   instance.isPlaying.set(false)
   instance.tts.set(initialTTS)
   instance.text.set(initialText)
 
-  instance.attributes.set({
-    id: data.id,
-    title: data.title,
-    disabled: disabled,
-    type: 'button',
-    class: `lea-sound-btn align-baseline p-1 d-print-none btn btn-${btnType} ${btnBlock} ${btnSize} ${borderClass} ${activeClass} ${customClass} ${disabledClass}`,
-    'data-tts': initialTTS,
-    'data-text': initialText,
-    'aria-label': data.title,
-  })
+  const attributes = SoundButtonUtils.getAttributes({ data, ttsReady })
+  instance.attributes.set(attributes)
 }
 
 Template.soundbutton.onDestroyed(function () {

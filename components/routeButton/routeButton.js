@@ -1,8 +1,9 @@
 import { Template } from 'meteor/templating'
-import { getBsType } from '../../utils/bootstrapUtils'
 
 import '../soundbutton/soundbutton'
 import './routeButton.html'
+import { ButtonUtils } from '../common/ButtonUtils'
+import { RouteButtonUtils } from './RouteButtonUtils'
 
 Template.routeButton.helpers({
   sound() {
@@ -16,57 +17,14 @@ Template.routeButton.helpers({
   },
   rightIcon() {
     const instance = Template.instance()
-    const { data } = instance
-    return data.icon && data.iconPos === 'right'
+    return ButtonUtils.rightIcon(instance.data)
   },
   attributes() {
     const instance = Template.instance()
-    const { data } = instance
-
-    const btnType = getBsType(data.type, data.outline)
-    const btnBlock = data.block ? 'w-100' : ''
-    const customClass = data.btnClass || ''
-    const activeClass = data.active ? 'active' : ''
-    const bgClass = `lea-text lea-route-btn-${btnType}`
-    const sm = data.sm ? 'btn-sm' : ''
-    const lg = data.lg ? 'btn-lg' : ''
-    const ml = data.group ? '' : 'ms-2 '
-    const atts = {
-      id: data.id,
-      title: data.title,
-      class: `lea-route-button shadow-sm ms-2 ${ml} btn btn-${btnType} ${btnBlock} ${bgClass} ${sm} ${lg} ${activeClass} ${customClass}`,
-      'aria-label': data.label || data.title,
-    }
-
-    atts.href = data.href ? data.href : ''
-
-    if (data.target) {
-      atts.target = data.target
-    }
-
-    Object.keys(data).forEach((key) => {
-      if (key.indexOf('data-') === -1) return
-      atts[key] = data[key]
-    })
-
-    return atts
+    return RouteButtonUtils.getAttributes(instance)
   },
   groupAttributes() {
     const instance = Template.instance()
-    const { data } = instance
-
-    const groupClass = data.group ? 'btn-group' : ''
-    const customClass = data.class || ''
-    const defaultClass = data.sound !== false ? 'd-flex align-items-center' : ''
-
-    const atts = {
-      id: data.id,
-      title: data.title,
-      class: `${defaultClass} ${groupClass} ${customClass}`,
-    }
-
-    if (groupClass) atts.role = 'group'
-
-    return atts
+    return RouteButtonUtils.getGroupAttributes(instance)
   },
 })

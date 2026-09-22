@@ -1,26 +1,14 @@
 import { Template } from 'meteor/templating'
 import './icon.html'
+import { IconUtils } from './IconUtils'
 
 Template.icon.onCreated(function () {
   const instance = this
 
   instance.autorun(() => {
     const data = Template.currentData()
-    const fw = data.fw ? 'fa-fw' : ''
-    const pulse = data.pulse ? 'fa-pulse' : ''
-    const spinning = data.spin ? 'fa-spin' : ''
-    const name = data.name
-    const regular = data.far && 'far'
-    const solid = data.fas && 'fas'
-    const type = regular || solid || 'far'
-    const scale = data.scale ? `fa-${data.scale}x` : ''
-    const classAtts = `fa ${type} ${fw} fa-${name} ${pulse} ${spinning} ${scale}`
-
-    instance.state.set('iconAtts', {
-      class: classAtts,
-      title: data.title,
-      'aria-title': data.title,
-    })
+    const iconAtts = IconUtils.getAttributes({ data })
+    instance.state.set({ iconAtts })
   })
 })
 

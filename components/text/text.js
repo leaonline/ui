@@ -2,10 +2,9 @@ import { TTSEngine } from 'meteor/leaonline:corelib/tts/TTSEngine'
 import { ReactiveVar } from 'meteor/reactive-var'
 import { Template } from 'meteor/templating'
 import { dataTarget } from '../../utils/eventUtils'
+import { TextUtils } from './TextUtils'
 import './text.css'
 import './text.html'
-
-const whiteSpace = /\s+/g
 
 Template.text.onCreated(function () {
   const instance = this
@@ -32,15 +31,12 @@ Template.text.onCreated(function () {
 
 Template.text.helpers({
   attributes() {
-    const data = Template.instance().data
-    const textClass = data.bold ? 'lea-text-bold' : 'lea-text'
-    const additionalClass = data.class || ''
-    return {
-      class: `${textClass} text-wrapper ${additionalClass}`,
-    }
+    const instance = Template.instance()
+    return TextUtils.getAttributes(instance)
   },
   tokens() {
-    return Template.instance().data.src.split(whiteSpace)
+    const instance = Template.instance()
+    return TextUtils.getTokens(instance)
   },
   tokenAttributes(currentIndex) {
     const instance = Template.instance()
