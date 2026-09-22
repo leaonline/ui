@@ -6,17 +6,18 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 ![GitHub](https://img.shields.io/github/license/leaonline/ui)
 
-This package brings common UI components to the Blaze ecosystem that are
-required in many of the lea.online applications.
+This Meteor package brings common UI components to the Blaze frontend. These components are
+required in many of the lea.online applications and thus bundled in this shared library.
 
 ## Components (Templates)
 
-- Soundbutton - A button with an associated tts-id, resolved by the TTSClient to play the associated sound
-- Text - Renders a basic Text plus the associated sound button
-- Image - lazy loads an image by given source
-- Video - lazy loads / streams a video by given source
-- Icon - wrapper for icon frameworks (currently using font-awesome 5)
 - ActionButton - A button with a certain action and an integrated SoundButton
+- Icon - wrapper for icon frameworks (currently using font-awesome 5)
+- Image - lazy loads an image by given source
+- RouteButton - An anchor with button design and integrated SoundButton
+- SoundButton - A button with an associated tts-id, resolved by the TTSClient to play the associated sound
+- Text - Base component for all components that require text with our target-group-specific Semikolon font
+- TextGroup - Renders a basic Text plus the associated sound button
 
 ## Renderers (Templates)
 
