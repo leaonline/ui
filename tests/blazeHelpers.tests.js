@@ -13,6 +13,8 @@ const withDiv = function withDiv(callback) {
   }
 }
 
+export const asyncTimeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
 export const withRenderedTemplate = function withRenderedTemplate(
   template,
   data,
@@ -68,9 +70,32 @@ export const createTemplateRenderingContext = () => {
     }
   }
 
+  const fire = async (name, target, options) => {
+      const EventClass = getEventClass(name)
+      const event = new EventClass(name, options);
+      target.dispatchEvent(event);
+      await asyncTimeout(1)
+  }
+
+  const hover = async (el) => {
+      const opts = {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: 1,
+          clientY: 1
+      };
+
+      el.dispatchEvent(new MouseEvent("pointerover", opts));
+      el.dispatchEvent(new MouseEvent("mouseover", opts));
+      el.dispatchEvent(new MouseEvent("pointerenter", { ...opts, bubbles: false }));
+      el.dispatchEvent(new MouseEvent("mouseenter", { ...opts, bubbles: false }));
+  }
+
   return {
     host,
     view,
+    hover,
     originalIsConfigured,
     originalIntersectionObserver,
     hadIntersectionObserver,
@@ -78,5 +103,13 @@ export const createTemplateRenderingContext = () => {
     teardown,
     render,
     setup,
+      fire,
   }
+}
+
+const getEventClass = name => {
+    if (['click', 'mouseover', 'mouseenter'].includes(name)) {
+        return MouseEvent
+    }
+    return Event
 }

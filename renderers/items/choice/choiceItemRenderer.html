@@ -11,7 +11,7 @@
                  name="{{entry.name}}"
                  value="{{entry.index}}"
                  disabled="{{#if readOnly}}disabled{{/if}}"
-                 class="mx-2 choice-interaction choice-input radio-group-button"
+                 class="mx-2 choice-input radio-group-button"
                  checked="{{#if selected @index}}checked{{/if}}">
             {{#if entry.tts}}
                 {{> soundbutton type=dimensionColor outline=true text=entry.tts class="choice-soundbutton"}}
@@ -19,12 +19,7 @@
             {{#if entry.image}}
                 {{> image src=entry.image class="choice-interaction choice-image"  cors="Anonymous"}}
             {{/if}}
-          <span class="h-100 mx-2 choice-interaction">
-					<!--
-                    <label class="choice-group-label choice-interaction" for="{{entry.name}}-{{@index}}">{{entry.text}}</label>
-                    -->
-              {{entry.text}}
-				</span>
+          <span class="h-100 mx-2 choice-label">{{entry.text}}</span>
         </div>
       {{/each}}
   </div>

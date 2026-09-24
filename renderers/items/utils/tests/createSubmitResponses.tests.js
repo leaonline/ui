@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { ReactiveVar } from 'meteor/reactive-var'
-import { createSubmitResponses } from './createSubmitResponses'
+import { createSubmitResponses } from '../createSubmitResponses'
 
 describe(createSubmitResponses.name, () => {
   it('throws on invalid input', () => {
