@@ -9,10 +9,10 @@
 export const getExplanations = ({ value, scores }) => {
   let explanations = []
 
-    if (Array.isArray(scores)) {
-      explanations = scores
-          .filter((score) => !!score.explanation)
-          .map((score) => score.explanation)
+  if (Array.isArray(scores)) {
+    explanations = scores
+      .filter((score) => !!score.explanation)
+      .map((score) => score.explanation)
   }
 
   if (value?.explanation) {

@@ -5,9 +5,10 @@ import { resolveRepresentative } from 'meteor/leaonline:corelib/utils/resolveRep
 export const ScoringRendererUtils = {}
 
 ScoringRendererUtils.getCompetencies = (selector) => {
-    const collection = getCollection(Competency.name)
-    const query = Array.isArray(selector) ? { $in: selector } : selector
-    return collection.find({ _id: query }).fetch().map(toRepresentative)
+  const collection = getCollection(Competency.name)
+  const query = Array.isArray(selector) ? { $in: selector } : selector
+  return collection.find({ _id: query }).fetch().map(toRepresentative)
 }
 
-const toRepresentative = (doc) => resolveRepresentative(doc, Competency.representative)
+const toRepresentative = (doc) =>
+  resolveRepresentative(doc, Competency.representative)

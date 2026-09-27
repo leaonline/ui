@@ -22,6 +22,7 @@ describe('actionButton', () => {
       disabled: true,
       'data-tracking': 'action',
     })
+
     const wrapper = root.firstElementChild
     const button = wrapper.querySelector('button.lea-action-button')
     const label = button.querySelector('.lea-text')
@@ -40,5 +41,38 @@ describe('actionButton', () => {
     expect(button.classList.contains('action-control')).to.equal(true)
     expect(label.textContent).to.equal('Save')
     expect(button.firstElementChild.contains(icon)).to.equal(true)
+  })
+
+  it('renders action button with no icon and tts sound', async () => {
+    const root = await render('actionButton', {
+      id: 'action-group',
+      title: 'Action title',
+      class: 'action-wrapper',
+      label: 'Save',
+      btnClass: 'action-control',
+      'data-tracking': 'action',
+    })
+
+    const wrapper = root.firstElementChild
+    const button = wrapper.querySelector('button.lea-action-button')
+    const label = button.querySelector('.lea-text')
+    const soundButton = wrapper.querySelector('.lea-sound-btn')
+    const ttsIcon = soundButton.querySelector('i')
+
+    // GROUP
+    expect(wrapper.id).to.equal('action-group')
+    expect(wrapper.title).to.equal('Action title')
+    expect(wrapper.classList.contains('action-wrapper')).to.equal(true)
+
+    // TTS BUTTON
+    expect(ttsIcon.classList.contains('fa-volume-up')).to.equal(true)
+
+    // BUTTON
+    expect(button.id).to.equal('action-group')
+    expect(button.title).to.equal('Action title')
+    expect(button.getAttribute('aria-label')).to.equal('Save')
+    expect(button.getAttribute('data-tracking')).to.equal('action')
+    expect(button.hasAttribute('disabled')).to.equal(false)
+    expect(label.textContent).to.equal('Save')
   })
 })

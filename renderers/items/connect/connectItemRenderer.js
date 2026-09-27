@@ -7,7 +7,7 @@ import '../../../components/image/image'
 import '../../../components/soundbutton/soundbutton'
 import './connectItemRenderer.css'
 import './connectItemRenderer.html'
-import {ConnectItemRendererUtils} from "./ConnectItemRendererUtils";
+import { ConnectItemRendererUtils } from './ConnectItemRendererUtils'
 
 Template.connectItemRenderer.onCreated(function () {
   const instance = this
@@ -37,8 +37,15 @@ Template.connectItemRenderer.onCreated(function () {
   }
 
   instance.createLine = ({ from, to, source, target, color }) => {
-      const root = instance.root
-      return ConnectItemRendererUtils.createLine({ root, from, to, source, target, color })
+    const root = instance.root
+    return ConnectItemRendererUtils.createLine({
+      root,
+      from,
+      to,
+      source,
+      target,
+      color,
+    })
   }
 
   instance.findEndpoint = (selector, index) =>
