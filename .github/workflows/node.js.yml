@@ -31,6 +31,7 @@ jobs:
     - run: |
         cd test-proxy
         npm ci
+        npm run setup
         npm run lint
 
   tests:
@@ -62,5 +63,6 @@ jobs:
 
       - run: |
           cd test-proxy
+          npm ci
           npm run setup
-          npm run ci
+          npm run tests:ci
