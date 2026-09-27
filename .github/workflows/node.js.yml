@@ -62,7 +62,9 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: |
+          ls -la
           cd test-proxy
           npm ci
           npm run setup
+          ls -la ../../
           npm run test:ci
