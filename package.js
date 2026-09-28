@@ -28,7 +28,9 @@ Package.onUse((api) => {
 Package.onTest((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
   api.use('ecmascript')
+  api.use('mongo')
   api.use('random')
+  api.use('tracker')
   api.use([
     'templating@1.4.4',
     'jquery@3.0.0',

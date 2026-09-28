@@ -1,39 +1,18 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import { createTemplateRenderingContext } from '../../../tests/blazeHelpers.tests'
+import { createFakeIntersectionObserverTests } from '../../../tests/createFakeIntersectionObserver.tests'
 import '../image'
 
 describe('image', () => {
-  const { render, setup, teardown, view, afterFlush } =
+  const { render, setup, teardown, afterFlush } =
     createTemplateRenderingContext()
   beforeEach(() => setup())
   afterEach(() => teardown())
 
   it('lazy-loads an intersecting image and disconnects on removal', async () => {
-    const observers = []
-
-    class FakeIntersectionObserver {
-      constructor(callback) {
-        this.callback = callback
-        this.observed = []
-        this.unobserved = []
-        this.disconnectCalls = 0
-        observers.push(this)
-      }
-
-      observe(target) {
-        this.observed.push(target)
-      }
-
-      unobserve(target) {
-        this.unobserved.push(target)
-      }
-
-      disconnect() {
-        this.disconnectCalls += 1
-      }
-    }
-
+    const { observers, FakeIntersectionObserver } =
+      createFakeIntersectionObserverTests()
     globalThis.IntersectionObserver = FakeIntersectionObserver
 
     const root = await render('image', {
