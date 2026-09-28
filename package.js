@@ -11,10 +11,6 @@ Package.describe({
   documentation: 'README.md',
 })
 
-Npm.depends({
-  'sortablejs': '1.15.7',
-})
-
 Package.onUse((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
 
@@ -24,21 +20,25 @@ Package.onUse((api) => {
     'reactive-dict',
     'dynamic-import',
     'leaonline:corelib',
-  ])
+    'jkuester:template-states',
+    'jkuester:template-loader'
+  ], 'client')
 })
 
 Package.onTest((api) => {
   api.versionsFrom(['3.0.1', '3.4'])
   api.use('ecmascript')
+  api.use('mongo')
   api.use('random')
+  api.use('tracker')
   api.use([
     'templating@1.4.4',
     'jquery@3.0.0',
-    'lmieulet:meteor-legacy-coverage@0.4.0',
-    'lmieulet:meteor-coverage@5.0.0',
-    'meteortesting:mocha@3.3.0',
+    // 'lmieulet:meteor-legacy-coverage@0.4.0',
+    // 'lmieulet:meteor-coverage@5.0.0',
+    'meteortesting:mocha@3.4.0',
   ])
   api.use('leaonline:corelib@2.0.0')
   api.use('leaonline:ui@2.1.0')
-  api.mainModule('ui-tests.js', ['server', 'client'])
+  api.mainModule('ui-tests.js', ['client'])
 })

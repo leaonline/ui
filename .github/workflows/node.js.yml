@@ -31,6 +31,7 @@ jobs:
     - run: |
         cd test-proxy
         npm ci
+        npm run setup
         npm run lint
 
   tests:
@@ -45,7 +46,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: leaonline/corelib
-          path: github/corelib
+          path: test-proxy/packages/corelib
 
       - name: Setup meteor
         uses: meteorengineer/setup-meteor@v2
@@ -62,5 +63,6 @@ jobs:
 
       - run: |
           cd test-proxy
+          npm ci
           npm run setup
-          npm run ci
+          npm run test:ci

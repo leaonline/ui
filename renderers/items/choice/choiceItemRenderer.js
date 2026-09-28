@@ -266,12 +266,12 @@ Template.choiceItemRenderer.events({
       data: templateInstance.data,
     })
   },
-  'mouseenter .choice-entry'(event, templateInstance) {
+  'mouseenter .choice-interaction'(event, templateInstance) {
     const index = templateInstance.$(event.currentTarget).data('index')
     const hovered = Number.parseInt(index, 10)
     templateInstance.state.set('hovered', hovered)
   },
-  'mouseleave .choice-entry'(event, templateInstance) {
+  'mouseleave .choice-interaction'(event, templateInstance) {
     templateInstance.state.set('hovered', null)
   },
 })

@@ -2,10 +2,8 @@
 
 import { Random } from 'meteor/random'
 import { Template } from 'meteor/templating'
-import { Components } from '../Components'
+import { ImageUtils } from './ImageUtils'
 import './image.html'
-
-const imageClass = 'lea-image'
 
 Template.image.onCreated(function () {
   const instance = this
@@ -15,38 +13,8 @@ Template.image.onCreated(function () {
 Template.image.helpers({
   attributes() {
     const instance = Template.instance()
-    const { data } = instance
-    const customClasses = data.class || ''
-    const shadowClass = data.shadow ? 'shadow' : ''
-    const classes = `${imageClass} ${shadowClass} ${customClasses}`
-    const obj = {}
-    const cors = data.cors || data.crossorigin
-
-    if (cors) {
-      obj.crossorigin = cors
-    }
-
-    Object.keys(data).forEach((key) => {
-      if (key.includes('data-') || key.includes('aria-')) {
-        obj[key] = data[key]
-      }
-    })
-
-    const base = Components.contentPath()
-    const imageSrc = data.src.startsWith('http')
-      ? data.src
-      : `${base}${data.src}`
-
-    return Object.assign(obj, {
-      'data-id': instance.id,
-      title: data.title,
-      alt: data.alt,
-      'aria-title': data.title,
-      width: data.width,
-      height: data.height,
-      class: classes,
-      'data-src': imageSrc,
-    })
+    const { id, data } = instance
+    return ImageUtils.getAttributes({ data, instanceId: id })
   },
 })
 
@@ -72,4 +40,16 @@ Template.image.onRendered(function () {
     })
   })
   observer.observe(image)
+  instance.observer = observer
+})
+
+Template.image.onDestroyed(function () {
+  const instance = this
+  if (instance.observer) {
+    try {
+      instance.observer.disconnect()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 })
